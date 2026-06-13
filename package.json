@@ -17,5 +17,9 @@
   "bugs": {
     "url": "https://github.com/Epic-Mushroom/CustomWordsBombParty/issues"
   },
-  "homepage": "https://github.com/Epic-Mushroom/CustomWordsBombParty#readme"
+  "homepage": "https://github.com/Epic-Mushroom/CustomWordsBombParty#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  }
 }
