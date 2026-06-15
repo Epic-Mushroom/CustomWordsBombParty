@@ -17,4 +17,4 @@ io.on("connection", (socket) => {
 
 http.listen(3000, () => console.log("server up"));
 
-console.log("test");
+console.log("script start");
