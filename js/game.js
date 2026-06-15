@@ -31,14 +31,14 @@ class Game {
         this.players = [];
         this.alphabetRule = new Set();
         this.wordDictionary = new Set();
-        this.substrings = {};
+        this.substrings = new Map();
 
         this.maxTimerLength = maxTimerLength; // could add variation depending on substring rarity
         this.maxPlayers = maxPlayers;
         this.startingLives = startingLives;
 
         this.currentRound = 1;
-        this.wordsSubmitted = {};
+        this.wordsSubmitted = new Map();
     }
 
     nextTurn() {
@@ -46,6 +46,6 @@ class Game {
     }
 
     nextRound() {
-        
+
     }
 }
