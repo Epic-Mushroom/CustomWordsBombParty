@@ -5,10 +5,12 @@ const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 
-const {Player, Game} = require("./public/src/game.js");
+const {Player, Game, GameManager} = require("./public/src/game.js");
 const {generateRoomCode} = require("./public/src/rooms.js");
 
 app.use(express.static(path.join(__dirname, "public")));
+
+let gameManager = new GameManager();
 
 io.on("connection", (socket) => {
     console.log(`player connected, socket id: ${socket.id}`);
@@ -17,8 +19,11 @@ io.on("connection", (socket) => {
         console.log(`player disconnected, socket id: ${socket.id}`);
     });
 
-    socket.on("generate_room_code", () => {
+    socket.on("create_room", () => {
         let generated_code = generateRoomCode();
+        gameManager.addGame(generated_code); // uses default constsraints for timer length, max players, etc
+
+        io.emit("update_rooms_list", generated_code);
 
         console.log(`room code generated with code ${generated_code}`);
     });
