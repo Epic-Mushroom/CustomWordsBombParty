@@ -10,6 +10,12 @@
         <link rel="icon" type="image/png" href="./images/brick.png">
     </head>
     <body>
+        <div id="menu">
+            <main>
+                <h1>Create a Room</h1>
+            </main>
+        </div>
+
         <div id="game">
             <main>
                 <h1>BombParty</h1>
@@ -17,13 +23,11 @@
 
                 <label for="guess">Enter guess:</label>
                 <input type="text" id="guess" name="guess">
-                <button type="submit">Enter</button>
-                <!-- need to enclose inputs in form-->
+                <button type="button" id="submit_button">Enter</button>
             </main>
         </div>
 
         <script src="./socket.io/socket.io.js"></script>
         <script src="./src/client.js"></script>
-        <script src="./src/game.js"></script>
     </body>
 </html>

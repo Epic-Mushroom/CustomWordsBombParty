@@ -1,20 +1,24 @@
+const path = require("path");
+
 const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
-const path = require("path");
+const io = require("socket.io")(http);
+
+const {Player, Game} = require("./public/src/game.js")
 
 app.use(express.static(path.join(__dirname, "public")));
-
-const io = require("socket.io")(http);
 
 io.on("connection", (socket) => {
     console.log(`player connected, socket id: ${socket.id}`);
 
     socket.on("disconnect", () => {
-        console.log(`player disconnected, socket id: ${socket.id}`)
+        console.log(`player disconnected, socket id: ${socket.id}`);
+    });
+
+    socket.on("submit_guess", () => {
+        console.log(`player clicked submit guess`);
     });
 });
 
-http.listen(3000, () => console.log("server up"));
-
-console.log("script start");
+http.listen(3000, () => console.log("server up"));  

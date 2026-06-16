@@ -49,3 +49,8 @@ class Game {
 
     }
 }
+
+module.exports = {
+    Player,
+    Game
+}
