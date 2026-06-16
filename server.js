@@ -10,6 +10,14 @@ const {generateRoomCode} = require("./public/src/rooms.js");
 
 app.use(express.static(path.join(__dirname, "public")));
 
+// routing
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"))
+});
+app.get("/game", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "game.html"))
+});
+
 let gameManager = new GameManager();
 
 io.on("connection", (socket) => {

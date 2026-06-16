@@ -3,24 +3,21 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="custom words bombparty">
+        <meta name="description" content="custom words bombparty (game)">
 
         <title>Custom BombParty</title>
         <link rel="stylesheet" href="./styles/main.css">
         <link rel="icon" type="image/png" href="./images/brick.png">
     </head>
     <body>
-        <div id="menu">
+        <div id="game">
             <main>
-                <button type="button" id="create_room_button">Create a Room</button>
-                <p id="room_code_display"></p>
-            </main>
-        </div>
+                <h1>BombParty</h1>
+                <h2>Substring: YYY</h2>
 
-        <div id="active_rooms">
-            <main>
-                <ol id="active_rooms_list">
-                </ol>
+                <label for="guess">Enter guess:</label>
+                <input type="text" id="guess" name="guess">
+                <button type="button" id="submit_button">Enter</button>
             </main>
         </div>
 
