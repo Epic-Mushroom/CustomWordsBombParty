@@ -50,6 +50,10 @@ class Game {
     }
 }
 
+class GameManager {
+    // contains all the games as a map with key room code
+}
+
 module.exports = {
     Player,
     Game

@@ -1,4 +1,5 @@
-roomCodeCharacters = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'A', 'S', 'D', 'F', 'G', 'Z', 'Y'];
+const ROOM_CODE_CHARACTERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'A', 'S', 'D', 'F', 'G', 'Z', 'Y'];
+const DEFAULT_ROOM_CODE_LENGTH = 4;
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -6,12 +7,16 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-function generateRoomCode(length) {
-    roomCode = "";
+function generateRoomCode(length = DEFAULT_ROOM_CODE_LENGTH) {
+    let roomCode = "";
 
     for (i = 0; i < length; i = i + 1) {
-        roomCode += roomCodeCharacters[getRandomInt(0, roomCodeCharacters.length - 1)];
+        roomCode += ROOM_CODE_CHARACTERS[getRandomInt(0, ROOM_CODE_CHARACTERS.length - 1)];
     }
 
     return roomCode;
+}
+
+module.exports = {
+    generateRoomCode
 }
