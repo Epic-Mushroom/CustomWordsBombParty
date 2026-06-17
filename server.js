@@ -53,13 +53,19 @@ io.on("connection", (socket) => {
     });
 
     socket.on("create_room", (maxPlayers, baseTimerDuration, startingLives) => {
-        let generated_code = roomsLogic.generateRoomCode();
-        let newGame = gameManager.addGame(generated_code, maxPlayers, baseTimerDuration, startingLives); // uses default constraints for timer length, max players, etc
+        try {
+            let generated_code = roomsLogic.generateRoomCode();
+            let newGame = gameManager.addGame(generated_code, maxPlayers = maxPlayers, baseTimerDuration = baseTimerDuration, startingLives = startingLives); // uses default constraints for timer length, max players, etc
 
-        io.emit("show_newly_generated_room", generated_code);
-        io.emit("update_rooms_list", generated_code);
+            io.emit("show_newly_generated_room", generated_code);
+            io.emit("update_rooms_list", generated_code);
 
-        console.log(`Generated room with game: ${newGame}`);
+            console.log(`Generated room with game: ${newGame}`);
+
+        } catch (err) {
+            socket.emit("alert", err.message);
+        }
+        
     });
 
     socket.on("submit_guess", () => {

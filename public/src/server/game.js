@@ -1,6 +1,14 @@
-const DEFAULT_BASE_TIMER_DURATION = 8; // seconds
-const DEFAULT_MAX_PLAYERS_PER_ROOM = 10;
-const DEFAULT_STARTING_LIVES = 3;
+export const DEFAULT_BASE_TIMER_DURATION = 8; // seconds
+export const DEFAULT_MAX_PLAYERS_PER_ROOM = 10;
+export const DEFAULT_STARTING_LIVES = 3;
+
+export const MAX_BASE_TIMER_DURATION = 67;
+export const MAX_MAX_PLAYERS_PER_ROOM = 67;
+export const MAX_STARTING_LIVES = 10;
+
+export const MIN_BASE_TIMER_DURATION = 1;
+export const MIN_MAX_PLAYERS_PER_ROOM = 1;
+export const MIN_STARTING_LIVES = 1;
 
 class Player {
     // has a username, a game that it is connected to, number of lives,
@@ -29,8 +37,8 @@ class Game {
     // room code, alphabet rule (set of letters) for generating extra lives (later, for gd, may want to use demon diffs instead)
     // max timer length, maxPlayers, starting life count, current round number, current player turn, isActive
 
-    constructor(roomCode, baseTimerDuration = DEFAULT_BASE_TIMER_DURATION,
-                maxPlayers = DEFAULT_MAX_PLAYERS_PER_ROOM,
+    constructor(roomCode, maxPlayers = DEFAULT_MAX_PLAYERS_PER_ROOM,
+                baseTimerDuration = DEFAULT_BASE_TIMER_DURATION, 
                 startingLives = DEFAULT_STARTING_LIVES) {
         this.roomCode = roomCode;
         
@@ -39,9 +47,21 @@ class Game {
         this.wordDictionary = new Set();
         this.substrings = new Map();
 
-        this.baseTimerDuration = baseTimerDuration; // could add variation depending on substring rarity
-        this.maxPlayers = maxPlayers;
-        this.startingLives = startingLives;
+        if (baseTimerDuration <= MAX_BASE_TIMER_DURATION && baseTimerDuration >= MIN_BASE_TIMER_DURATION) {
+            this.baseTimerDuration = baseTimerDuration; // could add variation depending on substring rarity
+        } else {
+            throw new Error(`Bomb timer duration must be between ${MIN_BASE_TIMER_DURATION} and ${MAX_BASE_TIMER_DURATION} inclusive`);
+        }
+        if (maxPlayers <= MAX_MAX_PLAYERS_PER_ROOM && maxPlayers >= MIN_MAX_PLAYERS_PER_ROOM) {
+            this.maxPlayers = maxPlayers; 
+        } else {
+            throw new Error(`Max players must be between ${MIN_MAX_PLAYERS_PER_ROOM} and ${MAX_MAX_PLAYERS_PER_ROOM} inclusive`);
+        }
+        if (startingLives <= MAX_STARTING_LIVES && startingLives >= MIN_STARTING_LIVES) {
+            this.startingLives = startingLives; 
+        } else {
+            throw new Error(`Starting lives must be between ${MIN_STARTING_LIVES} and ${MAX_STARTING_LIVES} inclusive`);
+        }
 
         this.currentRound = 1;
         this.wordsSubmitted = new Map();
@@ -74,10 +94,11 @@ class GameManager {
         this.games = new Map();
     }
 
-    addGame(roomCode, maxTimerLength = DEFAULT_BASE_TIMER_DURATION,
+    addGame(roomCode,
             maxPlayers = DEFAULT_MAX_PLAYERS_PER_ROOM,
+            baseTimerDuration = DEFAULT_BASE_TIMER_DURATION,
             startingLives = DEFAULT_STARTING_LIVES) {
-        let newGame = new Game(roomCode, maxTimerLength, maxPlayers, startingLives);
+        let newGame = new Game(roomCode, maxPlayers = maxPlayers, baseTimerDuration = baseTimerDuration, startingLives);
         this.games.set(roomCode, newGame);
 
         return newGame;
@@ -87,8 +108,5 @@ class GameManager {
 export {
     Player,
     Game,
-    GameManager,
-    DEFAULT_BASE_TIMER_DURATION,
-    DEFAULT_MAX_PLAYERS_PER_ROOM,
-    DEFAULT_STARTING_LIVES
+    GameManager
 }

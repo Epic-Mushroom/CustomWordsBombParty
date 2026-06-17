@@ -9,7 +9,14 @@ let targetGradientX = 50; // percent
 function set_username(username) {
     console.log(`trying to store username "${username}"`)
 
-    localStorage.setItem("username", username);
+    if (username.trim() != "") {
+        usernameField.value = username.trim();
+        localStorage.setItem("username", username.trim());
+    } else {
+        usernameField.value = "Gertrude";
+        localStorage.setItem("username", "Gertrude");
+    }
+    
 }
 
 function pre_fill_room_rule_defaults() {
@@ -80,6 +87,9 @@ socket.on("fetch_rooms_list", (roomCodesList) => {
 socket.on("update_rooms_list", add_room_to_room_code_list);
 socket.on("show_newly_generated_room", display_newly_generated_code);
 socket.on("pre_fill_room_rule_defaults", pre_fill_room_rule_defaults);
+socket.on("alert", (message) => {
+    alert(message);
+})
 
 // get elements
 const root = document.documentElement;
@@ -124,7 +134,7 @@ let gradientLerp = setInterval(() => {
     root.style.setProperty("--gradient-midpoint", `${
         currentGradientX + 0.06 * (targetGradientX - currentGradientX)
     }%`);
-    console.log(`moving gradient from ${window.getComputedStyle(root).getPropertyValue("--gradient-midpoint")} (${currentGradientX}) to ${targetGradientX}`);
+    // console.log(`moving gradient from ${window.getComputedStyle(root).getPropertyValue("--gradient-midpoint")} (${currentGradientX}) to ${targetGradientX}`);
 }, 0.33 * CLIENT_TICK_DELAY);
 
 
