@@ -56,6 +56,7 @@ io.on("connection", (socket) => {
         let generated_code = roomsLogic.generateRoomCode();
         gameManager.addGame(generated_code); // uses default constraints for timer length, max players, etc
 
+        io.emit("show_newly_generated_room", generated_code);
         io.emit("update_rooms_list", generated_code);
 
         console.log(`room code generated with code ${generated_code}`);

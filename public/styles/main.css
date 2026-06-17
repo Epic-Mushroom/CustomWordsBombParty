@@ -5,3 +5,8 @@
 .menu {
     background: linear-gradient(to right, #a7dee0, #7ca2ac var(--gradient-midpoint));
 }
+
+.green-text {
+    font-weight: bold;
+    color: rgb(0, 63, 0);
+}
