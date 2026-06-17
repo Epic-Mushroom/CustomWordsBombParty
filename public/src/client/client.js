@@ -20,10 +20,14 @@ function pre_fill_room_rule_defaults() {
     startingLivesField.value = gameLogic.DEFAULT_STARTING_LIVES;
 }
 
-function create_room() {
+function create_room(
+    maxPlayers = gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM,
+    baseTimerDuration = gameLogic.DEFAULT_BASE_TIMER_DURATION,
+    startingLives = gameLogic.DEFAULT_STARTING_LIVES
+) {
     console.log("trying to create room");
 
-    socket.emit("create_room");
+    socket.emit("create_room", maxPlayers, baseTimerDuration, startingLives);
 }
 
 async function copy_newly_generated_code() {
@@ -99,7 +103,9 @@ const submitButton = document.getElementById("submit_button");
 usernameButton.addEventListener("click", () => {
     set_username(usernameField.value);
 });
-createRoomButton?.addEventListener("click", create_room);
+createRoomButton?.addEventListener("click", () => {
+    create_room(maxPlayersField.value, baseTimerDurationField.value, startingLivesField.value);
+});
 defaultRulesButton?.addEventListener("click", pre_fill_room_rule_defaults);
 submitButton?.addEventListener("click", submit_guess);
 

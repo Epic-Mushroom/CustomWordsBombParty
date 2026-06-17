@@ -60,6 +60,11 @@ class Game {
     nextRound() {
 
     }
+
+    toString() {
+        return `Code: ${this.roomCode}, Maximum Players: ${this.maxPlayers}, Base Timer Duration: ${this.baseTimerDuration}, 
+Starting Lives: ${this.startingLives}`;
+    }
 }
 
 class GameManager {
@@ -72,7 +77,10 @@ class GameManager {
     addGame(roomCode, maxTimerLength = DEFAULT_BASE_TIMER_DURATION,
             maxPlayers = DEFAULT_MAX_PLAYERS_PER_ROOM,
             startingLives = DEFAULT_STARTING_LIVES) {
-        this.games.set(roomCode, new Game(roomCode, maxTimerLength, maxPlayers, startingLives));
+        let newGame = new Game(roomCode, maxTimerLength, maxPlayers, startingLives);
+        this.games.set(roomCode, newGame);
+
+        return newGame;
     }
 }
 

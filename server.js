@@ -52,14 +52,14 @@ io.on("connection", (socket) => {
         console.log(`player disconnected, socket id: ${socket.id}`);
     });
 
-    socket.on("create_room", () => {
+    socket.on("create_room", (maxPlayers, baseTimerDuration, startingLives) => {
         let generated_code = roomsLogic.generateRoomCode();
-        gameManager.addGame(generated_code); // uses default constraints for timer length, max players, etc
+        let newGame = gameManager.addGame(generated_code, maxPlayers, baseTimerDuration, startingLives); // uses default constraints for timer length, max players, etc
 
         io.emit("show_newly_generated_room", generated_code);
         io.emit("update_rooms_list", generated_code);
 
-        console.log(`room code generated with code ${generated_code}`);
+        console.log(`Generated room with game: ${newGame}`);
     });
 
     socket.on("submit_guess", () => {
