@@ -50,6 +50,12 @@ io.on("connection", (socket) => {
         gameManager.addGame(generated_code); // uses default constraints for timer length, max players, etc
 
         io.emit("update_rooms_list", generated_code);
+        io.emit(
+            "pre_fill_room_rule_defaults", 
+            gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM,
+            gameLogic.DEFAULT_BASE_TIMER_DURATION,
+            gameLogic.DEFAULT_STARTING_LIVES
+        );
 
         console.log(`room code generated with code ${generated_code}`);
     });

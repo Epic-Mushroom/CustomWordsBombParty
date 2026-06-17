@@ -1,4 +1,4 @@
-const DEFAULT_MAX_TIMER_LENGTH = 8; // seconds
+const DEFAULT_BASE_TIMER_DURATION = 8; // seconds
 const DEFAULT_MAX_PLAYERS_PER_ROOM = 10;
 const DEFAULT_STARTING_LIVES = 3;
 
@@ -29,7 +29,7 @@ class Game {
     // room code, alphabet rule (set of letters) for generating extra lives (later, for gd, may want to use demon diffs instead)
     // max timer length, maxPlayers, starting life count, current round number, current player turn, isActive
 
-    constructor(roomCode, maxTimerLength = DEFAULT_MAX_TIMER_LENGTH,
+    constructor(roomCode, baseTimerDuration = DEFAULT_BASE_TIMER_DURATION,
                 maxPlayers = DEFAULT_MAX_PLAYERS_PER_ROOM,
                 startingLives = DEFAULT_STARTING_LIVES) {
         this.roomCode = roomCode;
@@ -39,7 +39,7 @@ class Game {
         this.wordDictionary = new Set();
         this.substrings = new Map();
 
-        this.maxTimerLength = maxTimerLength; // could add variation depending on substring rarity
+        this.baseTimerDuration = baseTimerDuration; // could add variation depending on substring rarity
         this.maxPlayers = maxPlayers;
         this.startingLives = startingLives;
 
@@ -69,7 +69,7 @@ class GameManager {
         this.games = new Map();
     }
 
-    addGame(roomCode, maxTimerLength = DEFAULT_MAX_TIMER_LENGTH,
+    addGame(roomCode, maxTimerLength = DEFAULT_BASE_TIMER_DURATION,
             maxPlayers = DEFAULT_MAX_PLAYERS_PER_ROOM,
             startingLives = DEFAULT_STARTING_LIVES) {
         this.games.set(roomCode, new Game(roomCode, maxTimerLength, maxPlayers, startingLives));
@@ -79,5 +79,8 @@ class GameManager {
 module.exports = {
     Player,
     Game,
-    GameManager
+    GameManager,
+    DEFAULT_BASE_TIMER_DURATION,
+    DEFAULT_MAX_PLAYERS_PER_ROOM,
+    DEFAULT_STARTING_LIVES
 }

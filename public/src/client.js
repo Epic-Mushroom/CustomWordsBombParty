@@ -4,6 +4,10 @@ function set_username(username) {
     localStorage.setItem("username", username);
 }
 
+function pre_fill_room_rule_defaults(maxPlayers, baseTimerDuration, startingLives) {
+
+}
+
 function create_room() {
     console.log("trying to create room");
 
@@ -24,6 +28,7 @@ function submit_guess() {
     socket.emit("submit_guess");
 }
 
+// establishes connection
 const socket = io();
 
 // socket.io listeners
@@ -32,8 +37,8 @@ socket.on("fetch_rooms_list", (roomCodesList) => {
         add_room_to_room_code_list(roomCode);
     }
 })
-
 socket.on("update_rooms_list", add_room_to_room_code_list);
+socket.on("pre_fill_room_rule_defaults", pre_fill_room_rule_defaults);
 
 // get elements
 const root = document.documentElement;
@@ -66,3 +71,5 @@ if (localStorage.getItem("username") != null) {
 
     usernameField.value = localStorage.getItem("username");
 }
+
+// pre-fill defaults for room rules
