@@ -76,7 +76,7 @@ class GameManager {
     }
 }
 
-module.exports = {
+export {
     Player,
     Game,
     GameManager,

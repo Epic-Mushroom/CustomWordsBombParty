@@ -1,14 +1,12 @@
-const TICK_DELAY = 50; // milliseconds
+import path from "path";
+import url from "url";
+import process from "process";
+import express from "express";
+import * as httpModule from "http"; 
+import * as socketIo from "socket.io"; 
 
-const path = require("path");
-const express = require("express");
-const app = express();
-const http = require("http").createServer(app);
-const io = require("socket.io")(http);
-const process = require("process");
-
-const gameLogic = require("./public/src/game.js");
-const roomsLogic = require("./public/src/rooms.js");
+import * as gameLogic from "./public/src/game.js";
+import * as roomsLogic from "./public/src/rooms.js";
 
 function tick() {
     // console.log(`TICK #${num_ticks}`);
@@ -18,14 +16,21 @@ function tick() {
     setTimeout(tick, TICK_DELAY);
 }
 
-app.use(express.static(path.join(__dirname, "public")));
+const TICK_DELAY = 50; // milliseconds
+const DIRNAME = path.dirname(url.fileURLToPath(import.meta.url));
+
+const app = express();
+const http = httpModule.createServer(app);
+const io = new socketIo.Server(http);
+
+app.use(express.static(path.join(DIRNAME, "public")));
 
 // routing
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"))
+    res.sendFile(path.join(DIRNAME, "public", "index.html"))
 });
 app.get("/game/:roomCode", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "game.html"))
+    res.sendFile(path.join(DIRNAME, "public", "game.html"))
 });
 
 let gameManager = new gameLogic.GameManager();

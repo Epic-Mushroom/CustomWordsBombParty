@@ -17,6 +17,6 @@ function generateRoomCode(length = DEFAULT_ROOM_CODE_LENGTH) {
     return roomCode;
 }
 
-module.exports = {
+export {
     generateRoomCode
 }
