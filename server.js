@@ -46,12 +46,7 @@ io.on("connection", (socket) => {
 
     socket.emit("fetch_rooms_list", Array.from(gameManager.games.keys()));
 
-    socket.emit(
-        "pre_fill_room_rule_defaults", 
-        gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM,
-        gameLogic.DEFAULT_BASE_TIMER_DURATION,
-        gameLogic.DEFAULT_STARTING_LIVES
-    );
+    socket.emit("pre_fill_room_rule_defaults");
 
     socket.on("disconnect", () => {
         console.log(`player disconnected, socket id: ${socket.id}`);

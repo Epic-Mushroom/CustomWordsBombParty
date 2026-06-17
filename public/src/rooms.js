@@ -10,7 +10,7 @@ function getRandomInt(min, max) {
 function generateRoomCode(length = DEFAULT_ROOM_CODE_LENGTH) {
     let roomCode = "";
 
-    for (i = 0; i < length; i = i + 1) {
+    for (let i = 0; i < length; i = i + 1) {
         roomCode += ROOM_CODE_CHARACTERS[getRandomInt(0, ROOM_CODE_CHARACTERS.length - 1)];
     }
 
