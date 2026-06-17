@@ -5,7 +5,11 @@ function set_username(username) {
 }
 
 function pre_fill_room_rule_defaults(maxPlayers, baseTimerDuration, startingLives) {
+    console.log(`trying to pre-fill room rule defaults`)
 
+    maxPlayersField.value = maxPlayers;
+    baseTimerDurationField.value = baseTimerDuration;
+    startingLivesField.value = startingLives;
 }
 
 function create_room() {
@@ -44,10 +48,16 @@ socket.on("pre_fill_room_rule_defaults", pre_fill_room_rule_defaults);
 const root = document.documentElement;
 
 const usernameButton = document.getElementById("submit_username_button");
-const submitButton = document.getElementById("submit_button");
-const createRoomButton = document.getElementById("create_room_button");
 const usernameField = document.getElementById("username_field");
+
+const maxPlayersField = document.getElementById("max_players_field");
+const baseTimerDurationField = document.getElementById("base_timer_duration_field");
+const startingLivesField = document.getElementById("starting_lives_field");
+const createRoomButton = document.getElementById("create_room_button");
+
 const roomsList = document.getElementById("active_rooms_list");
+
+const submitButton = document.getElementById("submit_button");
 
 // element listeners
 submitButton?.addEventListener("click", submit_guess);
