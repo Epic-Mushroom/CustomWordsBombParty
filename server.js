@@ -33,7 +33,7 @@ io.on("connection", (socket) => {
 
     socket.on("create_room", () => {
         let generated_code = generateRoomCode();
-        gameManager.addGame(generated_code); // uses default constsraints for timer length, max players, etc
+        gameManager.addGame(generated_code); // uses default constraints for timer length, max players, etc
 
         io.emit("update_rooms_list", generated_code);
 
