@@ -27,7 +27,7 @@ class Game {
     // has an array of players, set that is the dictionary of words,
     // dictionary of substrings mapped to count, dictionary of words already done (key: word, value: player), 
     // room code, alphabet rule (set of letters) for generating extra lives (later, for gd, may want to use demon diffs instead)
-    // max timer length, maxPlayers, starting life count, current round number, current player turn
+    // max timer length, maxPlayers, starting life count, current round number, current player turn, isActive
 
     constructor(roomCode, maxTimerLength = DEFAULT_MAX_TIMER_LENGTH,
                 maxPlayers = DEFAULT_MAX_PLAYERS_PER_ROOM,
@@ -45,6 +45,12 @@ class Game {
 
         this.currentRound = 1;
         this.wordsSubmitted = new Map();
+
+        this.isActive = false;
+    }
+
+    startGame() {
+
     }
 
     nextTurn() {

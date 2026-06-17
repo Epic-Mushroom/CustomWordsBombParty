@@ -14,14 +14,18 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"))
 });
-app.get("/game", (req, res) => {
+app.get("/game/:roomCode", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "game.html"))
 });
 
 let gameManager = new GameManager();
 
+// server tick updates
+
 io.on("connection", (socket) => {
     console.log(`player connected, socket id: ${socket.id}`);
+
+    socket.emit("fetch_rooms_list", Array.from(gameManager.games.keys()));
 
     socket.on("disconnect", () => {
         console.log(`player disconnected, socket id: ${socket.id}`);
