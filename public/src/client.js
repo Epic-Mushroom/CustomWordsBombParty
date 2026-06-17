@@ -35,21 +35,32 @@ socket.on("fetch_rooms_list", (roomCodesList) => {
 
 socket.on("update_rooms_list", add_room_to_room_code_list);
 
-// buttons
+// get elements
+const root = document.documentElement;
+
 const usernameButton = document.getElementById("submit_username_button");
 const submitButton = document.getElementById("submit_button");
 const createRoomButton = document.getElementById("create_room_button");
-
-// other elements
 const usernameField = document.getElementById("username_field");
 const roomsList = document.getElementById("active_rooms_list");
 
+// element listeners
 submitButton?.addEventListener("click", submit_guess);
 createRoomButton?.addEventListener("click", create_room);
 usernameButton.addEventListener("click", () => {
     set_username(usernameField.value);
 });
 
+// other listeners
+// sets the gradient midpoint to mouse cursor location
+window.addEventListener("mousemove", (event) => {
+    let xPercent = (event.clientX / window.innerWidth) * 100;
+    let yPercent = (event.clientY / window.innerHeight) * 100;
+
+    root.style.setProperty("--gradient-midpoint", `${xPercent}%`);
+})
+
+// pre-fill username text field
 if (localStorage.getItem("username") != null) {
     console.log(`trying to pre-fill username field with username "${localStorage.getItem("username")}"`)
 

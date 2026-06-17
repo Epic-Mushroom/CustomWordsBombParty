@@ -1,3 +1,7 @@
+:root {
+    --gradient-midpoint: 50%;
+}
+
 .menu {
-    background: linear-gradient(to right, #a7dee0, #7ca2ac);
+    background: linear-gradient(to right, #a7dee0, #7ca2ac var(--gradient-midpoint));
 }
