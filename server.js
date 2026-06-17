@@ -1,12 +1,22 @@
-const path = require("path");
+const TICK_DELAY = 50; // milliseconds
 
+const path = require("path");
 const express = require("express");
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
+const process = require("process");
 
-const {Player, Game, GameManager} = require("./public/src/game.js");
-const {generateRoomCode} = require("./public/src/rooms.js");
+const gameLogic = require("./public/src/game.js");
+const roomsLogic = require("./public/src/rooms.js");
+
+function tick() {
+    // console.log(`TICK #${num_ticks}`);
+    num_ticks++;
+
+    // restarts the timer
+    setTimeout(tick, TICK_DELAY);
+}
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -18,10 +28,14 @@ app.get("/game/:roomCode", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "game.html"))
 });
 
-let gameManager = new GameManager();
+let gameManager = new gameLogic.GameManager();
 
 // server tick updates
+let num_ticks = 0;
 
+const tick_interval = setTimeout(tick, TICK_DELAY);
+
+// main socket listeners and emitters
 io.on("connection", (socket) => {
     console.log(`player connected, socket id: ${socket.id}`);
 
@@ -32,7 +46,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("create_room", () => {
-        let generated_code = generateRoomCode();
+        let generated_code = roomsLogic.generateRoomCode();
         gameManager.addGame(generated_code); // uses default constraints for timer length, max players, etc
 
         io.emit("update_rooms_list", generated_code);

@@ -1,6 +1,6 @@
-DEFAULT_MAX_TIMER_LENGTH = 8; // seconds
-DEFAULT_MAX_PLAYERS_PER_ROOM = 10;
-DEFAULT_STARTING_LIVES = 3;
+const DEFAULT_MAX_TIMER_LENGTH = 8; // seconds
+const DEFAULT_MAX_PLAYERS_PER_ROOM = 10;
+const DEFAULT_STARTING_LIVES = 3;
 
 class Player {
     // has a username, a game that it is connected to, number of lives,
