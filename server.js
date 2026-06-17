@@ -5,18 +5,18 @@ import express from "express";
 import * as httpModule from "http"; 
 import * as socketIo from "socket.io"; 
 
-import * as gameLogic from "./public/src/game.js";
-import * as roomsLogic from "./public/src/rooms.js";
+import * as gameLogic from "./public/src/server/game.js";
+import * as roomsLogic from "./public/src/server/rooms.js";
 
 function tick() {
     // console.log(`TICK #${num_ticks}`);
     num_ticks++;
 
     // restarts the timer
-    setTimeout(tick, TICK_DELAY);
+    setTimeout(tick, SERVER_TICK_DELAY);
 }
 
-const TICK_DELAY = 50; // milliseconds
+const SERVER_TICK_DELAY = 50; // milliseconds
 const DIRNAME = path.dirname(url.fileURLToPath(import.meta.url));
 
 const app = express();
@@ -38,7 +38,7 @@ let gameManager = new gameLogic.GameManager();
 // server tick updates
 let num_ticks = 0;
 
-const tick_interval = setTimeout(tick, TICK_DELAY);
+const tick_interval = setTimeout(tick, SERVER_TICK_DELAY);
 
 // main socket listeners and emitters
 io.on("connection", (socket) => {

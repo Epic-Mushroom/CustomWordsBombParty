@@ -1,7 +1,10 @@
-import * as gameLogic from "./game.js";
+import * as gameLogic from "../server/game.js";
 
-const MAX_GRADIENT_DISTANCE = 80;
-const MIN_GRADIENT_DISTANCE = 20;
+const CLIENT_TICK_DELAY = 50; // ms
+const MAX_GRADIENT_DISTANCE = 80; // percent
+const MIN_GRADIENT_DISTANCE = 20; // percent
+
+let targetGradientX = 50; // percent
 
 function set_username(username) {
     console.log(`trying to store username "${username}"`)
@@ -23,18 +26,28 @@ function create_room() {
     socket.emit("create_room");
 }
 
+async function copy_newly_generated_code() {
+
+}
+
 function display_newly_generated_code(roomCode) {
     // clear the container first
     newlyGeneratedCodeContainer.replaceChildren();
 
     let new_room_p = document.createElement("p");
-    new_room_p.textContent = `Room Code: ${roomCode}`;
+    new_room_p.textContent = `Room Code: ${roomCode} (click to copy URL)`;
     new_room_p.classList.add("green-text");
+    new_room_p.addEventListener("click", async () => {
+        try {
+            await navigator.clipboard.writeText(`${window.location.hostname}:${window.location.port}/game/${roomCode}`);
+            new_room_p.textContent = `Room Code: ${roomCode} (copied URL!)`;
+        } catch (err) {
+            new_room_p.textContent = `Room Code: ${roomCode} (failed to copy URL)`;
+        }
+    })
     newlyGeneratedCodeContainer.prepend(new_room_p);
 
     console.log(`displaying newly generated room code ${roomCode}`);
-    // console.log(`class of new_room_p is ${new_room_p.className}`);
-    // console.log(`property of new_room_p is ${window.getComputedStyle(new_room_p).getPropertyValue("font-weight")}`);
 }
 
 function add_room_to_room_code_list(roomCode) {
@@ -96,8 +109,18 @@ window.addEventListener("mousemove", (event) => {
     let xPercent = (event.clientX / window.innerWidth) * 100;
     let yPercent = (event.clientY / window.innerHeight) * 100;
 
-    root.style.setProperty("--gradient-midpoint", `${Math.max(Math.min(xPercent, MAX_GRADIENT_DISTANCE), MIN_GRADIENT_DISTANCE)}%`);
+    targetGradientX = Math.max(Math.min(xPercent, MAX_GRADIENT_DISTANCE), MIN_GRADIENT_DISTANCE)
 })
+
+let gradientLerp = setInterval(() => {
+    const currentGradientX = parseFloat(window.getComputedStyle(root).getPropertyValue("--gradient-midpoint").replace("%", ""));
+
+    root.style.setProperty("--gradient-midpoint", `${
+        currentGradientX + 0.06 * (targetGradientX - currentGradientX)
+    }%`);
+    console.log(`moving gradient from ${window.getComputedStyle(root).getPropertyValue("--gradient-midpoint")} (${currentGradientX}) to ${targetGradientX}`);
+}, 0.33 * CLIENT_TICK_DELAY);
+
 
 // pre-fill username text field
 if (localStorage.getItem("username") != null) {
