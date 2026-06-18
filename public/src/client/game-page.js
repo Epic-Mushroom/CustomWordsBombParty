@@ -31,7 +31,7 @@ clientMain.socket.on("connect", async () => {
     if (response.validRoom) {
         console.log("valid code");
 
-        // do stuff
+        clientMain.displayRoomCodeInfo(roomCodeContainer, getRoomCode());
 
     } else {
         console.log("invalid code");

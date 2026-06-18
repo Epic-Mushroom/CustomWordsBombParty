@@ -75,11 +75,11 @@ clientMain.socket.on("fetch_rooms_list", (roomCodesList) => {
         addRoomToRoomCodeList(roomsList, roomCode);
     }
 });
-clientMain.socket.on("update_rooms_list", (roomCode) => {
+clientMain.socket.on("update_number_of_active_rooms", (roomCode) => {
     addRoomToRoomCodeList(roomsList, roomCode)
 });
 clientMain.socket.on("show_newly_generated_room", (generatedCode) => {
-    clientMain.displayRoomCodeInfo(newlyGeneratedCodeContainer, generatedCode);
+    clientMain.displayRoomCodeInfo(newlyGeneratedCodeContainer, generatedCode, true);
 });
 clientMain.socket.on("pre_fill_room_rule_defaults", () => {
     preFillRoomRuleDefaults(maxPlayersField, baseTimerDurationField, startingLivesField);

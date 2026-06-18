@@ -61,7 +61,7 @@ io.on("connection", (socket) => {
             let newGame = gameManager.addGame(generatedCode, maxPlayers = maxPlayers, baseTimerDuration = baseTimerDuration, startingLives = startingLives); // uses default constraints for timer length, max players, etc
 
             io.emit("show_newly_generated_room", generatedCode);
-            io.emit("update_rooms_list", generatedCode);
+            io.emit("update_number_of_active_rooms", generatedCode);
 
             console.log(`Generated room with game: ${newGame}`);
 

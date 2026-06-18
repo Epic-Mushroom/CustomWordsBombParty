@@ -10,7 +10,7 @@ export const MIN_BASE_TIMER_DURATION = 1;
 export const MIN_MAX_PLAYERS_PER_ROOM = 1;
 export const MIN_STARTING_LIVES = 1;
 
-class Player {
+export class Player {
     // has a username, a game that it is connected to, number of lives,
     // current timer value, alphabet matched to the game's alphabet rule (make sure not to update after getting extra life),
     // if it's the player's turn, if the player is alive
@@ -31,7 +31,7 @@ class Player {
     }
 }
 
-class Game {
+export class Game {
     // has an array of players, set that is the dictionary of words,
     // dictionary of substrings mapped to count, dictionary of words already done (key: word, value: player), 
     // room code, alphabet rule (set of letters) for generating extra lives (later, for gd, may want to use demon diffs instead)
@@ -87,7 +87,7 @@ Starting Lives: ${this.startingLives}`;
     }
 }
 
-class GameManager {
+export class GameManager {
     // contains all the games as a map with key room code
 
     constructor() {
@@ -103,10 +103,12 @@ class GameManager {
 
         return newGame;
     }
-}
 
-export {
-    Player,
-    Game,
-    GameManager
+    numGames() {
+        return this.games.size;
+    }
+
+    numActiveGames() {
+        // should return the number of games in session
+    }
 }

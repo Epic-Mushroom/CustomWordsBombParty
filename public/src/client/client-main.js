@@ -51,7 +51,7 @@ export async function makeRoomCodeCopyable(roomCode, textElement) {
     }
 }
 
-export function displayRoomCodeInfo(container, roomCode) {
+export function displayRoomCodeInfo(container, roomCode, addJoinButton = false) {
     // clear the container first
     container.replaceChildren();
 
@@ -67,17 +67,19 @@ export function displayRoomCodeInfo(container, roomCode) {
 
     console.log(`displaying newly generated room code ${roomCode}`);
 
-    let joinRoomButton = document.createElement("button");
-    joinRoomButton.textContent = "Join Room";
-    joinRoomButton.type = "button";
-    joinRoomButton.id = "join-room-button";
-    joinRoomButton.onclick = () => {
-        window.location.href = `/game/${roomCode}`;
-    };
+    if (addJoinButton) {
+        let joinRoomButton = document.createElement("button");
+        joinRoomButton.textContent = "Join Room";
+        joinRoomButton.type = "button";
+        joinRoomButton.id = "join-room-button";
+        joinRoomButton.onclick = () => {
+            window.location.href = `/game/${roomCode}`;
+        };
 
-    container.append(joinRoomButton);
+        container.append(joinRoomButton);
 
-    console.log("added button to join room");
+        console.log("added button to join room");
+    }
 
 }
 
