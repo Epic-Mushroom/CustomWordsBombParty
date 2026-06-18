@@ -25,27 +25,7 @@ export let targetGradientX = 50; // percent
 let timesLinkCopied = 0;
 window.timesLinkCopied = () => {return timesLinkCopied};
 
-// global flags
-export let onHomepage = false;
-export let onGamePage = false;
-window.onHomepage = () => {return onHomepage};
-window.onGamePage = () => {return onGamePage};
-
 const root = document.documentElement;
-
-export function updatePageFlags() {
-    console.log("updating page flags");
-
-    if (window.location.pathname == "/") {
-        onHomepage = true;
-        console.log("on homepage");
-    }
-
-    if (window.location.pathname.startsWith("/game")) {
-        onGamePage = true;
-        console.log("on game page");
-    }
-}
 
 export function resetTimesCopied() {
     timesLinkCopied = 0;
@@ -71,6 +51,36 @@ export async function makeRoomCodeCopyable(roomCode, textElement) {
     }
 }
 
+export function displayRoomCodeInfo(container, roomCode) {
+    // clear the container first
+    container.replaceChildren();
+
+    resetTimesCopied();
+
+    let newRoomSpan = document.createElement("span");
+    newRoomSpan.textContent = `Room Code: ${roomCode} (click to copy URL)`;
+    newRoomSpan.classList.add("green-text");
+    newRoomSpan.addEventListener("click", async () => {
+        makeRoomCodeCopyable(roomCode, newRoomSpan);
+    })
+    container.prepend(newRoomSpan);
+
+    console.log(`displaying newly generated room code ${roomCode}`);
+
+    let joinRoomButton = document.createElement("button");
+    joinRoomButton.textContent = "Join Room";
+    joinRoomButton.type = "button";
+    joinRoomButton.id = "join-room-button";
+    joinRoomButton.onclick = () => {
+        window.location.href = `/game/${roomCode}`;
+    };
+
+    container.append(joinRoomButton);
+
+    console.log("added button to join room");
+
+}
+
 // establishes connection
 export const socket = io();
 
@@ -91,5 +101,3 @@ export let gradientLerp = setInterval(() => {
     }%`);
     // console.log(`moving gradient from ${window.getComputedStyle(root).getPropertyValue("--gradient-midpoint")} (${currentGradientX}) to ${targetGradientX}`);
 }, 0.33 * CLIENT_TICK_DELAY);
-
-updatePageFlags();

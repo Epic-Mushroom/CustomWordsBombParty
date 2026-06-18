@@ -1,4 +1,4 @@
-const ROOM_CODE_CHARACTERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'A', 'S', 'P', 'F', 'G', 'X', 'Y'];
+const ROOM_CODE_CHARACTERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'A', 'S', 'P', 'F', 'G', 'L', 'H', 'X', 'Y'];
 const DEFAULT_ROOM_CODE_LENGTH = 4;
 
 function getRandomInt(min, max) {
