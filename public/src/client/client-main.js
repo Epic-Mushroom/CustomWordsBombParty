@@ -23,6 +23,7 @@ const COPY_FLAVOR_TEXT = [ // indexed based on num times previously copied
 export let targetGradientX = 50; // percent
 
 let timesLinkCopied = 0;
+window.timesLinkCopied = () => {return timesLinkCopied};
 
 // global flags
 export let onHomepage = false;
@@ -44,6 +45,10 @@ export function updatePageFlags() {
         onGamePage = true;
         console.log("on game page");
     }
+}
+
+export function resetTimesCopied() {
+    timesLinkCopied = 0;
 }
 
 export async function makeRoomCodeCopyable(roomCode, textElement) {

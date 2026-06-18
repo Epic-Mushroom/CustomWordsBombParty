@@ -38,7 +38,7 @@ function displayNewlyGeneratedRoomInfo(roomCode) {
     // clear the container first
     newlyGeneratedCodeContainer.replaceChildren();
 
-    timesLinkCopied = 0;
+    clientMain.resetTimesCopied();
 
     let newRoomSpan = document.createElement("span");
     newRoomSpan.textContent = `Room Code: ${roomCode} (click to copy URL)`;

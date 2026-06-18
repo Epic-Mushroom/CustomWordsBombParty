@@ -43,13 +43,14 @@ app.get("/game/:roomCode", (req, res) => {
 io.on("connection", (socket) => {
     console.log(`player connected, socket id: ${socket.id}`);
 
-    socket.emit("fetch_rooms_list", Array.from(gameManager.games.keys()));
-
-    socket.emit("pre_fill_room_rule_defaults");
-
     socket.on("disconnect", () => {
         console.log(`player disconnected, socket id: ${socket.id}`);
     });
+
+    // homepage
+    socket.emit("fetch_rooms_list", Array.from(gameManager.games.keys()));
+
+    socket.emit("pre_fill_room_rule_defaults");
 
     socket.on("create_room", (maxPlayers, baseTimerDuration, startingLives) => {
         try {
@@ -67,9 +68,11 @@ io.on("connection", (socket) => {
         
     });
 
+    // game page
     socket.on("submit_guess", () => {
         console.log(`player clicked submit guess`);
-    });
+    });      
+    
 });
 
 http.listen(3000, () => console.log("server up"));  

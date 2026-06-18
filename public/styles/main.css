@@ -6,7 +6,7 @@
     background: linear-gradient(to right, #a7dee0, #7ca2ac var(--gradient-midpoint));
 }
 
-#newly_generated_code {
+#newly-generated-code {
     margin-top: 12px;
     margin-bottom: 12px;
     display: flex;

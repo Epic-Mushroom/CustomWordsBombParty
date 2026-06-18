@@ -6,8 +6,11 @@ function submitGuess() {
     clientMain.socket.emit("submit_guess");
 }
 
-function isValidRoom() {
+function isValidRoom(roomCodesList) {
+    let pathname = window.location.pathname;
+    let roomCode = pathname.slice(pathname.lastIndexOf("/game/") + "/game/".length).replace("/", "");
 
+    return roomCodesList.includes(roomCode);
 }
 
 // socket.io listeners
