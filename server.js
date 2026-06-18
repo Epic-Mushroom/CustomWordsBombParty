@@ -38,6 +38,9 @@ app.get("/", (req, res) => {
 app.get("/game/:roomCode", (req, res) => {
     res.sendFile(path.join(DIRNAME, "public", "game.html"))
 });
+app.use((req, res) => {
+    res.status(404).sendFile(path.join(DIRNAME, "public", "404.html"));
+});
 
 // main socket listeners and emitters
 io.on("connection", (socket) => {

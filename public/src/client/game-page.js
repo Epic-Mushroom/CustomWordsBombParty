@@ -15,6 +15,7 @@ function getRoomCode() {
 
 // get elements (game page)
 const roomCodeContainer = document.getElementById("room-code-container");
+const mainGameContainer = document.getElementById("main-game");
 const submitButton = document.getElementById("submit-button");
 
 // element listeners
@@ -29,7 +30,16 @@ clientMain.socket.on("connect", async () => {
 
     if (response.validRoom) {
         console.log("valid code");
+
+        // do stuff
+
     } else {
         console.log("invalid code");
+
+        mainGameContainer.replaceChildren();
+        let invalidCodeInfoText = document.createElement("h3");
+        invalidCodeInfoText.textContent = "This room doesn't exist!";
+
+        mainGameContainer.append(invalidCodeInfoText);
     }
 })
