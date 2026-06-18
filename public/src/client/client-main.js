@@ -22,7 +22,7 @@ const COPY_FLAVOR_TEXT = [ // indexed based on num times previously copied
 
 export let targetGradientX = 50; // percent
 
-let times_link_copied = 0;
+let timesLinkCopied = 0;
 
 // global flags
 export let onHomepage = false;
@@ -32,7 +32,7 @@ window.onGamePage = () => {return onGamePage};
 
 const root = document.documentElement;
 
-export function update_page_flags() {
+export function updatePageFlags() {
     console.log("updating page flags");
 
     if (window.location.pathname == "/") {
@@ -46,20 +46,20 @@ export function update_page_flags() {
     }
 }
 
-export async function make_room_code_copyable(roomCode, textElement) {
+export async function makeRoomCodeCopyable(roomCode, textElement) {
     try {
         await navigator.clipboard.writeText(`${window.location.hostname}:${window.location.port}/game/${roomCode}`);
-        let copy_success_text = ""
+        let copySuccessText = ""
 
-        if (times_link_copied >= COPY_FLAVOR_TEXT.length) {
-            copy_success_text = "...";
+        if (timesLinkCopied >= COPY_FLAVOR_TEXT.length) {
+            copySuccessText = "...";
 
         } else {
-            copy_success_text = COPY_FLAVOR_TEXT[times_link_copied];
+            copySuccessText = COPY_FLAVOR_TEXT[timesLinkCopied];
         }
 
-        textElement.textContent = `Room Code: ${roomCode} (${copy_success_text})`;
-        times_link_copied++;
+        textElement.textContent = `Room Code: ${roomCode} (${copySuccessText})`;
+        timesLinkCopied++;
 
     } catch (err) {
         textElement.textContent = `Room Code: ${roomCode} (failed to copy URL)`;
@@ -87,4 +87,4 @@ export let gradientLerp = setInterval(() => {
     // console.log(`moving gradient from ${window.getComputedStyle(root).getPropertyValue("--gradient-midpoint")} (${currentGradientX}) to ${targetGradientX}`);
 }, 0.33 * CLIENT_TICK_DELAY);
 
-update_page_flags();
+updatePageFlags();

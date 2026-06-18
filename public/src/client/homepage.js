@@ -1,9 +1,9 @@
-import * as client_main from "./client_main.js";
+import * as clientMain from "./client-main.js";
 
 // globals
-let times_link_copied = 0;
+let timesLinkCopied = 0;
 
-function set_username(username) {
+function setUsername(username) {
     console.log(`trying to store username "${username}"`)
 
     if (username.trim() != "") {
@@ -16,100 +16,100 @@ function set_username(username) {
     
 }
 
-function pre_fill_room_rule_defaults() {
+function preFillRoomRuleDefaults() {
     console.log(`trying to pre-fill room rule defaults`)
 
-    maxPlayersField.value = client_main.gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM;
-    baseTimerDurationField.value = client_main.gameLogic.DEFAULT_BASE_TIMER_DURATION;
-    startingLivesField.value = client_main.gameLogic.DEFAULT_STARTING_LIVES;
+    maxPlayersField.value = clientMain.gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM;
+    baseTimerDurationField.value = clientMain.gameLogic.DEFAULT_BASE_TIMER_DURATION;
+    startingLivesField.value = clientMain.gameLogic.DEFAULT_STARTING_LIVES;
 }
 
-function create_room(
-    maxPlayers = client_main.gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM,
-    baseTimerDuration = client_main.gameLogic.DEFAULT_BASE_TIMER_DURATION,
-    startingLives = client_main.gameLogic.DEFAULT_STARTING_LIVES
+function createRoom(
+    maxPlayers = clientMain.gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM,
+    baseTimerDuration = clientMain.gameLogic.DEFAULT_BASE_TIMER_DURATION,
+    startingLives = clientMain.gameLogic.DEFAULT_STARTING_LIVES
 ) {
     console.log("trying to create room");
 
-    client_main.socket.emit("create_room", maxPlayers, baseTimerDuration, startingLives);
+    clientMain.socket.emit("create_room", maxPlayers, baseTimerDuration, startingLives);
 }
 
-function display_newly_generated_room_info(roomCode) {
+function displayNewlyGeneratedRoomInfo(roomCode) {
     // clear the container first
     newlyGeneratedCodeContainer.replaceChildren();
 
-    times_link_copied = 0;
+    timesLinkCopied = 0;
 
-    let new_room_span = document.createElement("span");
-    new_room_span.textContent = `Room Code: ${roomCode} (click to copy URL)`;
-    new_room_span.classList.add("green-text");
-    new_room_span.addEventListener("click", async () => {
-        client_main.make_room_code_copyable(roomCode, new_room_span);
+    let newRoomSpan = document.createElement("span");
+    newRoomSpan.textContent = `Room Code: ${roomCode} (click to copy URL)`;
+    newRoomSpan.classList.add("green-text");
+    newRoomSpan.addEventListener("click", async () => {
+        clientMain.makeRoomCodeCopyable(roomCode, newRoomSpan);
     })
-    newlyGeneratedCodeContainer.prepend(new_room_span);
+    newlyGeneratedCodeContainer.prepend(newRoomSpan);
 
     console.log(`displaying newly generated room code ${roomCode}`);
 
-    let join_room_button = document.createElement("button");
-    join_room_button.textContent = "Join Room";
-    join_room_button.type = "button";
-    join_room_button.id = "join_room_button";
-    join_room_button.onclick = () => {
+    let joinRoomButton = document.createElement("button");
+    joinRoomButton.textContent = "Join Room";
+    joinRoomButton.type = "button";
+    joinRoomButton.id = "join-room-button";
+    joinRoomButton.onclick = () => {
         window.location.href = `/game/${roomCode}`;
     };
 
-    newlyGeneratedCodeContainer.append(join_room_button);
+    newlyGeneratedCodeContainer.append(joinRoomButton);
 
     console.log("added button to join room");
 
 }
 
-function add_room_to_room_code_list(roomCode) {
-    let new_room_li = document.createElement("li");
-    new_room_li.textContent = roomCode;
-    roomsList.appendChild(new_room_li);
+function addRoomToRoomCodeList(roomCode) {
+    let newRoomLi = document.createElement("li");
+    newRoomLi.textContent = roomCode;
+    roomsList.appendChild(newRoomLi);
 
     console.log("added room to room code list");
 }
 
-client_main.socket.on("alert", (message) => {
+clientMain.socket.on("alert", (message) => {
     alert(message);
 });
 
 // socket.io listeners
-client_main.socket.on("fetch_rooms_list", (roomCodesList) => {
+clientMain.socket.on("fetch_rooms_list", (roomCodesList) => {
     for (const roomCode of roomCodesList) {
-        add_room_to_room_code_list(roomCode);
+        addRoomToRoomCodeList(roomCode);
     }
 });
-client_main.socket.on("update_rooms_list", add_room_to_room_code_list);
-client_main.socket.on("show_newly_generated_room", display_newly_generated_room_info);
-client_main.socket.on("pre_fill_room_rule_defaults", pre_fill_room_rule_defaults);
+clientMain.socket.on("update_rooms_list", addRoomToRoomCodeList);
+clientMain.socket.on("show_newly_generated_room", displayNewlyGeneratedRoomInfo);
+clientMain.socket.on("pre_fill_room_rule_defaults", preFillRoomRuleDefaults);
 
 // get elements (homepage)
 const root = document.documentElement;
 
-const usernameButton = document.getElementById("submit_username_button");
-const usernameField = document.getElementById("username_field");
+const usernameButton = document.getElementById("submit-username-button");
+const usernameField = document.getElementById("username-field");
 
-const maxPlayersField = document.getElementById("max_players_field");
-const baseTimerDurationField = document.getElementById("base_timer_duration_field");
-const startingLivesField = document.getElementById("starting_lives_field");
+const maxPlayersField = document.getElementById("max-players-field");
+const baseTimerDurationField = document.getElementById("base-timer-duration-field");
+const startingLivesField = document.getElementById("starting-lives-field");
 // contains room code once generated by user
-const newlyGeneratedCodeContainer = document.getElementById("newly_generated_code"); 
-const createRoomButton = document.getElementById("create_room_button");
-const defaultRulesButton = document.getElementById("reset_rules_button");
+const newlyGeneratedCodeContainer = document.getElementById("newly-generated-code"); 
+const createRoomButton = document.getElementById("create-room-button");
+const defaultRulesButton = document.getElementById("reset-rules-button");
 
-const roomsList = document.getElementById("active_rooms_list");
+const roomsList = document.getElementById("active-rooms-list");
 
 // element listeners
 usernameButton?.addEventListener("click", () => {
-    set_username(usernameField.value);
+    setUsername(usernameField.value);
 });
 createRoomButton?.addEventListener("click", () => {
-    create_room(maxPlayersField.value, baseTimerDurationField.value, startingLivesField.value);
+    createRoom(maxPlayersField.value, baseTimerDurationField.value, startingLivesField.value);
 });
-defaultRulesButton?.addEventListener("click", pre_fill_room_rule_defaults);
+defaultRulesButton?.addEventListener("click", preFillRoomRuleDefaults);
 
 // pre-fill username text field
 if (localStorage.getItem("username") != null) {

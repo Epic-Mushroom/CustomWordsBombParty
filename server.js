@@ -9,8 +9,7 @@ import * as gameLogic from "./public/src/server/game.js";
 import * as roomsLogic from "./public/src/server/rooms.js";
 
 function tick() {
-    // console.log(`TICK #${num_ticks}`);
-    num_ticks++;
+    numTicks++;
 
     // restarts the timer
     setTimeout(tick, SERVER_TICK_DELAY);
@@ -26,9 +25,9 @@ const io = new socketIo.Server(http);
 let gameManager = new gameLogic.GameManager();
 
 // server tick updates
-let num_ticks = 0;
+let numTicks = 0;
 
-const tick_interval = setTimeout(tick, SERVER_TICK_DELAY);
+const tickInterval = setTimeout(tick, SERVER_TICK_DELAY);
 
 app.use(express.static(path.join(DIRNAME, "public")));
 
@@ -54,11 +53,11 @@ io.on("connection", (socket) => {
 
     socket.on("create_room", (maxPlayers, baseTimerDuration, startingLives) => {
         try {
-            let generated_code = roomsLogic.generateRoomCode();
-            let newGame = gameManager.addGame(generated_code, maxPlayers = maxPlayers, baseTimerDuration = baseTimerDuration, startingLives = startingLives); // uses default constraints for timer length, max players, etc
+            let generatedCode = roomsLogic.generateRoomCode();
+            let newGame = gameManager.addGame(generatedCode, maxPlayers = maxPlayers, baseTimerDuration = baseTimerDuration, startingLives = startingLives); // uses default constraints for timer length, max players, etc
 
-            io.emit("show_newly_generated_room", generated_code);
-            io.emit("update_rooms_list", generated_code);
+            io.emit("show_newly_generated_room", generatedCode);
+            io.emit("update_rooms_list", generatedCode);
 
             console.log(`Generated room with game: ${newGame}`);
 
