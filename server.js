@@ -69,6 +69,10 @@ io.on("connection", (socket) => {
     });
 
     // game page
+    socket.on("validate_room_code", (roomCode, callback) => {
+        callback({validRoom: gameManager.games.has(roomCode)});
+    });
+
     socket.on("submit_guess", () => {
         console.log(`player clicked submit guess`);
     });      

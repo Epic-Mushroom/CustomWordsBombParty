@@ -72,20 +72,6 @@ function addRoomToRoomCodeList(roomCode) {
     console.log("added room to room code list");
 }
 
-clientMain.socket.on("alert", (message) => {
-    alert(message);
-});
-
-// socket.io listeners
-clientMain.socket.on("fetch_rooms_list", (roomCodesList) => {
-    for (const roomCode of roomCodesList) {
-        addRoomToRoomCodeList(roomCode);
-    }
-});
-clientMain.socket.on("update_rooms_list", addRoomToRoomCodeList);
-clientMain.socket.on("show_newly_generated_room", displayNewlyGeneratedRoomInfo);
-clientMain.socket.on("pre_fill_room_rule_defaults", preFillRoomRuleDefaults);
-
 // get elements (homepage)
 const root = document.documentElement;
 
@@ -110,6 +96,19 @@ createRoomButton?.addEventListener("click", () => {
     createRoom(maxPlayersField.value, baseTimerDurationField.value, startingLivesField.value);
 });
 defaultRulesButton?.addEventListener("click", preFillRoomRuleDefaults);
+
+// socket.io listeners
+clientMain.socket.on("alert", (message) => {
+    alert(message);
+});
+clientMain.socket.on("fetch_rooms_list", (roomCodesList) => {
+    for (const roomCode of roomCodesList) {
+        addRoomToRoomCodeList(roomCode);
+    }
+});
+clientMain.socket.on("update_rooms_list", addRoomToRoomCodeList);
+clientMain.socket.on("show_newly_generated_room", displayNewlyGeneratedRoomInfo);
+clientMain.socket.on("pre_fill_room_rule_defaults", preFillRoomRuleDefaults);
 
 // pre-fill username text field
 if (localStorage.getItem("username") != null) {
