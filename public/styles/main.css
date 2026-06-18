@@ -1,9 +1,22 @@
 :root {
     --gradient-midpoint: 50%;
+    --gradient-start-color: #a7dee0;
+    --gradient-end-color: #7ca2ac
 }
 
-.menu {
-    background: linear-gradient(to right, #a7dee0, #7ca2ac var(--gradient-midpoint));
+.menu-body, .game-body {
+    background: linear-gradient(to right, var(--gradient-start-color), var(--gradient-end-color) var(--gradient-midpoint));
+}
+
+#room-settings {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.number-input {
+    width: 21px;
 }
 
 #newly-generated-code {
