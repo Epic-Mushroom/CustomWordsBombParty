@@ -1,5 +1,8 @@
 import * as client_main from "./client_main.js";
 
+// globals
+let times_link_copied = 0;
+
 function set_username(username) {
     console.log(`trying to store username "${username}"`)
 
@@ -35,16 +38,13 @@ function display_newly_generated_room_info(roomCode) {
     // clear the container first
     newlyGeneratedCodeContainer.replaceChildren();
 
+    times_link_copied = 0;
+
     let new_room_span = document.createElement("span");
     new_room_span.textContent = `Room Code: ${roomCode} (click to copy URL)`;
     new_room_span.classList.add("green-text");
     new_room_span.addEventListener("click", async () => {
-        try {
-            await navigator.clipboard.writeText(`${window.location.hostname}:${window.location.port}/game/${roomCode}`);
-            new_room_span.textContent = `Room Code: ${roomCode} (copied URL!)`;
-        } catch (err) {
-            new_room_span.textContent = `Room Code: ${roomCode} (failed to copy URL)`;
-        }
+        client_main.make_room_code_copyable(roomCode, new_room_span);
     })
     newlyGeneratedCodeContainer.prepend(new_room_span);
 
@@ -54,7 +54,6 @@ function display_newly_generated_room_info(roomCode) {
     join_room_button.textContent = "Join Room";
     join_room_button.type = "button";
     join_room_button.id = "join_room_button";
-    // join_room_button.onclick = `window.location.href = \`\${window.location.hostname}/game/${roomCode}\`;`
     join_room_button.onclick = () => {
         window.location.href = `/game/${roomCode}`;
     };
@@ -62,7 +61,7 @@ function display_newly_generated_room_info(roomCode) {
     newlyGeneratedCodeContainer.append(join_room_button);
 
     console.log("added button to join room");
-    
+
 }
 
 function add_room_to_room_code_list(roomCode) {
