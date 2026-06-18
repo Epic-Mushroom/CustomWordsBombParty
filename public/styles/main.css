@@ -6,6 +6,14 @@
     background: linear-gradient(to right, #a7dee0, #7ca2ac var(--gradient-midpoint));
 }
 
+#newly_generated_code {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
 .green-text {
     cursor: pointer;
     font-weight: bold;

@@ -31,24 +31,38 @@ function create_room(
     client_main.socket.emit("create_room", maxPlayers, baseTimerDuration, startingLives);
 }
 
-function display_newly_generated_code(roomCode) {
+function display_newly_generated_room_info(roomCode) {
     // clear the container first
     newlyGeneratedCodeContainer.replaceChildren();
 
-    let new_room_p = document.createElement("p");
-    new_room_p.textContent = `Room Code: ${roomCode} (click to copy URL)`;
-    new_room_p.classList.add("green-text");
-    new_room_p.addEventListener("click", async () => {
+    let new_room_span = document.createElement("span");
+    new_room_span.textContent = `Room Code: ${roomCode} (click to copy URL)`;
+    new_room_span.classList.add("green-text");
+    new_room_span.addEventListener("click", async () => {
         try {
             await navigator.clipboard.writeText(`${window.location.hostname}:${window.location.port}/game/${roomCode}`);
-            new_room_p.textContent = `Room Code: ${roomCode} (copied URL!)`;
+            new_room_span.textContent = `Room Code: ${roomCode} (copied URL!)`;
         } catch (err) {
-            new_room_p.textContent = `Room Code: ${roomCode} (failed to copy URL)`;
+            new_room_span.textContent = `Room Code: ${roomCode} (failed to copy URL)`;
         }
     })
-    newlyGeneratedCodeContainer.prepend(new_room_p);
+    newlyGeneratedCodeContainer.prepend(new_room_span);
 
     console.log(`displaying newly generated room code ${roomCode}`);
+
+    let join_room_button = document.createElement("button");
+    join_room_button.textContent = "Join Room";
+    join_room_button.type = "button";
+    join_room_button.id = "join_room_button";
+    // join_room_button.onclick = `window.location.href = \`\${window.location.hostname}/game/${roomCode}\`;`
+    join_room_button.onclick = () => {
+        window.location.href = `/game/${roomCode}`;
+    };
+
+    newlyGeneratedCodeContainer.append(join_room_button);
+
+    console.log("added button to join room");
+    
 }
 
 function add_room_to_room_code_list(roomCode) {
@@ -70,7 +84,7 @@ client_main.socket.on("fetch_rooms_list", (roomCodesList) => {
     }
 });
 client_main.socket.on("update_rooms_list", add_room_to_room_code_list);
-client_main.socket.on("show_newly_generated_room", display_newly_generated_code);
+client_main.socket.on("show_newly_generated_room", display_newly_generated_room_info);
 client_main.socket.on("pre_fill_room_rule_defaults", pre_fill_room_rule_defaults);
 
 // get elements (homepage)
