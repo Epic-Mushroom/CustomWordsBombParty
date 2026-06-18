@@ -1,10 +1,4 @@
-import * as gameLogic from "../server/game.js";
-
-const CLIENT_TICK_DELAY = 50; // ms
-const MAX_GRADIENT_DISTANCE = 80; // percent
-const MIN_GRADIENT_DISTANCE = 20; // percent
-
-let targetGradientX = 50; // percent
+import * as client_main from "./client_main.js";
 
 function set_username(username) {
     console.log(`trying to store username "${username}"`)
@@ -15,30 +9,26 @@ function set_username(username) {
     } else {
         usernameField.value = "Gertrude";
         localStorage.setItem("username", "Gertrude");
-    }
+    } 
     
 }
 
 function pre_fill_room_rule_defaults() {
     console.log(`trying to pre-fill room rule defaults`)
 
-    maxPlayersField.value = gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM;
-    baseTimerDurationField.value = gameLogic.DEFAULT_BASE_TIMER_DURATION;
-    startingLivesField.value = gameLogic.DEFAULT_STARTING_LIVES;
+    maxPlayersField.value = client_main.gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM;
+    baseTimerDurationField.value = client_main.gameLogic.DEFAULT_BASE_TIMER_DURATION;
+    startingLivesField.value = client_main.gameLogic.DEFAULT_STARTING_LIVES;
 }
 
 function create_room(
-    maxPlayers = gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM,
-    baseTimerDuration = gameLogic.DEFAULT_BASE_TIMER_DURATION,
-    startingLives = gameLogic.DEFAULT_STARTING_LIVES
+    maxPlayers = client_main.gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM,
+    baseTimerDuration = client_main.gameLogic.DEFAULT_BASE_TIMER_DURATION,
+    startingLives = client_main.gameLogic.DEFAULT_STARTING_LIVES
 ) {
     console.log("trying to create room");
 
-    socket.emit("create_room", maxPlayers, baseTimerDuration, startingLives);
-}
-
-async function copy_newly_generated_code() {
-
+    client_main.socket.emit("create_room", maxPlayers, baseTimerDuration, startingLives);
 }
 
 function display_newly_generated_code(roomCode) {
@@ -69,29 +59,21 @@ function add_room_to_room_code_list(roomCode) {
     console.log("added room to room code list");
 }
 
-function submit_guess() {
-    console.log("the submit guess button was clicked");
-
-    socket.emit("submit_guess");
-}
-
-// establishes connection
-const socket = io();
+client_main.socket.on("alert", (message) => {
+    alert(message);
+});
 
 // socket.io listeners
-socket.on("fetch_rooms_list", (roomCodesList) => {
+client_main.socket.on("fetch_rooms_list", (roomCodesList) => {
     for (const roomCode of roomCodesList) {
         add_room_to_room_code_list(roomCode);
     }
-})
-socket.on("update_rooms_list", add_room_to_room_code_list);
-socket.on("show_newly_generated_room", display_newly_generated_code);
-socket.on("pre_fill_room_rule_defaults", pre_fill_room_rule_defaults);
-socket.on("alert", (message) => {
-    alert(message);
-})
+});
+client_main.socket.on("update_rooms_list", add_room_to_room_code_list);
+client_main.socket.on("show_newly_generated_room", display_newly_generated_code);
+client_main.socket.on("pre_fill_room_rule_defaults", pre_fill_room_rule_defaults);
 
-// get elements
+// get elements (homepage)
 const root = document.documentElement;
 
 const usernameButton = document.getElementById("submit_username_button");
@@ -107,36 +89,14 @@ const defaultRulesButton = document.getElementById("reset_rules_button");
 
 const roomsList = document.getElementById("active_rooms_list");
 
-const submitButton = document.getElementById("submit_button");
-
 // element listeners
-usernameButton.addEventListener("click", () => {
+usernameButton?.addEventListener("click", () => {
     set_username(usernameField.value);
 });
 createRoomButton?.addEventListener("click", () => {
     create_room(maxPlayersField.value, baseTimerDurationField.value, startingLivesField.value);
 });
 defaultRulesButton?.addEventListener("click", pre_fill_room_rule_defaults);
-submitButton?.addEventListener("click", submit_guess);
-
-// other listeners
-// sets the gradient midpoint to mouse cursor location
-window.addEventListener("mousemove", (event) => {
-    let xPercent = (event.clientX / window.innerWidth) * 100;
-    let yPercent = (event.clientY / window.innerHeight) * 100;
-
-    targetGradientX = Math.max(Math.min(xPercent, MAX_GRADIENT_DISTANCE), MIN_GRADIENT_DISTANCE)
-})
-
-let gradientLerp = setInterval(() => {
-    const currentGradientX = parseFloat(window.getComputedStyle(root).getPropertyValue("--gradient-midpoint").replace("%", ""));
-
-    root.style.setProperty("--gradient-midpoint", `${
-        currentGradientX + 0.06 * (targetGradientX - currentGradientX)
-    }%`);
-    // console.log(`moving gradient from ${window.getComputedStyle(root).getPropertyValue("--gradient-midpoint")} (${currentGradientX}) to ${targetGradientX}`);
-}, 0.33 * CLIENT_TICK_DELAY);
-
 
 // pre-fill username text field
 if (localStorage.getItem("username") != null) {
@@ -144,5 +104,3 @@ if (localStorage.getItem("username") != null) {
 
     usernameField.value = localStorage.getItem("username");
 }
-
-// pre-fill defaults for room rules

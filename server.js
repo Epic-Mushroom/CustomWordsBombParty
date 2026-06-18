@@ -23,6 +23,13 @@ const app = express();
 const http = httpModule.createServer(app);
 const io = new socketIo.Server(http);
 
+let gameManager = new gameLogic.GameManager();
+
+// server tick updates
+let num_ticks = 0;
+
+const tick_interval = setTimeout(tick, SERVER_TICK_DELAY);
+
 app.use(express.static(path.join(DIRNAME, "public")));
 
 // routing
@@ -32,13 +39,6 @@ app.get("/", (req, res) => {
 app.get("/game/:roomCode", (req, res) => {
     res.sendFile(path.join(DIRNAME, "public", "game.html"))
 });
-
-let gameManager = new gameLogic.GameManager();
-
-// server tick updates
-let num_ticks = 0;
-
-const tick_interval = setTimeout(tick, SERVER_TICK_DELAY);
 
 // main socket listeners and emitters
 io.on("connection", (socket) => {

@@ -6,11 +6,14 @@
         <meta name="description" content="custom words bombparty (game)">
 
         <title>Custom BombParty</title>
-        <link rel="stylesheet" href="./styles/main.css">
-        <link rel="icon" type="image/png" href="./images/brick.png">
+        <link rel="stylesheet" href="/styles/main.css">
+        <link rel="icon" type="image/png" href="/images/brick.png">
     </head>
     <body>
         <div id="game">
+            <div id="room_code_container">
+                <br><br>
+            </div>
             <main>
                 <h1>BombParty</h1>
                 <h2>Substring: YYY</h2>
@@ -23,7 +26,7 @@
 
         <a href="/">Go back to homepage</a>
 
-        <script src="./socket.io/socket.io.js"></script>
-        <script src="./src/client/client.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="module" src="/src/client/gamepage.js"></script>
     </body>
 </html>
