@@ -25,7 +25,11 @@ export class Player {
     // if it's the player's turn, if the player is alive
 
     constructor(username, game /* Game */) {
-        this.username = username;
+        if (username != null) {
+            this.username = username;
+        } else {
+            this.username = "Gertrude";
+        }
         this.game = game;
 
         this.isPlayerTurn = false;
@@ -93,6 +97,35 @@ export class Player {
 
     isGameLeader() {
         return this.game.leader === this;
+    }
+
+    toString() {
+        let status = "in-game";
+
+        if (!this.game.isActive) {
+            status = "ready";
+        }
+
+        if (!this.isPlayerConnected) {
+            status = "disconnected";
+        }
+
+        if (!this.isPlayerAlive) {
+            status = "dead";
+        }
+
+        let livesDisplay = "";
+        for (let i = 0; i < Math.min(this.currentLifeCount, this.game.startingLives); i++) {
+            livesDisplay += "❤️";
+        }
+        for (let i = 0; i < this.game.startingLives - this.currentLifeCount; i++) {
+            livesDisplay += "🩶";
+        }
+        for (let i = 0; i < this.currentLifeCount - this.game.startingLives; i++) {
+            livesDisplay += "💛";
+        }
+
+        return `${this.username} ${livesDisplay} (${status})`;
     }
 }
 
