@@ -11,6 +11,7 @@ function setUsername(usernameField, username) {
         localStorage.setItem("username", "Gertrude");
     } 
     
+    clientMain.socket.emit("set_username", localStorage.getItem("username"));
 }
 
 function preFillRoomRuleDefaults(maxPlayersField, baseTimerDurationField, startingLivesField) {

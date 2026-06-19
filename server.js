@@ -73,6 +73,8 @@ io.on("connection", (socket) => {
 
     socket.emit("pre_fill_room_rule_defaults");
 
+    socket.on("set_username", (username) => socket.username = username);
+
     socket.on("create_room", (maxPlayers, baseTimerDuration, startingLives) => {
         try {
             let generatedCode = roomsLogic.generateRoomCode();
@@ -101,8 +103,10 @@ io.on("connection", (socket) => {
 
         try {
             let roomGame = gameManager.games.get(roomCode);
-            let newPlayer = new gameLogic.Player(username, roomGame);
-            roomGame.addPlayer(newPlayer);
+            let newPlayer = new gameLogic.Player(username, roomGame, socket.id);
+
+            roomGame.addOrUpdatePlayer(newPlayer);
+            gameManager.addPlayer(newPlayer);
 
         } catch (err) {
             if (err.name != "GameError") {
@@ -133,12 +137,12 @@ eventManager.on("one_second_tick", (numTicks) => {
 
 eventManager.on("five_second_tick", (numTicks) => {
     // clears empty and inactive rooms
-    for (const [key, value] of gameManager.games) {
-        if (value.isOld() && value.players.length == 0) {
-            gameManager.games.delete(key);
+    for (const [roomCode, game] of gameManager.games) {
+        if (game.isOld() && game.players.length == 0) {
+            gameManager.removeGame(roomCode);
             io.emit("update_rooms_count", gameManager.games.size);
 
-            console.log(`deleted game with room code ${key}`);
+            console.log(`deleted game with room code ${roomCode}`);
         }
         
     }

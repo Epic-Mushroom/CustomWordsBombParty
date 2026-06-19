@@ -24,13 +24,14 @@ export class Player {
     // current timer value, alphabet matched to the game's alphabet rule (make sure not to update after getting extra life),
     // if it's the player's turn, if the player is alive
 
-    constructor(username, game /* Game */) {
+    constructor(username, game /* Game */, socketId = null) {
         if (username != null) {
             this.username = username;
         } else {
             this.username = "Gertrude";
         }
         this.game = game;
+        this.socketId = socketId;
 
         this.isPlayerTurn = false;
         this.isPlayerAlive = true;
@@ -93,6 +94,16 @@ export class Player {
             return this.game.baseTimerDuration - timeSinceStart;
 
         }
+    }
+
+    reconnect(newSocketId) {
+        this.isPlayerConnected = true;
+        this.socketId = newSocketId;
+    }
+
+    disconnect() {
+        this.isPlayerConnected = false;
+        this.socketId = null;
     }
 
     isGameLeader() {
@@ -174,9 +185,19 @@ export class Game {
         this.gameCreationTime = (new Date()).getTime();
     }
 
-    addPlayer(player) {
+    addOrUpdatePlayer(player) {
         if (this.players.length >= this.maxPlayers) {
             throw new GameError("This room is full!");
+        }
+
+        let existingPlayer = this.findPlayer(player.username);
+
+        if (existingPlayer?.isPlayerConnected) {
+            throw new GameError("There is already another player in this room with the same username!");
+
+        } else if (existingPlayer != null) {
+            existingPlayer.reconnect();
+            return existingPlayer;
         }
 
         this.players.push(player);
@@ -184,6 +205,13 @@ export class Game {
         if (this.leader === null) {
             this.leader = player;
         }
+
+        return player;
+    }
+
+    findPlayer(username) {
+        let foundPlayer = this.players.find((player) => player.username === username);
+        return (foundPlayer === undefined) ? null : foundPlayer;
     }
 
     startGame() {
@@ -227,17 +255,23 @@ Starting Lives: ${this.startingLives}`;
 }
 
 export class GameManager {
-    // contains all the games as a map with key room code
+    // contains all the games as a map with key being the room code
+    // also contains all created Players as a map with key being socket id
+    // disconnected socket ids should be deleted
+    // players should only be created upon entering a room
 
     constructor() {
         this.games = new Map();
+        this.players = new Map();
     }
 
+    // should probably make this consistent with addPlayer, as in have the caller create the Game object and pass
+    // that in
     addGame(roomCode,
             maxPlayers = DEFAULT_MAX_PLAYERS_PER_ROOM,
             baseTimerDuration = DEFAULT_BASE_TIMER_DURATION,
             startingLives = DEFAULT_STARTING_LIVES) {
-        let newGame = new Game(roomCode, maxPlayers = maxPlayers, baseTimerDuration = baseTimerDuration, startingLives);
+        let newGame = new Game(roomCode, maxPlayers = maxPlayers, baseTimerDuration, startingLives);
         this.games.set(roomCode, newGame);
 
         return newGame;
@@ -248,6 +282,24 @@ export class GameManager {
     }
 
     numActiveGames() {
-        // should return the number of games in session
+        return Array.from(this.games.keys()).filter((key) => this.games.get(key).isActive).length;
+    }
+
+    removeGame(roomCode) {
+        return this.games.delete(roomCode);
+    }
+
+    addPlayer(player) {
+        if (player.socketId == null) {
+            throw Error("Can't add a player with null socket ID to the playerbase");
+        }
+
+        this.players.set(player.socketId, player);
+
+        return player;
+    }
+
+    removePlayer(socketId) {
+        return this.players.delete(socketId);
     }
 }
