@@ -99,9 +99,20 @@ io.on("connection", (socket) => {
             return;
         }
 
-        let roomGame = gameManager.games.get(roomCode);
-        let newPlayer = new gameLogic.Player(username, roomGame);
-        roomGame.addPlayer(newPlayer);
+        try {
+            let roomGame = gameManager.games.get(roomCode);
+            let newPlayer = new gameLogic.Player(username, roomGame);
+            roomGame.addPlayer(newPlayer);
+
+        } catch (err) {
+            if (err.name != "GameError") {
+                throw err;
+
+            } else {
+                socket.emit("alert_with_redirect", err.message);
+
+            }
+        }
 
     })
 
@@ -113,7 +124,7 @@ io.on("connection", (socket) => {
 
 // server listeners (EventEmitter)
 eventManager.on("one_second_tick", (numTicks) => {
-    console.log("one second tick");
+    // console.log("one second tick");
 
     for (const [key, value] of gameManager.games) {
         io.to(key).emit("update_player_info", value.players.map((player) => player.toString()));

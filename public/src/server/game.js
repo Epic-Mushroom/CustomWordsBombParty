@@ -175,6 +175,10 @@ export class Game {
     }
 
     addPlayer(player) {
+        if (this.players.length >= this.maxPlayers) {
+            throw new GameError("This room is full!");
+        }
+
         this.players.push(player);
 
         if (this.leader === null) {

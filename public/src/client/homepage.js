@@ -73,6 +73,10 @@ defaultRulesButton?.addEventListener("click", () => {
 clientMain.socket.on("alert", (message) => {
     alert(message);
 });
+clientMain.socket.on("alert_with_redirect", (message) => {
+    alert(message);
+    window.location.href = "/";
+});
 clientMain.socket.on("update_rooms_count", (count) => {
     updateRoomsCount(roomsCountContainer, count);
 });

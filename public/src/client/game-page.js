@@ -37,8 +37,11 @@ const submitButton = document.getElementById("submit-button");
 submitButton?.addEventListener("click", submitGuess);
 
 // socket.io listeners
-clientMain.socket.on("alert", (message) => {
+clientMain.socket.on("alert", (message) => alert(message));
+clientMain.socket.on("alert_with_redirect", (message) => {
     alert(message);
+    console.log("alert_with_redirect");
+    window.location.href = "/";
 });
 clientMain.socket.on("update_player_info", (playerStrings) => updatePlayerInfo(playerInfoContainer, playerStrings));
 clientMain.socket.on("connect", async () => {
