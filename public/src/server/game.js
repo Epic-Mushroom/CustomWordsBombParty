@@ -10,7 +10,7 @@ export const MIN_BASE_TIMER_DURATION = 1;
 export const MIN_MAX_PLAYERS_PER_ROOM = 1;
 export const MIN_STARTING_LIVES = 1;
 
-export const SECONDS_UNTIL_GAME_IS_OLD = 60;
+export const SECONDS_UNTIL_GAME_IS_OLD = 360;
 
 class GameError extends Error {
     constructor(message) {
@@ -34,6 +34,9 @@ export class Player {
         this.timeoutId = null; // use with setTimeout for the bomb timer
         this.timerStartTime = 0; // epoch time in ms when the timer was started
         this.currentAlphabet = new Set();
+
+        this.isPlayerConnected = true;
+        this.playerDisconnectTime = 2 * (new Date()).getTime(); // placeholder value
     }
 
     updateAlphabet(guess /* String */) {
@@ -87,6 +90,10 @@ export class Player {
 
         }
     }
+
+    isGameLeader() {
+        return this.game.leader === this;
+    }
 }
 
 export class Game {
@@ -127,11 +134,17 @@ export class Game {
 
         this.isActive = false;
 
+        this.leader = null; // should just be the first player in the this.players array
+
         this.gameCreationTime = (new Date()).getTime();
     }
 
     addPlayer(player) {
         this.players.push(player);
+
+        if (this.leader === null) {
+            this.leader = player;
+        }
     }
 
     startGame() {
