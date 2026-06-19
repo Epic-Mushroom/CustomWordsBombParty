@@ -51,7 +51,7 @@ io.on("connection", (socket) => {
     });
 
     // homepage
-    socket.emit("fetch_rooms_list", Array.from(gameManager.games.keys()));
+    socket.emit("update_rooms_count", gameManager.games.size);
 
     socket.emit("pre_fill_room_rule_defaults");
 
@@ -60,8 +60,8 @@ io.on("connection", (socket) => {
             let generatedCode = roomsLogic.generateRoomCode();
             let newGame = gameManager.addGame(generatedCode, maxPlayers = maxPlayers, baseTimerDuration = baseTimerDuration, startingLives = startingLives); // uses default constraints for timer length, max players, etc
 
-            io.emit("show_newly_generated_room", generatedCode);
-            io.emit("update_number_of_active_rooms", generatedCode);
+            socket.emit("show_newly_generated_room", generatedCode);
+            io.emit("update_rooms_count", gameManager.games.size);
 
             console.log(`Generated room with game: ${newGame}`);
 

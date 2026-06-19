@@ -10,6 +10,13 @@ export const MIN_BASE_TIMER_DURATION = 1;
 export const MIN_MAX_PLAYERS_PER_ROOM = 1;
 export const MIN_STARTING_LIVES = 1;
 
+class GameError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "GameError";
+    }
+}
+
 export class Player {
     // has a username, a game that it is connected to, number of lives,
     // current timer value, alphabet matched to the game's alphabet rule (make sure not to update after getting extra life),
@@ -69,7 +76,17 @@ export class Game {
         this.isActive = false;
     }
 
+    addPlayer(player) {
+        this.players.push(player);
+    }
+
     startGame() {
+        if (this.players.length == 0) {
+            throw new GameError("There are no players in this room!");
+            
+        } else if (this.players.length > this.maxPlayers) {
+            throw new GameError("There are too many players in this room!");
+        }
 
     }
 

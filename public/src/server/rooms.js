@@ -7,7 +7,7 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-function generateRoomCode(length = DEFAULT_ROOM_CODE_LENGTH) {
+export function generateRoomCode(length = DEFAULT_ROOM_CODE_LENGTH) {
     let roomCode = "";
 
     for (let i = 0; i < length; i = i + 1) {
@@ -15,8 +15,4 @@ function generateRoomCode(length = DEFAULT_ROOM_CODE_LENGTH) {
     }
 
     return roomCode;
-}
-
-export {
-    generateRoomCode
 }

@@ -31,12 +31,14 @@ function createRoom(
     clientMain.socket.emit("create_room", maxPlayers, baseTimerDuration, startingLives);
 }
 
-function addRoomToRoomCodeList(roomsList, roomCode) {
-    let newRoomLi = document.createElement("li");
-    newRoomLi.textContent = roomCode;
-    roomsList.appendChild(newRoomLi);
+function updateRoomsCount(roomsCountContainer, count) {
+    roomsCountContainer.replaceChildren();
 
-    console.log("added room to room code list");
+    let roomCountSpan = document.createElement("span");
+    roomCountSpan.textContent = `There are currently ${count} rooms active`;
+    roomsCountContainer.appendChild(roomCountSpan);
+
+    console.log("updated rooms count");
 }
 
 // get elements (homepage)
@@ -53,6 +55,7 @@ const newlyGeneratedCodeContainer = document.getElementById("newly-generated-cod
 const createRoomButton = document.getElementById("create-room-button");
 const defaultRulesButton = document.getElementById("reset-rules-button");
 
+const roomsCountContainer = document.getElementById("active-rooms-count");
 const roomsList = document.getElementById("active-rooms-list");
 
 // element listeners
@@ -70,13 +73,8 @@ defaultRulesButton?.addEventListener("click", () => {
 clientMain.socket.on("alert", (message) => {
     alert(message);
 });
-clientMain.socket.on("fetch_rooms_list", (roomCodesList) => {
-    for (const roomCode of roomCodesList) {
-        addRoomToRoomCodeList(roomsList, roomCode);
-    }
-});
-clientMain.socket.on("update_number_of_active_rooms", (roomCode) => {
-    addRoomToRoomCodeList(roomsList, roomCode)
+clientMain.socket.on("update_rooms_count", (count) => {
+    updateRoomsCount(roomsCountContainer, count);
 });
 clientMain.socket.on("show_newly_generated_room", (generatedCode) => {
     clientMain.displayRoomCodeInfo(newlyGeneratedCodeContainer, generatedCode, true);

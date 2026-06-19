@@ -7,8 +7,8 @@ export const MIN_GRADIENT_DISTANCE = 20; // percent
 const COPY_FLAVOR_TEXT = [ // indexed based on num times previously copied
     "copied URL!",
     "copied URL again!",
-    "copied a third time!",
-    "copied a fourth time!",
+    "copied a third time! share the URL with your friends!",
+    "copied a fourth time! tell them to paste it into their address bar!",
     "copied a fifth time!",
     "copied a sixth time...",
     "copied a seventh time...",

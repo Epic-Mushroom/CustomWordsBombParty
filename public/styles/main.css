@@ -5,7 +5,14 @@
 }
 
 .menu-body, .game-body {
+    margin-top: 67px;
     background: linear-gradient(to right, var(--gradient-start-color), var(--gradient-end-color) var(--gradient-midpoint));
+}
+
+.center-aligned {
+    display: block;
+    align-content: center;
+    text-align: center;
 }
 
 #room-settings {
