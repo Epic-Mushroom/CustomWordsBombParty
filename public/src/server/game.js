@@ -24,24 +24,28 @@ export class Player {
     // current timer value, alphabet matched to the game's alphabet rule (make sure not to update after getting extra life),
     // if it's the player's turn, if the player is alive
 
-    constructor(username, game /* Game */, socketId = null) {
+    constructor(username, gameRoomCode, socketId = null) {
         if (username != null) {
             this.username = username;
         } else {
             this.username = "Gertrude";
         }
-        this.game = game;
+        this.roomCode = gameRoomCode;
         this.socketId = socketId;
 
         this.isPlayerTurn = false;
         this.isPlayerAlive = true;
-        this.currentLifeCount = game.startingLives;
+        this.currentLifeCount = gameManager.findGame(this.roomCode).startingLives;
         this.timeoutId = null; // use with setTimeout for the bomb timer
         this.timerStartTime = 0; // epoch time in ms when the timer was started
         this.currentAlphabet = new Set();
 
         this.isPlayerConnected = true;
         this.playerDisconnectTime = 2 * (new Date()).getTime(); // placeholder value
+    }
+
+    getGame() {
+        return gameManager.findGame(this.roomCode);
     }
 
     updateAlphabet(guess /* String */) {
@@ -60,7 +64,7 @@ export class Player {
     }
 
     submitGuess(word) {
-        if (this.game.isValidGuess(word)) {
+        if (this.getGame().isValidGuess(word)) {
             this.endPlayerTurn(true);
             return true;
 
@@ -79,7 +83,7 @@ export class Player {
     }
 
     startTimer() {
-        this.timeoutId = setTimeout(this.endPlayerTurn, this.game.baseTimerDuration * 1000);
+        this.timeoutId = setTimeout(this.endPlayerTurn, this.getGame().baseTimerDuration * 1000);
         this.timerStartTime = (new Date()).getTime();
     }
 
@@ -87,11 +91,11 @@ export class Player {
         // need to change calculation if using variable timer duration in the future
         let timeSinceStart = ((new Date()).getTime() - this.timerStartTime);
 
-        if (timeSinceStart >= this.game.baseTimerDuration * 1000) {
+        if (timeSinceStart >= this.getGame().baseTimerDuration * 1000) {
             return 0;
 
         } else {
-            return this.game.baseTimerDuration - timeSinceStart;
+            return this.getGame().baseTimerDuration - timeSinceStart;
 
         }
     }
@@ -107,7 +111,7 @@ export class Player {
     }
 
     isGameLeader() {
-        return this.game.leader === this;
+        return this.getGame().leader === this;
     }
 
     toString() {
@@ -115,7 +119,7 @@ export class Player {
 
         let status = "in-game";
 
-        if (!this.game.isActive) {
+        if (!this.getGame().isActive) {
             status = "ready";
         }
 
@@ -128,13 +132,13 @@ export class Player {
         }
 
         let livesDisplay = "";
-        for (let i = 0; i < Math.min(this.currentLifeCount, this.game.startingLives); i++) {
+        for (let i = 0; i < Math.min(this.currentLifeCount, this.getGame().startingLives); i++) {
             livesDisplay += "❤️";
         }
-        for (let i = 0; i < this.game.startingLives - this.currentLifeCount; i++) {
+        for (let i = 0; i < this.getGame().startingLives - this.currentLifeCount; i++) {
             livesDisplay += "🩶";
         }
-        for (let i = 0; i < this.currentLifeCount - this.game.startingLives; i++) {
+        for (let i = 0; i < this.currentLifeCount - this.getGame().startingLives; i++) {
             livesDisplay += "💛";
         }
 
@@ -196,7 +200,7 @@ export class Game {
             throw new GameError("There is already another player in this room with the same username!");
 
         } else if (existingPlayer != null) {
-            existingPlayer.reconnect();
+            existingPlayer.reconnect(player.socketId);
             return existingPlayer;
         }
 
@@ -285,6 +289,10 @@ export class GameManager {
         return Array.from(this.games.keys()).filter((key) => this.games.get(key).isActive).length;
     }
 
+    findGame(roomCode) {
+        return this.games.get(roomCode);
+    }
+
     removeGame(roomCode) {
         return this.games.delete(roomCode);
     }
@@ -299,7 +307,32 @@ export class GameManager {
         return player;
     }
 
+    findPlayersByUsername(username) {
+        foundPlayers = new Array();
+
+        for (const [id, player] of this.players) {
+            if (player.username = username) {
+                foundPlayers.push(player);
+            }
+        }
+
+        return foundPlayers;
+    }
+
+    findPlayerBySocketId(socketId) {
+        for (const [id, player] of this.players) {
+            if (id == socketId) {
+                return player;
+            }
+        }
+
+        return null;
+    }
+
     removePlayer(socketId) {
         return this.players.delete(socketId);
     }
 }
+
+// for use by server.js
+export const gameManager = new GameManager();

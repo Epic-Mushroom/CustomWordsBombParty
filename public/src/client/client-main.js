@@ -103,3 +103,6 @@ export let gradientLerp = setInterval(() => {
     }%`);
     // console.log(`moving gradient from ${window.getComputedStyle(root).getPropertyValue("--gradient-midpoint")} (${currentGradientX}) to ${targetGradientX}`);
 }, 0.33 * CLIENT_TICK_DELAY);
+
+// forces complete disconnect before client is able to reconnect (in the case of refreshes);
+window.addEventListener("beforeunload", () => socket.disconnect());

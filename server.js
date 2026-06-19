@@ -7,6 +7,7 @@ import * as httpModule from "http";
 import * as socketIo from "socket.io"; 
 
 import * as gameLogic from "./public/src/server/game.js";
+import {gameManager} from "./public/src/server/game.js";
 import * as roomsLogic from "./public/src/server/rooms.js";
 
 function tick(numTicks) {
@@ -34,8 +35,7 @@ const app = express();
 const http = httpModule.createServer(app);
 const io = new socketIo.Server(http);
 
-let eventManager = new EventEmitter();
-let gameManager = new gameLogic.GameManager();
+const eventManager = new EventEmitter();
 
 // server tick updates
 let tickInterval = setTimeout(() => {
@@ -60,6 +60,12 @@ io.on("connection", (socket) => {
     console.log(`player connected, socket id: ${socket.id}`);
 
     socket.on("disconnect", () => {
+        let player = gameManager.players.get(socket.id);
+        if (player != null) {
+            player.disconnect();
+            gameManager.removePlayer(socket.id);
+        }
+
         console.log(`player disconnected, socket id: ${socket.id}`);
     });
 
@@ -78,7 +84,7 @@ io.on("connection", (socket) => {
     socket.on("create_room", (maxPlayers, baseTimerDuration, startingLives) => {
         try {
             let generatedCode = roomsLogic.generateRoomCode();
-            let newGame = gameManager.addGame(generatedCode, maxPlayers = maxPlayers, baseTimerDuration = baseTimerDuration, startingLives = startingLives); // uses default constraints for timer length, max players, etc
+            let newGame = gameManager.addGame(generatedCode, maxPlayers, baseTimerDuration, startingLives); 
 
             socket.emit("show_newly_generated_room", generatedCode);
             io.emit("update_rooms_count", gameManager.games.size);
@@ -103,7 +109,7 @@ io.on("connection", (socket) => {
 
         try {
             let roomGame = gameManager.games.get(roomCode);
-            let newPlayer = new gameLogic.Player(username, roomGame, socket.id);
+            let newPlayer = new gameLogic.Player(username, roomCode, socket.id);
 
             roomGame.addOrUpdatePlayer(newPlayer);
             gameManager.addPlayer(newPlayer);
