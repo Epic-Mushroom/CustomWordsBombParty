@@ -1,5 +1,6 @@
 import path from "path";
 import url from "url";
+import EventEmitter from "events";
 import process from "process";
 import express from "express";
 import * as httpModule from "http"; 
@@ -8,11 +9,18 @@ import * as socketIo from "socket.io";
 import * as gameLogic from "./public/src/server/game.js";
 import * as roomsLogic from "./public/src/server/rooms.js";
 
-function tick() {
-    numTicks++;
+function tick(numTicks) {
+    let newTicks = numTicks + 1;
+    // console.log(`Tick #${newTicks}`);
+
+    if (newTicks % 100 == 0) {
+        eventManager.emit("five_second_tick", newTicks);
+    }
 
     // restarts the timer
-    setTimeout(tick, SERVER_TICK_DELAY);
+    tickInterval = setTimeout(() => {
+        tick(newTicks);
+    }, SERVER_TICK_DELAY);
 }
 
 const SERVER_TICK_DELAY = 50; // milliseconds
@@ -22,12 +30,13 @@ const app = express();
 const http = httpModule.createServer(app);
 const io = new socketIo.Server(http);
 
+let eventManager = new EventEmitter();
 let gameManager = new gameLogic.GameManager();
 
 // server tick updates
-let numTicks = 0;
-
-const tickInterval = setTimeout(tick, SERVER_TICK_DELAY);
+let tickInterval = setTimeout(() => {
+    tick(0);
+}, SERVER_TICK_DELAY);
 
 app.use(express.static(path.join(DIRNAME, "public")));
 
@@ -80,6 +89,19 @@ io.on("connection", (socket) => {
         console.log(`player clicked submit guess`);
     });      
     
+    // server listeners (EventEmitter)
+    eventManager.on("five_second_tick", (numTicks) => {
+        // clears empty and inactive rooms
+        for (const [key, value] of gameManager.games) {
+            if (gameManager.games.get(key).isOld() && gameManager.games.get(key).players.length == 0) {
+                gameManager.games.delete(key);
+                io.emit("update_rooms_count", gameManager.games.size);
+
+                console.log(`deleted game with room code ${key}`);
+            }
+            
+        }
+    });
 });
 
 http.listen(3000, () => console.log("server up"));  

@@ -10,6 +10,8 @@ export const MIN_BASE_TIMER_DURATION = 1;
 export const MIN_MAX_PLAYERS_PER_ROOM = 1;
 export const MIN_STARTING_LIVES = 1;
 
+export const SECONDS_UNTIL_GAME_IS_OLD = 60;
+
 class GameError extends Error {
     constructor(message) {
         super(message);
@@ -29,12 +31,61 @@ export class Player {
         this.isPlayerTurn = false;
         this.isPlayerAlive = true;
         this.currentLifeCount = game.startingLives;
-        this.currentTimerValue = game.maxTimerLength; // could add variation depending on substring rarity
+        this.timeoutId = null; // use with setTimeout for the bomb timer
+        this.timerStartTime = 0; // epoch time in ms when the timer was started
         this.currentAlphabet = new Set();
     }
 
     updateAlphabet(guess /* String */) {
         // called when submitting a correct guess, if alphabet is filled out then we add an extra life
+    }
+
+    activatePlayerTurn() {
+        if (!this.isPlayerAlive || this.currentLifeCount <= 0) {
+            throw new GameError("Player is dead!");
+        }
+
+        this.resetTimer();
+        this.startTimer();
+
+        this.isPlayerTurn = true;
+    }
+
+    submitGuess(word) {
+        if (this.game.isValidGuess(word)) {
+            this.endPlayerTurn(true);
+            return true;
+
+        } else {
+            return false;
+        }
+    }
+
+    endPlayerTurn(success = false) {
+        this.resetTimer()
+    }
+
+    resetTimer() {
+        clearTimeout(this.timeoutId);
+        this.timerStartTime = 0;
+    }
+
+    startTimer() {
+        this.timeoutId = setTimeout(this.endPlayerTurn, this.game.baseTimerDuration * 1000);
+        this.timerStartTime = (new Date()).getTime();
+    }
+
+    getTimeLeft() {
+        // need to change calculation if using variable timer duration in the future
+        let timeSinceStart = ((new Date()).getTime() - this.timerStartTime);
+
+        if (timeSinceStart >= this.game.baseTimerDuration * 1000) {
+            return 0;
+
+        } else {
+            return this.game.baseTimerDuration - timeSinceStart;
+
+        }
     }
 }
 
@@ -71,9 +122,12 @@ export class Game {
         }
 
         this.currentRound = 1;
+        this.currentSubstring = "ION";
         this.wordsSubmitted = new Map();
 
         this.isActive = false;
+
+        this.gameCreationTime = (new Date()).getTime();
     }
 
     addPlayer(player) {
@@ -81,12 +135,16 @@ export class Game {
     }
 
     startGame() {
-        if (this.players.length == 0) {
+        if (this.players.length === 0) {
             throw new GameError("There are no players in this room!");
             
         } else if (this.players.length > this.maxPlayers) {
             throw new GameError("There are too many players in this room!");
         }
+
+        // ...
+
+        this.isActive = true;
 
     }
 
@@ -96,6 +154,18 @@ export class Game {
 
     nextRound() {
 
+    }
+
+    isValidGuess(guess) {
+        return guess.includes(this.currentSubstring);
+    }
+
+    getSecondsSinceCreation() {
+        return ((new Date()).getTime() - this.gameCreationTime) / 1000;
+    }
+
+    isOld() {
+        return this.getSecondsSinceCreation() >= SECONDS_UNTIL_GAME_IS_OLD;
     }
 
     toString() {
