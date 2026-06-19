@@ -3,7 +3,7 @@ import * as clientMain from "./client-main.js";
 function setUsername(usernameField, username) {
     console.log(`trying to store username "${username}"`)
 
-    if (username.trim() != "") {
+    if (username.trim() !== "") {
         usernameField.value = username.trim();
         localStorage.setItem("username", username.trim());
     } else {

@@ -100,6 +100,8 @@ export class Player {
     }
 
     toString() {
+        let crown = (this.isGameLeader()) ? "👑 " : "";
+
         let status = "in-game";
 
         if (!this.game.isActive) {
@@ -125,7 +127,7 @@ export class Player {
             livesDisplay += "💛";
         }
 
-        return `${this.username} ${livesDisplay} (${status})`;
+        return `${crown}${this.username} ${livesDisplay} (${status})`;
     }
 }
 

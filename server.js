@@ -13,6 +13,10 @@ function tick(numTicks) {
     let newTicks = numTicks + 1;
     // console.log(`Tick #${newTicks}`);
 
+    if (newTicks % 20 == 0) {
+        eventManager.emit("one_second_tick", newTicks);
+    }
+
     if (newTicks % 100 == 0) {
         eventManager.emit("five_second_tick", newTicks);
     }
@@ -59,6 +63,11 @@ io.on("connection", (socket) => {
         console.log(`player disconnected, socket id: ${socket.id}`);
     });
 
+    socket.on("join_io_room", (ioRoomCode, callback) => {
+        socket.join(ioRoomCode);
+        callback();
+});
+
     // homepage
     socket.emit("update_rooms_count", gameManager.games.size);
 
@@ -85,23 +94,43 @@ io.on("connection", (socket) => {
         callback({validRoom: gameManager.games.has(roomCode)});
     });
 
+    socket.on("add_player_to_room", (username, roomCode) => {
+        if (!gameManager.games.has(roomCode)) {
+            return;
+        }
+
+        let roomGame = gameManager.games.get(roomCode);
+        let newPlayer = new gameLogic.Player(username, roomGame);
+        roomGame.addPlayer(newPlayer);
+
+    })
+
     socket.on("submit_guess", () => {
         console.log(`player clicked submit guess`);
     });      
     
-    // server listeners (EventEmitter)
-    eventManager.on("five_second_tick", (numTicks) => {
-        // clears empty and inactive rooms
-        for (const [key, value] of gameManager.games) {
-            if (gameManager.games.get(key).isOld() && gameManager.games.get(key).players.length == 0) {
-                gameManager.games.delete(key);
-                io.emit("update_rooms_count", gameManager.games.size);
+});
 
-                console.log(`deleted game with room code ${key}`);
-            }
-            
+// server listeners (EventEmitter)
+eventManager.on("one_second_tick", (numTicks) => {
+    console.log("one second tick");
+
+    for (const [key, value] of gameManager.games) {
+        io.to(key).emit("update_player_info", value.players.map((player) => player.toString()));
+    }
+});
+
+eventManager.on("five_second_tick", (numTicks) => {
+    // clears empty and inactive rooms
+    for (const [key, value] of gameManager.games) {
+        if (value.isOld() && value.players.length == 0) {
+            gameManager.games.delete(key);
+            io.emit("update_rooms_count", gameManager.games.size);
+
+            console.log(`deleted game with room code ${key}`);
         }
-    });
+        
+    }
 });
 
 http.listen(3000, () => console.log("server up"));  
