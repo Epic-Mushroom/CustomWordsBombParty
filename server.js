@@ -84,7 +84,8 @@ io.on("connection", (socket) => {
     socket.on("create_room", (maxPlayers, baseTimerDuration, startingLives) => {
         try {
             let generatedCode = roomsLogic.generateRoomCode();
-            let newGame = gameManager.addGame(generatedCode, maxPlayers, baseTimerDuration, startingLives); 
+            let newGame = new gameLogic.Game(generatedCode, maxPlayers, baseTimerDuration, startingLives)
+            gameManager.addGame(newGame);
 
             socket.emit("show_newly_generated_room", generatedCode);
             io.emit("update_rooms_count", gameManager.games.size);
@@ -103,6 +104,8 @@ io.on("connection", (socket) => {
     });
 
     socket.on("add_player_to_room", (username, roomCode) => {
+        console.log(`trying to add ${username} to ${roomCode}`);
+
         if (!gameManager.games.has(roomCode)) {
             return;
         }
@@ -111,7 +114,7 @@ io.on("connection", (socket) => {
             let roomGame = gameManager.games.get(roomCode);
             let newPlayer = new gameLogic.Player(username, roomCode, socket.id);
 
-            roomGame.addOrUpdatePlayer(newPlayer);
+            newPlayer = roomGame.addOrUpdatePlayer(newPlayer);
             gameManager.addPlayer(newPlayer);
 
         } catch (err) {

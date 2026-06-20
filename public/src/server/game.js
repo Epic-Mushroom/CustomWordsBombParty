@@ -40,7 +40,7 @@ export class Player {
         this.timerStartTime = 0; // epoch time in ms when the timer was started
         this.currentAlphabet = new Set();
 
-        this.isPlayerConnected = true;
+        this.isConnected = true;
         this.playerDisconnectTime = 2 * (new Date()).getTime(); // placeholder value
     }
 
@@ -101,13 +101,15 @@ export class Player {
     }
 
     reconnect(newSocketId) {
-        this.isPlayerConnected = true;
+        this.isConnected = true;
         this.socketId = newSocketId;
+        this.playerDisconnectTime = 2 * (new Date()).getTime();
     }
 
     disconnect() {
-        this.isPlayerConnected = false;
-        this.socketId = null;
+        this.isConnected = false;
+        // this.socketId = null;
+        this.playerDisconnectTime = (new Date()).getTime();
     }
 
     isGameLeader() {
@@ -123,7 +125,7 @@ export class Player {
             status = "ready";
         }
 
-        if (!this.isPlayerConnected) {
+        if (!this.isConnected) {
             status = "disconnected";
         }
 
@@ -196,7 +198,7 @@ export class Game {
 
         let existingPlayer = this.findPlayer(player.username);
 
-        if (existingPlayer?.isPlayerConnected) {
+        if (existingPlayer?.isConnected) {
             throw new GameError("There is already another player in this room with the same username!");
 
         } else if (existingPlayer != null) {
@@ -214,8 +216,7 @@ export class Game {
     }
 
     findPlayer(username) {
-        let foundPlayer = this.players.find((player) => player.username === username);
-        return (foundPlayer === undefined) ? null : foundPlayer;
+        return this.players.find((player) => player.username === username);
     }
 
     startGame() {
@@ -271,14 +272,10 @@ export class GameManager {
 
     // should probably make this consistent with addPlayer, as in have the caller create the Game object and pass
     // that in
-    addGame(roomCode,
-            maxPlayers = DEFAULT_MAX_PLAYERS_PER_ROOM,
-            baseTimerDuration = DEFAULT_BASE_TIMER_DURATION,
-            startingLives = DEFAULT_STARTING_LIVES) {
-        let newGame = new Game(roomCode, maxPlayers = maxPlayers, baseTimerDuration, startingLives);
-        this.games.set(roomCode, newGame);
+    addGame(game) {
+        this.games.set(game.roomCode, game);
 
-        return newGame;
+        return game;
     }
 
     numGames() {
