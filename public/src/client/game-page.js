@@ -1,7 +1,5 @@
 import * as clientMain from "./client-main.js";
 
-let isValidRoomCode = false;
-
 function updatePlayerInfo(playerInfoContainer, playerStrings) {
     // console.log("trying to update player info");
 
@@ -49,6 +47,7 @@ clientMain.socket.on("alert_with_redirect", (message) => {
     console.log("alert_with_redirect");
     window.location.href = "/";
 });
+clientMain.socket.on("force_username_update", (newUsername) => clientMain.setUsername(usernameField, newUsername));
 clientMain.socket.on("update_player_info", (playerStrings) => updatePlayerInfo(playerInfoContainer, playerStrings));
 clientMain.socket.on("connect", async () => {
     const response = await clientMain.socket.timeout(10000).emitWithAck("validate_room_code", getRoomCode());

@@ -31,8 +31,6 @@ function updateRoomsCount(roomsCountContainer, count) {
 }
 
 // get elements (homepage)
-const root = document.documentElement;
-
 const usernameButton = document.getElementById("submit-username-button");
 const usernameField = document.getElementById("username-field");
 

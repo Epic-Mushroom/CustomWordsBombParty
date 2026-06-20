@@ -30,12 +30,17 @@ export function resetTimesCopied() {
     timesLinkCopied = 0;
 }
 
-export function preFillUsernameField(usernameField) {
-    if (localStorage.getItem("username") != null) {
-    console.log(`trying to pre-fill username field with username "${localStorage.getItem("username")}"`)
+export function preFillUsernameField(usernameField, username = null) {
+    if (username != null) {
+        console.log(`trying to pre-fill username field with username "${username}"`)
 
-    usernameField.value = localStorage.getItem("username");
-};
+        usernameField.value = username;
+
+    } else if (localStorage.getItem("username") != null) {
+        console.log(`trying to pre-fill username field with username "${localStorage.getItem("username")}"`)
+
+        usernameField.value = localStorage.getItem("username");
+    }
 }
 
 export function setUsername(usernameField, username) {
@@ -44,10 +49,10 @@ export function setUsername(usernameField, username) {
     if (username.trim() !== "") {
         usernameField.value = username.trim();
         localStorage.setItem("username", username.trim());
-    } else {
-        usernameField.value = "Gertrude";
-        localStorage.setItem("username", "Gertrude");
-    } 
+    } // else {
+    //     usernameField.value = "";
+    //     localStorage.setItem("username", null);
+    // } 
     
     socket.emit("set_username", localStorage.getItem("username"));
 }
@@ -111,7 +116,7 @@ export const socket = io();
 // sets the gradient midpoint to mouse cursor location
 export let gradientOnMouseMove = window.addEventListener("mousemove", (event) => {
     let xPercent = (event.clientX / window.innerWidth) * 100;
-    let yPercent = (event.clientY / window.innerHeight) * 100;
+    // let yPercent = (event.clientY / window.innerHeight) * 100;
 
     targetGradientX = Math.max(Math.min(xPercent, MAX_GRADIENT_DISTANCE), MIN_GRADIENT_DISTANCE)
 })

@@ -1,3 +1,13 @@
+import {getRandomInt} from "../utils.js";
+
+const RANDOM_USERNAME_SUFFIX_CHARACTERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+const RANDOM_USERNAME_SUFFIX_MIN_LENGTH = 6;
+const RANDOM_USERNAME_SUFFIX_MAX_LENGTH = 7;
+const RANDOM_USERNAME_PREFIXES = [
+    "Gertrude",
+    "Bartholomew"
+]
+
 export const DEFAULT_BASE_TIMER_DURATION = 8; // seconds
 export const DEFAULT_MAX_PLAYERS_PER_ROOM = 10;
 export const DEFAULT_STARTING_LIVES = 3;
@@ -25,10 +35,10 @@ export class Player {
     // if it's the player's turn, if the player is alive
 
     constructor(username, gameRoomCode, socketId = null) {
-        if (username != null) {
+        if (username != null || username === "") {
             this.username = username;
         } else {
-            this.username = "Gertrude";
+            this.username = Player.generateUsername();
         }
         this.roomCode = gameRoomCode;
         this.socketId = socketId;
@@ -42,6 +52,19 @@ export class Player {
 
         this.isConnected = true;
         this.playerDisconnectTime = 2 * (new Date()).getTime(); // placeholder value
+    }
+
+    static generateUsername() {
+        let generatedUsername = "";
+
+        generatedUsername += RANDOM_USERNAME_PREFIXES[getRandomInt(0, RANDOM_USERNAME_PREFIXES.length - 1)];
+        generatedUsername += "_";
+        let suffixLength = getRandomInt(RANDOM_USERNAME_SUFFIX_MIN_LENGTH, RANDOM_USERNAME_SUFFIX_MAX_LENGTH);
+        for (let i = 0; i < suffixLength; i++) {
+            generatedUsername += RANDOM_USERNAME_SUFFIX_CHARACTERS[getRandomInt(0, RANDOM_USERNAME_SUFFIX_CHARACTERS.length - 1)];
+        }
+
+        return generatedUsername;
     }
 
     getGame() {
@@ -305,10 +328,10 @@ export class GameManager {
     }
 
     findPlayersByUsername(username) {
-        foundPlayers = new Array();
+        let foundPlayers = new Array();
 
         for (const [id, player] of this.players) {
-            if (player.username = username) {
+            if (player.username === username) {
                 foundPlayers.push(player);
             }
         }
@@ -318,7 +341,7 @@ export class GameManager {
 
     findPlayerBySocketId(socketId) {
         for (const [id, player] of this.players) {
-            if (id == socketId) {
+            if (id === socketId) {
                 return player;
             }
         }

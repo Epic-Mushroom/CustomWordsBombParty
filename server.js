@@ -71,7 +71,7 @@ io.on("connection", (socket) => {
 
     socket.on("join_io_room", (ioRoomCode, callback) => {
         socket.join(ioRoomCode);
-        callback();
+        callback(); 
 });
 
     // homepage
@@ -80,7 +80,11 @@ io.on("connection", (socket) => {
     socket.emit("pre_fill_room_rule_defaults");
 
     socket.on("set_username", (username) => {
-        gameManager.findPlayerBySocketId(socket.id).username = username;
+        let foundPlayer = gameManager.findPlayerBySocketId(socket.id);
+        
+        if (foundPlayer != null) {
+            foundPlayer.username = username;
+        }
     });
 
     socket.on("create_room", (maxPlayers, baseTimerDuration, startingLives) => {
@@ -107,6 +111,9 @@ io.on("connection", (socket) => {
 
     socket.on("add_player_to_room", (username, roomCode) => {
         console.log(`trying to add ${username} to ${roomCode}`);
+        if (username == "") {
+            console.warn(`username is blank`);
+        }
 
         if (!gameManager.games.has(roomCode)) {
             return;
@@ -116,8 +123,14 @@ io.on("connection", (socket) => {
             let roomGame = gameManager.games.get(roomCode);
             let newPlayer = new gameLogic.Player(username, roomCode, socket.id);
 
+            console.log(`created Player with username ${newPlayer.username}`);
+
             newPlayer = roomGame.addOrUpdatePlayer(newPlayer);
             gameManager.addPlayer(newPlayer);
+
+            if (newPlayer.username != username) {
+                socket.emit("force_username_update", newPlayer.username);
+            }
 
         } catch (err) {
             if (err.name != "GameError") {
