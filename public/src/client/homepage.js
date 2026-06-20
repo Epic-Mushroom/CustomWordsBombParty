@@ -1,18 +1,6 @@
 import * as clientMain from "./client-main.js";
 
-function setUsername(usernameField, username) {
-    console.log(`trying to store username "${username}"`)
 
-    if (username.trim() !== "") {
-        usernameField.value = username.trim();
-        localStorage.setItem("username", username.trim());
-    } else {
-        usernameField.value = "Gertrude";
-        localStorage.setItem("username", "Gertrude");
-    } 
-    
-    clientMain.socket.emit("set_username", localStorage.getItem("username"));
-}
 
 function preFillRoomRuleDefaults(maxPlayersField, baseTimerDurationField, startingLivesField) {
     console.log(`trying to pre-fill room rule defaults`)
@@ -61,7 +49,7 @@ const roomsList = document.getElementById("active-rooms-list");
 
 // element listeners
 usernameButton?.addEventListener("click", () => {
-    setUsername(usernameField, usernameField.value);
+    clientMain.setUsername(usernameField, usernameField.value);
 });
 createRoomButton?.addEventListener("click", () => {
     createRoom(maxPlayersField.value, baseTimerDurationField.value, startingLivesField.value);

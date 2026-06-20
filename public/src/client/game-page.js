@@ -2,6 +2,8 @@ import * as clientMain from "./client-main.js";
 
 let isValidRoomCode = false;
 
+
+
 function updatePlayerInfo(playerInfoContainer, playerStrings) {
     // console.log("trying to update player info");
 
@@ -28,12 +30,18 @@ function getRoomCode() {
 }
 
 // get elements (game page)
+const usernameButton = document.getElementById("submit-username-button");
+const usernameField = document.getElementById("username-field");
+
 const roomCodeContainer = document.getElementById("room-code-container");
 const mainGameContainer = document.getElementById("main-game");
 const playerInfoContainer = document.getElementById("player-info");
 const submitButton = document.getElementById("submit-button");
 
 // element listeners
+usernameButton?.addEventListener("click", () => {
+    clientMain.setUsername(usernameField, usernameField.value);
+});
 submitButton?.addEventListener("click", submitGuess);
 
 // socket.io listeners

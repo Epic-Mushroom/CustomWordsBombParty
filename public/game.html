@@ -10,9 +10,14 @@
         <link rel="icon" type="image/png" href="/images/brick.png">
     </head>
     <body class="game-body">
-        <div id="room-code-container" class="room-code-info"></div>
         <div id="main-game">
-            <main>
+            <main class="center-aligned-container">
+                <section class="username-entry">
+                    <label for="username-field">Enter your username: </label>
+                    <input type="text" id="username-field">
+                    <button type="button" id="submit-username-button">OK</button>
+                </section>
+                <div id="room-code-container" class="room-code-info"></div>
                 <h1>BombParty</h1>
                 <section id="enter-guess">
                     <h2 id="substring">Substring: YYY</h2>

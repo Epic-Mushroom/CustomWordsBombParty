@@ -31,6 +31,20 @@ export function resetTimesCopied() {
     timesLinkCopied = 0;
 }
 
+export function setUsername(usernameField, username) {
+    console.log(`trying to store username "${username}"`)
+
+    if (username.trim() !== "") {
+        usernameField.value = username.trim();
+        localStorage.setItem("username", username.trim());
+    } else {
+        usernameField.value = "Gertrude";
+        localStorage.setItem("username", "Gertrude");
+    } 
+    
+    clientMain.socket.emit("set_username", localStorage.getItem("username"));
+}
+
 export async function makeRoomCodeCopyable(roomCode, textElement) {
     try {
         await navigator.clipboard.writeText(`${window.location.hostname}:${window.location.port}/game/${roomCode}`);
