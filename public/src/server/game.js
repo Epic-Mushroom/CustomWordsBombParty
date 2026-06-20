@@ -20,7 +20,7 @@ export const MIN_BASE_TIMER_DURATION = 1;
 export const MIN_MAX_PLAYERS_PER_ROOM = 1;
 export const MIN_STARTING_LIVES = 1;
 
-export const SECONDS_UNTIL_GAME_IS_OLD = 360;
+export const SECONDS_UNTIL_GAME_IS_OLD = 600;
 
 class GameError extends Error {
     constructor(message) {
@@ -315,6 +315,17 @@ export class GameManager {
 
     removeGame(roomCode) {
         return this.games.delete(roomCode);
+    }
+
+    removeInactiveGames() {
+        for (const [roomCode, game] of this.games) {
+            if (game.isOld() && !game.isActive) {
+                this.removeGame(roomCode);
+    
+                console.log(`deleted game with room code ${roomCode}`);
+            }
+            
+        }
     }
 
     addPlayer(player) {

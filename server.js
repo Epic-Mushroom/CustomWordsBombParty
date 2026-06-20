@@ -161,15 +161,8 @@ eventManager.on("one_second_tick", (numTicks) => {
 
 eventManager.on("five_second_tick", (numTicks) => {
     // clears empty and inactive rooms
-    for (const [roomCode, game] of gameManager.games) {
-        if (game.isOld() && game.players.length == 0) {
-            gameManager.removeGame(roomCode);
-            io.emit("update_rooms_count", gameManager.games.size);
-
-            console.log(`deleted game with room code ${roomCode}`);
-        }
-        
-    }
+    gameManager.removeInactiveGames();
+    io.emit("update_rooms_count", gameManager.games.size)
 });
 
 http.listen(3000, () => console.log("server up"));  
