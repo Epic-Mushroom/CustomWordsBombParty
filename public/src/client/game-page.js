@@ -2,8 +2,6 @@ import * as clientMain from "./client-main.js";
 
 let isValidRoomCode = false;
 
-
-
 function updatePlayerInfo(playerInfoContainer, playerStrings) {
     // console.log("trying to update player info");
 
@@ -72,4 +70,6 @@ clientMain.socket.on("connect", async () => {
 
         mainGameContainer.append(invalidCodeInfoText);
     }
-})
+});
+
+clientMain.preFillUsernameField(usernameField);

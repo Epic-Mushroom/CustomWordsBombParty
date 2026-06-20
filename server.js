@@ -79,7 +79,9 @@ io.on("connection", (socket) => {
 
     socket.emit("pre_fill_room_rule_defaults");
 
-    socket.on("set_username", (username) => socket.username = username);
+    socket.on("set_username", (username) => {
+        gameManager.findPlayerBySocketId(socket.id).username = username;
+    });
 
     socket.on("create_room", (maxPlayers, baseTimerDuration, startingLives) => {
         try {

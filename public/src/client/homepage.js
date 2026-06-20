@@ -76,9 +76,4 @@ clientMain.socket.on("pre_fill_room_rule_defaults", () => {
     preFillRoomRuleDefaults(maxPlayersField, baseTimerDurationField, startingLivesField);
 });
 
-// pre-fill username text field
-if (localStorage.getItem("username") != null) {
-    console.log(`trying to pre-fill username field with username "${localStorage.getItem("username")}"`)
-
-    usernameField.value = localStorage.getItem("username");
-}
+clientMain.preFillUsernameField(usernameField);

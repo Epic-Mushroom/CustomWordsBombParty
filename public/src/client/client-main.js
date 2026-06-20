@@ -23,12 +23,19 @@ const COPY_FLAVOR_TEXT = [ // indexed based on num times previously copied
 export let targetGradientX = 50; // percent
 
 let timesLinkCopied = 0;
-window.timesLinkCopied = () => {return timesLinkCopied};
 
 const root = document.documentElement;
 
 export function resetTimesCopied() {
     timesLinkCopied = 0;
+}
+
+export function preFillUsernameField(usernameField) {
+    if (localStorage.getItem("username") != null) {
+    console.log(`trying to pre-fill username field with username "${localStorage.getItem("username")}"`)
+
+    usernameField.value = localStorage.getItem("username");
+};
 }
 
 export function setUsername(usernameField, username) {
@@ -42,7 +49,7 @@ export function setUsername(usernameField, username) {
         localStorage.setItem("username", "Gertrude");
     } 
     
-    clientMain.socket.emit("set_username", localStorage.getItem("username"));
+    socket.emit("set_username", localStorage.getItem("username"));
 }
 
 export async function makeRoomCodeCopyable(roomCode, textElement) {
