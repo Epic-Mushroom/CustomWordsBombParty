@@ -41,12 +41,6 @@ usernameButton?.addEventListener("click", () => {
 submitButton?.addEventListener("click", submitGuess);
 
 // socket.io listeners
-clientMain.socket.on("alert", (message) => alert(message));
-clientMain.socket.on("alert_with_redirect", (message) => {
-    alert(message);
-    console.log("alert_with_redirect");
-    window.location.href = "/";
-});
 clientMain.socket.on("force_username_update", (newUsername) => clientMain.setUsername(usernameField, newUsername));
 clientMain.socket.on("update_player_info", (playerStrings) => updatePlayerInfo(playerInfoContainer, playerStrings));
 clientMain.socket.on("connect", async () => {

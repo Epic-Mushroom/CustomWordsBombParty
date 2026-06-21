@@ -49,12 +49,9 @@ export function setUsername(usernameField, username) {
     if (username.trim() !== "") {
         usernameField.value = username.trim();
         localStorage.setItem("username", username.trim());
-    } // else {
-    //     usernameField.value = "";
-    //     localStorage.setItem("username", null);
-    // } 
+    }
     
-    socket.emit("set_username", localStorage.getItem("username"));
+    socket.emit("set_server_username", localStorage.getItem("username"));
 }
 
 export async function makeRoomCodeCopyable(roomCode, textElement) {
@@ -111,6 +108,14 @@ export function displayRoomCodeInfo(container, roomCode, addJoinButton = false) 
 
 // establishes connection
 export const socket = io();
+
+socket.on("alert", (message) => {
+    alert(message);
+});
+socket.on("alert_with_redirect", (message) => {
+    alert(message);
+    window.location.href = "/";
+});
 
 // other listeners
 // sets the gradient midpoint to mouse cursor location

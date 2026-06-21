@@ -10,6 +10,13 @@ import * as gameLogic from "./public/src/server/game.js";
 import {gameManager} from "./public/src/server/game.js";
 import * as roomsLogic from "./public/src/server/rooms.js";
 
+class ServerError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = "ServerError";
+    }
+}
+
 function tick(numTicks) {
     let newTicks = numTicks + 1;
     // console.log(`Tick #${newTicks}`);
@@ -79,11 +86,20 @@ io.on("connection", (socket) => {
 
     socket.emit("pre_fill_room_rule_defaults");
 
-    socket.on("set_username", (username) => {
+    socket.on("set_server_username", (newUsername) => {
+        // for setting the username attribute of the player object on the server end
         let foundPlayer = gameManager.findPlayerBySocketId(socket.id);
-        
+        let playerGame = gameManager.games.get(foundPlayer?.roomCode);
+
         if (foundPlayer != null) {
-            foundPlayer.username = username;
+            let existingPlayerWithSameName = playerGame.findPlayer(newUsername);
+            if (existingPlayerWithSameName != null && existingPlayerWithSameName.socketId != foundPlayer.socketId) {
+                socket.emit("alert", "There is already another player in this game with that username!");
+
+            } else {
+                foundPlayer.username = newUsername;
+                
+            }
         }
     });
 
