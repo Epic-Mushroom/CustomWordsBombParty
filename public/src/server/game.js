@@ -301,7 +301,7 @@ export class Game {
 
         this.players.push(player);
 
-        if (this.leader === null) {
+        if (this.leader == null) {
             this.leader = player;
         }
 

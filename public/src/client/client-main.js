@@ -24,7 +24,7 @@ export let targetGradientX = 50; // percent
 
 let timesLinkCopied = 0;
 
-const root = document.documentElement;
+export const root = document.documentElement;
 
 export function resetTimesCopied() {
     timesLinkCopied = 0;
@@ -43,15 +43,20 @@ export function preFillUsernameField(usernameField, username = null) {
     }
 }
 
-export function setUsername(usernameField, username) {
+export async function setUsername(usernameField, username) {
     console.log(`trying to store username "${username}"`)
 
     if (username.trim() !== "") {
+        let response = await socket.timeout(10000).emitWithAck("set_server_username", username);
+
+        if (!response.usernameSet) {
+            alert("There is already another player in this room with that name!");
+            return;
+        }
+
         usernameField.value = username.trim();
         localStorage.setItem("username", username.trim());
     }
-
-    socket.emit("set_server_username", localStorage.getItem("username"));
 }
 
 export async function makeRoomCodeCopyable(roomCode, textElement) {

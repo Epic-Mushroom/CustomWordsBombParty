@@ -98,7 +98,7 @@ io.on("connection", (socket) => {
         gameLogic.DEFAULT_STARTING_LIVES
     ));
 
-    socket.on("set_server_username", (newUsername) => {
+    socket.on("set_server_username", (newUsername, callback) => {
         // for setting the username attribute of the player object on the server end
         let foundPlayer = gameManager.findPlayerBySocketId(socket.id);
         let playerGame = gameManager.games.get(foundPlayer?.roomCode);
@@ -106,13 +106,15 @@ io.on("connection", (socket) => {
         if (foundPlayer != null) {
             let existingPlayerWithSameName = playerGame.findPlayer(newUsername);
             if (existingPlayerWithSameName != null && existingPlayerWithSameName.socketId != foundPlayer.socketId) {
-                socket.emit("alert", "There is already another player in this game with that username!");
+                callback({"usernameSet": false});
 
             } else {
                 foundPlayer.username = newUsername;
 
             }
         }
+
+        callback({"usernameSet": true});
     });
 
     socket.on("create_room", (
@@ -188,6 +190,7 @@ eventManager.on("one_second_tick", (numTicks) => {
 
     for (const [key, value] of gameManager.games) {
         io.to(key).emit("update_player_info", value.players.map((player) => player.toString()), value.players.map((player) => player.username));
+        io.to(value.leader?.socketId).emit("show_start_game_container", true);
     }
 });
 

@@ -1,4 +1,5 @@
 import * as clientMain from "./client-main.js";
+import {socket} from "./client-main.js";
 
 function updatePlayerInfo(playerInfoContainer, playerStrings, playerUsernames) {
     // console.log("trying to update player info");
@@ -22,10 +23,18 @@ function updatePlayerInfo(playerInfoContainer, playerStrings, playerUsernames) {
     }
 }
 
+function showStartGameContainer(startGameContainer, isGameLeader = false) {
+    if (isGameLeader) {
+        clientMain.root.style.setProperty("--start-game-button-visibility", "block");
+    } else {
+        clientMain.root.style.setProperty("--start-game-button-visibility", "none");
+    }
+}
+
 function submitGuess() {
     console.log("the submit guess button was clicked");
 
-    clientMain.socket.emit("submit_guess");
+    socket.emit("submit_guess");
 }
 
 function getRoomCode() {
@@ -39,6 +48,7 @@ const usernameField = document.getElementById("username-field");
 
 const roomCodeContainer = document.getElementById("room-code-container");
 const mainGameContainer = document.getElementById("main-game");
+const startGameContainer = document.getElementById("start-game");
 const playerInfoContainer = document.getElementById("player-info");
 const submitButton = document.getElementById("submit-button");
 
@@ -49,18 +59,19 @@ usernameButton?.addEventListener("click", () => {
 submitButton?.addEventListener("click", submitGuess);
 
 // socket.io listeners
-clientMain.socket.on("force_username_update", (newUsername) => clientMain.setUsername(usernameField, newUsername));
-clientMain.socket.on("update_player_info", (playerStrings, playerUsernames) => updatePlayerInfo(playerInfoContainer, playerStrings, playerUsernames));
-clientMain.socket.on("connect", async () => {
-    const response = await clientMain.socket.timeout(10000).emitWithAck("validate_room_code", getRoomCode());
+socket.on("force_username_update", (newUsername) => clientMain.setUsername(usernameField, newUsername));
+socket.on("update_player_info", (playerStrings, playerUsernames) => updatePlayerInfo(playerInfoContainer, playerStrings, playerUsernames));
+socket.on("show_start_game_container", (isLeader) => showStartGameContainer(startGameContainer, isLeader));
+socket.on("connect", async () => {
+    const response = await socket.timeout(10000).emitWithAck("validate_room_code", getRoomCode());
 
     if (response.validRoom) {
         console.log("valid code");
 
-        await clientMain.socket.emitWithAck("join_io_room", getRoomCode());
+        await socket.emitWithAck("join_io_room", getRoomCode());
 
         clientMain.displayRoomCodeInfo(roomCodeContainer, getRoomCode());
-        clientMain.socket.emit("add_player_to_room", localStorage.getItem("username"), getRoomCode());
+        socket.emit("add_player_to_room", localStorage.getItem("username"), getRoomCode());
 
     } else {
         console.log("invalid code");
