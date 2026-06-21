@@ -22,6 +22,8 @@ export const MIN_STARTING_LIVES = 1;
 
 export const SECONDS_UNTIL_GAME_IS_OLD = 600;
 
+export const SUBSTRING_LENGTHS = [2, 3];
+
 class GameError extends Error {
     constructor(message) {
         super(message);
@@ -217,23 +219,26 @@ export class Game {
 
         this.gameCreationTime = (new Date()).getTime();
 
-        this.populateWordDictionary();
-        this.populateSubstrings();
+        this.populateWordData();
     }
 
-    populateWordDictionary() {
+    // populates both the word dictionary set and dictionary of substrings and their counts
+    populateWordData() {
         console.log(`started adding words to the word dictionary`);
 
         try {
             readFile(
                 this.wordListFile, 
                 (line) => {
-                    this.wordDictionary.add(line.trim());
-                    // console.log(`adding ${line.trim()} to the word dictionary`);
+                    let word = line.trim();
+                    this.wordDictionary.add(word);
+
+                    // update substrings set
+                    this.populateSubstrings(word);
                 },
                 () => {
-                    console.log(`finished adding ${this.wordDictionary.size} words to the word dictionary`);
-                    console.log(this.wordDictionary.has("aardvark"));
+                    // console.log(`finished adding ${this.wordDictionary.size} words to the word dictionary`);
+                    // console.log(`substring "ass" has ${this.substrings.get("ass")} occurrences`);
                     this.wordsLoaded = true;
                 }
             );
@@ -244,9 +249,14 @@ export class Game {
         }
     }
 
-    populateSubstrings() {
-        for (const word of this.wordDictionary) {
-            // ...
+    populateSubstrings(word) {
+        for (const substringLength of SUBSTRING_LENGTHS) {
+            for (let i = 0; i <= word.length - substringLength; i++) {
+                let curSubstring = word.substring(i, i + substringLength).toLowerCase();
+                let curSubstringCount = (this.substrings.get(curSubstring) == null) ? 0 : this.substrings.get(curSubstring);
+                this.substrings.set(curSubstring, curSubstringCount + 1);
+
+            }
         }
     }
 
@@ -284,6 +294,10 @@ export class Game {
             
         } else if (this.players.length > this.maxPlayers) {
             throw new GameError("There are too many players in this room!");
+        }
+
+        if (!this.wordsLoaded) {
+            throw new GameError("Still loading words!");
         }
 
         // ...
