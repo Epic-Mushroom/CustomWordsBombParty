@@ -308,6 +308,17 @@ export class Game {
         return player;
     }
 
+    isDeadLobby() {
+        for (const player of this.players) {
+            if (player.isConnected) {
+                return false;
+            }
+        }
+
+        // don't want to mark newly made rooms as dead
+        return this.isOld();
+    }
+
     findPlayer(username) {
         return this.players.find((player) => player.username === username);
     }
@@ -393,7 +404,7 @@ export class GameManager {
 
     removeInactiveGames() {
         for (const [roomCode, game] of this.games) {
-            if (game.isOld() && !game.isActive) {
+            if (game.isDeadLobby()) {
                 this.removeGame(roomCode);
     
                 console.log(`deleted game with room code ${roomCode}`);
