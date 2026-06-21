@@ -1,7 +1,10 @@
 :root {
     --gradient-midpoint: 50%;
     --gradient-start-color: #a7dee0;
-    --gradient-end-color: #7ca2ac
+    --gradient-end-color: #7ca2ac;
+
+    --guess-entry-visibility: none; /* set to block when enabling */
+    --start-game-button-visibility: none;
 }
 
 .menu-body, .game-body {
@@ -45,4 +48,12 @@
     cursor: pointer;
     font-weight: bold;
     color: rgb(0, 63, 0);
+}
+
+#enter-guess {
+    display: var(--guess-entry-visibility);
+}
+
+#start-game {
+    display: var(--start-game-button-visibility);
 }

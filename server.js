@@ -187,7 +187,7 @@ eventManager.on("one_second_tick", (numTicks) => {
     // console.log("one second tick");
 
     for (const [key, value] of gameManager.games) {
-        io.to(key).emit("update_player_info", value.players.map((player) => player.toString()));
+        io.to(key).emit("update_player_info", value.players.map((player) => player.toString()), value.players.map((player) => player.username));
     }
 });
 

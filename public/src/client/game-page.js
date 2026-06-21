@@ -1,13 +1,21 @@
 import * as clientMain from "./client-main.js";
 
-function updatePlayerInfo(playerInfoContainer, playerStrings) {
+function updatePlayerInfo(playerInfoContainer, playerStrings, playerUsernames) {
     // console.log("trying to update player info");
 
     playerInfoContainer.replaceChildren();
 
-    for (const playerString of playerStrings) {
+    for (let i = 0; i < playerStrings.length; i++) {
+        let playerString = playerStrings[i];
+
         let newPlayerLi = document.createElement("li");
-        newPlayerLi.textContent = playerString;
+        if (playerUsernames[i] === localStorage.getItem("username")) {
+            let boldElement = document.createElement("b");
+            boldElement.textContent = playerString;
+            newPlayerLi.append(boldElement);
+        } else {
+            newPlayerLi.textContent = playerString;
+        }
         playerInfoContainer.append(newPlayerLi);
 
         // console.log(`adding ${playerString} to player info`)
@@ -42,7 +50,7 @@ submitButton?.addEventListener("click", submitGuess);
 
 // socket.io listeners
 clientMain.socket.on("force_username_update", (newUsername) => clientMain.setUsername(usernameField, newUsername));
-clientMain.socket.on("update_player_info", (playerStrings) => updatePlayerInfo(playerInfoContainer, playerStrings));
+clientMain.socket.on("update_player_info", (playerStrings, playerUsernames) => updatePlayerInfo(playerInfoContainer, playerStrings, playerUsernames));
 clientMain.socket.on("connect", async () => {
     const response = await clientMain.socket.timeout(10000).emitWithAck("validate_room_code", getRoomCode());
 
