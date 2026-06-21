@@ -221,15 +221,22 @@ export class Game {
     }
 
     populateWordDictionary() {
+        console.log(`adding to the word dictionary`);
+
         try {
             readFile(this.wordListFile, (line) => {
                 this.wordDictionary.add(line.trim());
-                console.log(`added ${line.trim()} to the word dictionary`);
+                // console.log(`adding ${line.trim()} to the word dictionary`);
             });
 
         } catch (err) {
             console.error(`Something happened when trying to read the word list file (${err})`);
 
+        }
+
+        console.log(`added ${this.wordDictionary.size} words to the word dictionary`);
+        for (const value of this.wordDictionary) {
+            console.log(value);
         }
     }
 

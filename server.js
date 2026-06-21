@@ -128,7 +128,7 @@ io.on("connection", (socket) => {
             socket.emit("show_newly_generated_room", generatedCode);
             io.emit("update_rooms_count", gameManager.games.size);
 
-            console.log(`Generated room with game: ${newGame}`);
+            console.log(`generated room with game: ${newGame}`);
 
         } catch (err) {
             socket.emit("alert", err.message);

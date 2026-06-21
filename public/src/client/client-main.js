@@ -1,3 +1,5 @@
+import {io} from "https://cdn.socket.io/4.8.3/socket.io.esm.min.js";
+
 export const CLIENT_TICK_DELAY = 50; // ms
 export const MAX_GRADIENT_DISTANCE = 80; // percent
 export const MIN_GRADIENT_DISTANCE = 20; // percent
