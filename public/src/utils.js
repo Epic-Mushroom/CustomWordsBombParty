@@ -1,3 +1,16 @@
+import fs from "fs";
+import readline from "readline";
+
+export function readFile(filePath, onLineCallback /* callback */) {
+  const fileStream = fs.createReadStream(filePath);
+  const readlineInterface = readline.createInterface({
+    input: fileStream,
+    crlfDelay: Infinity
+  });
+
+  readlineInterface.on("line", (line) => onLineCallback(line));
+}
+
 export function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max) + 1;

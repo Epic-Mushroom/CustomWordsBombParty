@@ -1,4 +1,4 @@
-import {getRandomInt} from "../utils.js";
+import {readFile, getRandomInt} from "../utils.js";
 
 const RANDOM_USERNAME_SUFFIX_CHARACTERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
 const RANDOM_USERNAME_SUFFIX_MIN_LENGTH = 6;
@@ -182,6 +182,9 @@ export class Game {
                 startingLives = DEFAULT_STARTING_LIVES) {
         this.roomCode = roomCode;
         
+        this.usesPresetWordList = true;
+        this.wordListFile = "public/word-lists/default-word-list.txt";
+
         this.players = [];
         this.alphabetRule = new Set();
         this.wordDictionary = new Set();
@@ -212,6 +215,28 @@ export class Game {
         this.leader = null; // should just be the first player in the this.players array
 
         this.gameCreationTime = (new Date()).getTime();
+
+        this.populateWordDictionary();
+        this.populateSubstrings();
+    }
+
+    populateWordDictionary() {
+        try {
+            readFile(this.wordListFile, (line) => {
+                this.wordDictionary.add(line.trim());
+                console.log(`added ${line.trim()} to the word dictionary`);
+            });
+
+        } catch (err) {
+            console.error(`Something happened when trying to read the word list file (${err})`);
+
+        }
+    }
+
+    populateSubstrings() {
+        for (const word of this.wordDictionary) {
+            // ...
+        }
     }
 
     addOrUpdatePlayer(player) {

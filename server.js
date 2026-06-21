@@ -84,7 +84,19 @@ io.on("connection", (socket) => {
     // homepage
     socket.emit("update_rooms_count", gameManager.games.size);
 
-    socket.emit("pre_fill_room_rule_defaults");
+    socket.emit(
+        "pre_fill_room_rule_defaults", 
+        gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM, 
+        gameLogic.DEFAULT_BASE_TIMER_DURATION, 
+        gameLogic.DEFAULT_STARTING_LIVES
+    );
+
+    socket.on("request_room_rule_defaults", () => socket.emit(
+        "pre_fill_room_rule_defaults", 
+        gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM, 
+        gameLogic.DEFAULT_BASE_TIMER_DURATION, 
+        gameLogic.DEFAULT_STARTING_LIVES
+    ));
 
     socket.on("set_server_username", (newUsername) => {
         // for setting the username attribute of the player object on the server end
@@ -98,12 +110,16 @@ io.on("connection", (socket) => {
 
             } else {
                 foundPlayer.username = newUsername;
-                
+
             }
         }
     });
 
-    socket.on("create_room", (maxPlayers, baseTimerDuration, startingLives) => {
+    socket.on("create_room", (
+        maxPlayers = gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM,
+        baseTimerDuration = gameLogic.DEFAULT_BASE_TIMER_DURATION,
+        startingLives = gameLogic.DEFAULT_STARTING_LIVES
+    ) => {
         try {
             let generatedCode = roomsLogic.generateRoomCode();
             let newGame = new gameLogic.Game(generatedCode, maxPlayers, baseTimerDuration, startingLives)

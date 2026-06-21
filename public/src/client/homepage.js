@@ -1,23 +1,28 @@
 import * as clientMain from "./client-main.js";
+import {socket} from "./client-main.js";
 
-
-
-function preFillRoomRuleDefaults(maxPlayersField, baseTimerDurationField, startingLivesField) {
+async function preFillRoomRuleDefaults(
+    maxPlayersField, maxPlayers,
+    baseTimerDurationField, baseTimerDuration,
+    startingLivesField, startingLives
+) {
     console.log(`trying to pre-fill room rule defaults`)
 
-    maxPlayersField.value = clientMain.gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM;
-    baseTimerDurationField.value = clientMain.gameLogic.DEFAULT_BASE_TIMER_DURATION;
-    startingLivesField.value = clientMain.gameLogic.DEFAULT_STARTING_LIVES;
+    // const response = await socket.timeout(10000).emitWithAck("get_room_rule_defaults");
+
+    maxPlayersField.value = maxPlayers;
+    baseTimerDurationField.value = baseTimerDuration;
+    startingLivesField.value = startingLives;
 }
 
 function createRoom(
-    maxPlayers = clientMain.gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM,
-    baseTimerDuration = clientMain.gameLogic.DEFAULT_BASE_TIMER_DURATION,
-    startingLives = clientMain.gameLogic.DEFAULT_STARTING_LIVES
+    maxPlayers,
+    baseTimerDuration,
+    startingLives
 ) {
     console.log("trying to create room");
 
-    clientMain.socket.emit("create_room", maxPlayers, baseTimerDuration, startingLives);
+    socket.emit("create_room", maxPlayers, baseTimerDuration, startingLives);
 }
 
 function updateRoomsCount(roomsCountContainer, count) {
@@ -52,19 +57,23 @@ usernameButton?.addEventListener("click", () => {
 createRoomButton?.addEventListener("click", () => {
     createRoom(maxPlayersField.value, baseTimerDurationField.value, startingLivesField.value);
 });
-defaultRulesButton?.addEventListener("click", () => {
-    preFillRoomRuleDefaults(maxPlayersField, baseTimerDurationField, startingLivesField);
+defaultRulesButton?.addEventListener("click", async () => {
+    socket.emit("request_room_rule_defaults");
 });
 
 // socket.io listeners
-clientMain.socket.on("update_rooms_count", (count) => {
+socket.on("update_rooms_count", (count) => {
     updateRoomsCount(roomsCountContainer, count);
 });
-clientMain.socket.on("show_newly_generated_room", (generatedCode) => {
+socket.on("show_newly_generated_room", (generatedCode) => {
     clientMain.displayRoomCodeInfo(newlyGeneratedCodeContainer, generatedCode, true);
 });
-clientMain.socket.on("pre_fill_room_rule_defaults", () => {
-    preFillRoomRuleDefaults(maxPlayersField, baseTimerDurationField, startingLivesField);
+socket.on("pre_fill_room_rule_defaults", (maxPlayers, baseTimerDuration, startingLives) => {
+    preFillRoomRuleDefaults(
+        maxPlayersField, maxPlayers, 
+        baseTimerDurationField, baseTimerDuration,
+        startingLivesField, startingLives
+    );
 });
 
 clientMain.preFillUsernameField(usernameField);

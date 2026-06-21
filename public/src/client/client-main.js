@@ -1,5 +1,3 @@
-export * as gameLogic from "../server/game.js";
-
 export const CLIENT_TICK_DELAY = 50; // ms
 export const MAX_GRADIENT_DISTANCE = 80; // percent
 export const MIN_GRADIENT_DISTANCE = 20; // percent
@@ -50,7 +48,7 @@ export function setUsername(usernameField, username) {
         usernameField.value = username.trim();
         localStorage.setItem("username", username.trim());
     }
-    
+
     socket.emit("set_server_username", localStorage.getItem("username"));
 }
 
