@@ -184,6 +184,7 @@ export class Game {
         
         this.usesPresetWordList = true;
         this.wordListFile = "public/word-lists/default-word-list.txt";
+        this.wordsLoaded = false;
 
         this.players = [];
         this.alphabetRule = new Set();
@@ -221,22 +222,25 @@ export class Game {
     }
 
     populateWordDictionary() {
-        console.log(`adding to the word dictionary`);
+        console.log(`started adding words to the word dictionary`);
 
         try {
-            readFile(this.wordListFile, (line) => {
-                this.wordDictionary.add(line.trim());
-                // console.log(`adding ${line.trim()} to the word dictionary`);
-            });
+            readFile(
+                this.wordListFile, 
+                (line) => {
+                    this.wordDictionary.add(line.trim());
+                    // console.log(`adding ${line.trim()} to the word dictionary`);
+                },
+                () => {
+                    console.log(`finished adding ${this.wordDictionary.size} words to the word dictionary`);
+                    console.log(this.wordDictionary.has("aardvark"));
+                    this.wordsLoaded = true;
+                }
+            );
 
         } catch (err) {
             console.error(`Something happened when trying to read the word list file (${err})`);
 
-        }
-
-        console.log(`added ${this.wordDictionary.size} words to the word dictionary`);
-        for (const value of this.wordDictionary) {
-            console.log(value);
         }
     }
 

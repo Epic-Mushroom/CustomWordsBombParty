@@ -142,7 +142,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("add_player_to_room", (username, roomCode) => {
-        console.log(`trying to add ${username} to ${roomCode}`);
+        // console.log(`trying to add ${username} to ${roomCode}`);
         if (username == "") {
             console.warn(`username is blank`);
         }
