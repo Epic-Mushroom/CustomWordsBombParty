@@ -17,3 +17,59 @@ export function getRandomInt(min, max) {
   max = Math.floor(max) + 1;
   return Math.floor(Math.random() * (max - min) + min);
 }
+
+// weightFunction is applied to every element in the iterable
+// ONLY WORKS WITH ITERABLES THAT DON'T EXPIRE AFTER ONE PASS
+export function getWeightedRandomElementAlt(iterable, weightFunction) {
+  // first find sum of weights
+  let weightsSum = 0;
+  for (const element of iterable) {
+    let curWeight = weightFunction(element);
+
+    if (curWeight < 0) {
+      throw new Error("Weight of an element cannot be negative");
+
+    } else {
+      weightsSum += curWeight;
+
+    }
+  }
+
+  if (weightsSum <= 0) {
+    throw new Error("Sum of weights cannot be zero or negative");
+  }
+
+  let targetWeightThreshold = Math.random() * weightsSum;
+  let cumulativeWeightsSum = 0;
+  for (const element of iterable) {
+    cumulativeWeightsSum += weightFunction(element);
+    if (cumulativeWeightsSum > targetWeightThreshold) {
+      return element;
+    }
+  }
+
+  return null; // just in case
+}
+
+export function getWeightedRandomElement(iterable, weightFunction) {
+  let cumulativeWeightsSum = 0;
+  let selectedElement = null;
+  for (const element of iterable) {
+    let curWeight = weightFunction(element);
+    cumulativeWeightsSum += curWeight;
+
+    if (curWeight < 0) {
+      throw new Error("Weight of an element cannot be negative");
+
+    } else if (cumulativeWeightsSum > 0 && Math.random() < (1.0 * curWeight) / cumulativeWeightsSum) {
+      selectedElement = element;
+
+    }
+  }
+
+  if (cumulativeWeightsSum <= 0) {
+    throw new Error("Sum of weights cannot be zero or negative");
+  }
+
+  return selectedElement;
+}

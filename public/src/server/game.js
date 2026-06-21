@@ -1,4 +1,4 @@
-import {readFile, getRandomInt} from "../utils.js";
+import {readFile, getRandomInt, getWeightedRandomElement} from "../utils.js";
 
 const RANDOM_USERNAME_SUFFIX_CHARACTERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
 const RANDOM_USERNAME_SUFFIX_MIN_LENGTH = 6;
@@ -11,6 +11,7 @@ const RANDOM_USERNAME_PREFIXES = [
 export const DEFAULT_BASE_TIMER_DURATION = 8; // seconds
 export const DEFAULT_MAX_PLAYERS_PER_ROOM = 10;
 export const DEFAULT_STARTING_LIVES = 3;
+export const DEFAULT_MIN_WORDS_PER_SUBSTRING = 100; // should convert this into a percent to account for different sizes of wordlists
 
 export const MAX_BASE_TIMER_DURATION = 67;
 export const MAX_MAX_PLAYERS_PER_ROOM = 67;
@@ -192,6 +193,7 @@ export class Game {
         this.alphabetRule = new Set();
         this.wordDictionary = new Set();
         this.substrings = new Map();
+        this.uniqueSubstrings = 0;
 
         if (baseTimerDuration <= MAX_BASE_TIMER_DURATION && baseTimerDuration >= MIN_BASE_TIMER_DURATION) {
             this.baseTimerDuration = baseTimerDuration; // could add variation depending on substring rarity
@@ -239,6 +241,12 @@ export class Game {
                 () => {
                     // console.log(`finished adding ${this.wordDictionary.size} words to the word dictionary`);
                     // console.log(`substring "ass" has ${this.substrings.get("ass")} occurrences`);
+                    // console.log(`number of unique substrings: ${this.uniqueSubstrings}`);
+                    // for (let i = 0; i < 50; i++) {
+                    //     let randSubstring = this.getRandomSubstring();
+                    //     console.log(`${randSubstring}: ${this.substrings.get(randSubstring)}`);
+                    // }
+
                     this.wordsLoaded = true;
                 }
             );
@@ -253,11 +261,27 @@ export class Game {
         for (const substringLength of SUBSTRING_LENGTHS) {
             for (let i = 0; i <= word.length - substringLength; i++) {
                 let curSubstring = word.substring(i, i + substringLength).toLowerCase();
-                let curSubstringCount = (this.substrings.get(curSubstring) == null) ? 0 : this.substrings.get(curSubstring);
+                let curSubstringCount = 0;
+                if (this.substrings.get(curSubstring) == null) {
+                    this.uniqueSubstrings++;
+                } else {
+                    curSubstringCount = this.substrings.get(curSubstring);
+                }
                 this.substrings.set(curSubstring, curSubstringCount + 1);
 
             }
         }
+    }
+
+    getRandomSubstring(minWordsPerSubstring = DEFAULT_MIN_WORDS_PER_SUBSTRING) {
+        return getWeightedRandomElement(this.substrings.keys(), (substring) => {
+            let occurrences = this.substrings.get(substring);
+            if (occurrences < minWordsPerSubstring) {
+                return 0;
+            } else {
+                return occurrences;
+            }
+        });
     }
 
     addOrUpdatePlayer(player) {
