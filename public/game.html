@@ -19,11 +19,16 @@
                     <button type="button" id="submit-username-button">OK</button>
                 </section>
                 <h1>BombParty</h1>
-                <section id="enter-guess">
+                <section id="gameplay">
                     <h2 id="substring">Substring: YYY</h2>
-                    <label for="guess">Enter guess:</label>
-                    <input type="text" id="guess" name="guess">
-                    <button type="button" id="submit-button">Enter</button>
+                    <div id="submit-guess">
+                        <label for="guess">Enter guess:</label>
+                        <input type="text" id="guess" name="guess">
+                        <button type="button" id="submit-button">Enter</button>
+                    </div>
+                    <div>
+                        <span id="waiting-for-player">Waiting for ???</span>
+                    </div>
                 </section>
                 <section id="start-game">
                     <button type="button" id="start-game-button">Start Game</button>

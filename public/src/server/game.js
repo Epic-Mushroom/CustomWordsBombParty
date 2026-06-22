@@ -56,6 +56,8 @@ export class Player {
 
         this.isConnected = true;
         this.playerDisconnectTime = 2 * (new Date()).getTime(); // placeholder value
+
+        this.events = new EventEmitter();
     }
 
     static generateUsername() {
@@ -89,11 +91,16 @@ export class Player {
 
         this.isPlayerTurn = true;
 
+        this.events.emit("started_player_turn");
         console.log(`activated ${this.username}'s turn`);
     }
 
     submitGuess(word) {
         console.log(`${this.username} tried to submit ${word}`);
+
+        if (!this.getGame().isActive || !this.isPlayerTurn) {
+            return false;
+        }
 
         if (this.getGame().isValidGuess(word)) {
             this.endTurn(true);
@@ -251,6 +258,8 @@ export class Game {
         this.gameCreationTime = (new Date()).getTime();
 
         this.populateWordData();
+
+        this.events = new EventEmitter();
     }
 
     // populates both the word dictionary set and dictionary of substrings and their counts

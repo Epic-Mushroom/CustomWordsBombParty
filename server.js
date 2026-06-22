@@ -39,6 +39,33 @@ function tick(numTicks) {
     }, SERVER_TICK_DELAY);
 }
 
+/**
+ * 
+ * @param {gameLogic.Player} player 
+ */
+function addPlayerListeners(player) {
+    player.events.on("started_player_turn", () => {
+        let curGame = player.getGame();
+
+        io.to(player.socketId).emit("gameplay_visibility", true, player.username);
+        for (const gamePlayer of curGame.players) {
+            if (gamePlayer === player) {
+                continue;
+            }
+
+            io.to(gamePlayer.socketId).emit("gameplay_visibility", false, player.username);
+        }
+    });
+}
+
+/**
+ * 
+ * @param {gameLogic.Game} game 
+ */
+function addGameListeners(game) {
+    
+}
+
 const SERVER_TICK_DELAY = 50; // milliseconds
 const DIRNAME = path.dirname(url.fileURLToPath(import.meta.url));
 
@@ -130,6 +157,7 @@ io.on("connection", (socket) => {
             let generatedCode = roomsLogic.generateRoomCode();
             let newGame = new gameLogic.Game(generatedCode, maxPlayers, baseTimerDuration, startingLives)
             gameManager.addGame(newGame);
+            addGameListeners(newGame);
 
             socket.emit("show_newly_generated_room", generatedCode);
             io.emit("update_rooms_count", gameManager.games.size);
@@ -165,6 +193,7 @@ io.on("connection", (socket) => {
 
             newPlayer = roomGame.addOrUpdatePlayer(newPlayer);
             gameManager.addPlayer(newPlayer);
+            addPlayerListeners(newPlayer);
 
             if (newPlayer.username != username) {
                 socket.emit("force_username_update", newPlayer.username);
@@ -219,7 +248,7 @@ eventManager.on("one_second_tick", (numTicks) => {
     for (const [key, value] of gameManager.games) {
         io.to(key).emit("update_player_info", value.players.map((player) => player.toString()), value.players.map((player) => player.username));
 
-        if (!value.isActive) {
+        if (!value.isActive && !value.isFinished) {
             io.to(value.leader?.socketId).emit("show_start_game_container", true);
         }
     }

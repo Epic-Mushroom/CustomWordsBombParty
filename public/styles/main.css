@@ -3,7 +3,9 @@
     --gradient-start-color: #a7dee0;
     --gradient-end-color: #7ca2ac;
 
-    --guess-entry-visibility: none; /* set to block when enabling */
+    --gameplay-visibility: none; /* set to block when enabling */
+    --guess-entry-visibility: none; 
+    --waiting-visibility: none;
     --start-game-button-visibility: none;
 }
 
@@ -50,8 +52,16 @@
     color: rgb(0, 63, 0);
 }
 
-#enter-guess {
+#gameplay {
+    display: var(--gameplay-visibility);
+}
+
+#submit-guess {
     display: var(--guess-entry-visibility);
+}
+
+#waiting-for-player {
+    display: var(--waiting-visibility);
 }
 
 #start-game {

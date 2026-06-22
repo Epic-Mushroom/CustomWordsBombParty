@@ -46,6 +46,30 @@ async function startGame() {
     }
 }
 
+/**
+ * 
+ * @param {HTMLElement} gameplayContainer 
+ * @param {boolean} isClientTurn 
+ */
+function gameplayVisibility(gameplayContainer, isClientTurn, curTurnHolderUsername) {
+    clientMain.root.style.setProperty("--gameplay-visibility", "block");
+
+    if (isClientTurn) {
+        clientMain.root.style.setProperty("--guess-entry-visibility", "block");
+        clientMain.root.style.setProperty("--waiting-visibility", "none");
+        console.log("showing submit guess interface");
+
+    } else {
+        let waitingSpan = document.getElementById("waiting-for-player");
+        waitingSpan.textContent = `Waiting for ${curTurnHolderUsername}`;
+
+        clientMain.root.style.setProperty("--guess-entry-visibility", "none");
+        clientMain.root.style.setProperty("--waiting-visibility", "block");
+        console.log("hiding submit guess interface");
+
+    }
+}
+
 function submitGuess() {
     console.log("the submit guess button was clicked");
 
@@ -65,8 +89,9 @@ const roomCodeContainer = document.getElementById("room-code-container");
 const mainGameContainer = document.getElementById("main-game");
 const startGameContainer = document.getElementById("start-game");
 const startGameButton = document.getElementById("start-game-button");
-const playerInfoContainer = document.getElementById("player-info");
+const gameplayContainer = document.getElementById("gameplay");
 const submitButton = document.getElementById("submit-button");
+const playerInfoContainer = document.getElementById("player-info");
 
 // element listeners
 usernameButton?.addEventListener("click", () => {
@@ -79,6 +104,9 @@ submitButton?.addEventListener("click", submitGuess);
 socket.on("force_username_update", (newUsername) => clientMain.setUsername(usernameField, newUsername));
 socket.on("update_player_info", (playerStrings, playerUsernames) => updatePlayerInfo(playerInfoContainer, playerStrings, playerUsernames));
 socket.on("show_start_game_container", (isLeader) => showStartGameContainer(startGameContainer, isLeader));
+socket.on("gameplay_visibility", (isClientTurn, curTurnHolderUsername) => {
+    gameplayVisibility(gameplayContainer, isClientTurn, curTurnHolderUsername);
+})
 socket.on("connect", async () => {
     const response = await socket.timeout(10000).emitWithAck("validate_room_code", getRoomCode());
 
