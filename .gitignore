@@ -1,2 +1,4 @@
+.vscode/
 node_modules/
 to_do.txt
+eslint.config.js
