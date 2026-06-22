@@ -201,12 +201,12 @@ export class Game {
             throw new Error(`Bomb timer duration must be between ${MIN_BASE_TIMER_DURATION} and ${MAX_BASE_TIMER_DURATION} inclusive`);
         }
         if (maxPlayers <= MAX_MAX_PLAYERS_PER_ROOM && maxPlayers >= MIN_MAX_PLAYERS_PER_ROOM) {
-            this.maxPlayers = maxPlayers; 
+            this.maxPlayers = Math.floor(maxPlayers); 
         } else {
             throw new Error(`Max players must be between ${MIN_MAX_PLAYERS_PER_ROOM} and ${MAX_MAX_PLAYERS_PER_ROOM} inclusive`);
         }
         if (startingLives <= MAX_STARTING_LIVES && startingLives >= MIN_STARTING_LIVES) {
-            this.startingLives = startingLives; 
+            this.startingLives = Math.ceil(startingLives); 
         } else {
             throw new Error(`Starting lives must be between ${MIN_STARTING_LIVES} and ${MAX_STARTING_LIVES} inclusive`);
         }
