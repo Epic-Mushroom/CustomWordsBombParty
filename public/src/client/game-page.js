@@ -51,12 +51,14 @@ async function startGame() {
  * @param {HTMLElement} gameplayContainer 
  * @param {boolean} isClientTurn 
  */
-function gameplayVisibility(submitGuessTextBox, isClientTurn, curTurnHolderUsername) {
+function gameplayVisibility(submitGuessTextBox, substringElement, isClientTurn, curTurnHolderUsername, curSubstring) {
     clientMain.root.style.setProperty("--gameplay-visibility", "flex");
 
     if (isClientTurn) {
         clientMain.root.style.setProperty("--guess-entry-visibility", "block");
         clientMain.root.style.setProperty("--waiting-visibility", "none");
+
+        substringElement.textContent = curSubstring.toUpperCase();
 
         submitGuessTextBox.value = "";
         submitGuessTextBox.focus();
@@ -123,6 +125,7 @@ const mainGameContainer = document.getElementById("main-game");
 const startGameContainer = document.getElementById("start-game");
 const startGameButton = document.getElementById("start-game-button");
 const gameplayContainer = document.getElementById("gameplay");
+const substringElement = document.getElementById("substring");
 const submitGuessTextBox = document.getElementById("guess")
 const submitGuessForm = document.getElementById("submit-guess-form");
 const playerInfoContainer = document.getElementById("player-info");
@@ -141,8 +144,8 @@ submitGuessForm.addEventListener("submit", (event) => {
 socket.on("force_username_update", (newUsername) => clientMain.setUsername(usernameField, newUsername));
 socket.on("update_player_info", (playerStrings, playerUsernames) => updatePlayerInfo(playerInfoContainer, playerStrings, playerUsernames));
 socket.on("show_start_game_container", (isLeader) => showStartGameContainer(startGameContainer, isLeader));
-socket.on("gameplay_visibility", (isClientTurn, curTurnHolderUsername) => {
-    gameplayVisibility(submitGuessTextBox, isClientTurn, curTurnHolderUsername);
+socket.on("gameplay_visibility", (isClientTurn, curTurnHolderUsername, curSubstring) => {
+    gameplayVisibility(submitGuessTextBox, substringElement, isClientTurn, curTurnHolderUsername, curSubstring);
 })
 socket.on("show_winner", showWinner);
 socket.on("connect", async () => {
