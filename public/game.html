@@ -22,9 +22,12 @@
                 <section id="gameplay">
                     <h2 id="substring">Substring: YYY</h2>
                     <div id="submit-guess">
-                        <label for="guess">Enter guess:</label>
-                        <input type="text" id="guess" name="guess">
-                        <button type="button" id="submit-button">Enter</button>
+                        <form id="submit-guess-form">
+                            <label for="guess">Enter guess:</label>
+                            <input type="text" id="guess" name="guess" autocomplete="off">
+                            <button type="submit" id="submit-button">Enter</button>
+                        </form>
+                        
                     </div>
                     <div>
                         <span id="waiting-for-player">Waiting for ???</span>

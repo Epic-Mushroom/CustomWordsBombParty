@@ -237,8 +237,9 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("submit_guess", () => {
-        console.log(`player clicked submit guess`);
+    socket.on("submit_guess", (guess, callback) => {
+        const player = gameManager.findPlayerBySocketId(socket.id);
+        callback({failure : !player.submitGuess(guess.trim())});
     });      
     
 });

@@ -51,12 +51,16 @@ async function startGame() {
  * @param {HTMLElement} gameplayContainer 
  * @param {boolean} isClientTurn 
  */
-function gameplayVisibility(gameplayContainer, isClientTurn, curTurnHolderUsername) {
+function gameplayVisibility(submitGuessTextBox, isClientTurn, curTurnHolderUsername) {
     clientMain.root.style.setProperty("--gameplay-visibility", "flex");
 
     if (isClientTurn) {
         clientMain.root.style.setProperty("--guess-entry-visibility", "block");
         clientMain.root.style.setProperty("--waiting-visibility", "none");
+
+        submitGuessTextBox.value = "";
+        submitGuessTextBox.focus();
+
         console.log("showing submit guess interface");
 
     } else {
@@ -84,10 +88,23 @@ function showWinner(winnerUsername) {
     winnerSpan.textContent = `🎉 ${winnerUsername} has won the game!`;
 }
 
-function submitGuess() {
-    console.log("the submit guess button was clicked");
+/**
+ * 
+ * @param {string} guess 
+ */
+async function submitGuess(guess) {
+    console.log(`client tried to submit guess ${guess}`);
 
-    socket.emit("submit_guess");
+    let response = await socket.timeout(10000).emitWithAck("submit_guess", guess);
+
+    if (response.failure) {
+        // flash red
+        console.log(`invalid guess`);
+
+    } else {
+        // flash green
+        console.log(`valid guess`);
+    }
 }
 
 function getRoomCode() {
@@ -104,7 +121,8 @@ const mainGameContainer = document.getElementById("main-game");
 const startGameContainer = document.getElementById("start-game");
 const startGameButton = document.getElementById("start-game-button");
 const gameplayContainer = document.getElementById("gameplay");
-const submitButton = document.getElementById("submit-button");
+const submitGuessTextBox = document.getElementById("guess")
+const submitGuessForm = document.getElementById("submit-guess-form");
 const playerInfoContainer = document.getElementById("player-info");
 
 // element listeners
@@ -112,14 +130,17 @@ usernameButton?.addEventListener("click", () => {
     clientMain.setUsername(usernameField, usernameField.value);
 });
 startGameButton.addEventListener("click", startGame);
-submitButton?.addEventListener("click", submitGuess);
+submitGuessForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    submitGuess(submitGuessTextBox.value);
+})
 
 // socket.io listeners
 socket.on("force_username_update", (newUsername) => clientMain.setUsername(usernameField, newUsername));
 socket.on("update_player_info", (playerStrings, playerUsernames) => updatePlayerInfo(playerInfoContainer, playerStrings, playerUsernames));
 socket.on("show_start_game_container", (isLeader) => showStartGameContainer(startGameContainer, isLeader));
 socket.on("gameplay_visibility", (isClientTurn, curTurnHolderUsername) => {
-    gameplayVisibility(gameplayContainer, isClientTurn, curTurnHolderUsername);
+    gameplayVisibility(submitGuessTextBox, isClientTurn, curTurnHolderUsername);
 })
 socket.on("show_winner", showWinner);
 socket.on("connect", async () => {
