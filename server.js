@@ -63,7 +63,9 @@ function addPlayerListeners(player) {
  * @param {gameLogic.Game} game 
  */
 function addGameListeners(game) {
-    
+    game.events.on("game_over", (winnerUsername) => {
+        io.to(game.roomCode).emit("show_winner", winnerUsername);
+    })
 }
 
 const SERVER_TICK_DELAY = 50; // milliseconds

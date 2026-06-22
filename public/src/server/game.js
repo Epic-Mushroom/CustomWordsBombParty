@@ -442,7 +442,9 @@ export class Game {
         this.isActive = false;
         this.isFinished = true;
 
-        console.log(`game over, winner is ${this.lastOneStanding()}`);
+        let winner = this.lastOneStanding();
+        this.events.emit("game_over", winner.username);
+        console.log(`game over, winner is ${winner}`);
     }
 
     isValidGuess(guess) {

@@ -52,7 +52,7 @@ async function startGame() {
  * @param {boolean} isClientTurn 
  */
 function gameplayVisibility(gameplayContainer, isClientTurn, curTurnHolderUsername) {
-    clientMain.root.style.setProperty("--gameplay-visibility", "block");
+    clientMain.root.style.setProperty("--gameplay-visibility", "flex");
 
     if (isClientTurn) {
         clientMain.root.style.setProperty("--guess-entry-visibility", "block");
@@ -68,6 +68,20 @@ function gameplayVisibility(gameplayContainer, isClientTurn, curTurnHolderUserna
         console.log("hiding submit guess interface");
 
     }
+}
+
+/**
+ * 
+ * @param {string} winnerUsername 
+ */
+function showWinner(winnerUsername) {
+    clientMain.root.style.setProperty("--winner-visibility", "block");
+    clientMain.root.style.setProperty("--guess-entry-visibility", "none");
+    clientMain.root.style.setProperty("--waiting-visibility", "none");
+    clientMain.root.style.setProperty("--substring-visibility", "none");
+
+    let winnerSpan = document.getElementById("winner");
+    winnerSpan.textContent = `🎉 ${winnerUsername} has won the game!`;
 }
 
 function submitGuess() {
@@ -107,6 +121,7 @@ socket.on("show_start_game_container", (isLeader) => showStartGameContainer(star
 socket.on("gameplay_visibility", (isClientTurn, curTurnHolderUsername) => {
     gameplayVisibility(gameplayContainer, isClientTurn, curTurnHolderUsername);
 })
+socket.on("show_winner", showWinner);
 socket.on("connect", async () => {
     const response = await socket.timeout(10000).emitWithAck("validate_room_code", getRoomCode());
 

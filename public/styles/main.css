@@ -1,11 +1,13 @@
 :root {
     --gradient-midpoint: 50%;
-    --gradient-start-color: #a7dee0;
-    --gradient-end-color: #7ca2ac;
+    --gradient-start-color: #7bdaaa;
+    --gradient-end-color: #229ec0;
 
-    --gameplay-visibility: none; /* set to block when enabling */
-    --guess-entry-visibility: none; 
+    --gameplay-visibility: none; /* set to flex when enabling */
+    --substring-visibility: block;
+    --guess-entry-visibility: none; /* set to block when enabling */
     --waiting-visibility: none;
+    --winner-visibility: none;
     --start-game-button-visibility: none;
 }
 
@@ -54,6 +56,12 @@
 
 #gameplay {
     display: var(--gameplay-visibility);
+    flex-direction: column;
+    gap: 20px;
+}
+
+#substring {
+    display: var(--substring-visibility);
 }
 
 #submit-guess {
@@ -62,6 +70,11 @@
 
 #waiting-for-player {
     display: var(--waiting-visibility);
+}
+
+#winner {
+    display: var(--winner-visibility);
+    font-size: larger;
 }
 
 #start-game {
