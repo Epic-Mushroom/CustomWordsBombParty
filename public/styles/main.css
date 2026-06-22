@@ -4,7 +4,7 @@
     --gradient-end-color: #229ec0;
 
     --gameplay-visibility: none; /* set to flex when enabling */
-    --substring-visibility: block;
+    --prompt-info-visibility: block;
     --guess-entry-visibility: none; /* set to block when enabling */
     --waiting-visibility: none;
     --winner-visibility: none;
@@ -60,8 +60,8 @@
     gap: 20px;
 }
 
-#substring-container {
-    display: var(--substring-visibility);
+#prompt-info-container {
+    display: var(--prompt-info-visibility);
 }
 
 #submit-guess {

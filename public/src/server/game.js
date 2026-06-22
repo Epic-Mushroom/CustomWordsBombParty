@@ -53,6 +53,7 @@ export class Player {
         this.currentLifeCount = gameManager.getGame(this.roomCode).startingLives;
         this.timeoutId = null; // use with setTimeout for the bomb timer
         this.timerStartTime = 0; // epoch time in ms when the timer was started
+        this.timerEndTime = 0;
         this.currentAlphabet = new Set();
 
         this.numCorrectGuesses = 0;
@@ -121,6 +122,7 @@ export class Player {
     resetTimer() {
         clearTimeout(this.timeoutId);
         this.timerStartTime = 0;
+        this.timerEndTime = 0;
     }
 
     endTurn(success = false) {
@@ -144,17 +146,19 @@ export class Player {
     startTimer() {
         this.timeoutId = setTimeout(() => this.endTurn(), this.getGame().baseTimerDuration * 1000);
         this.timerStartTime = (new Date()).getTime();
+        this.timerEndTime = this.timerStartTime + this.getGame().baseTimerDuration * 1000;
     }
 
     getTimeLeft() {
         // need to change calculation if using variable timer duration in the future
-        let timeSinceStart = ((new Date()).getTime() - this.timerStartTime);
+        let curTimeMs = (new Date()).getTime();
+        let msSinceStart = (curTimeMs - this.timerStartTime);
 
-        if (timeSinceStart >= this.getGame().baseTimerDuration * 1000) {
+        if (msSinceStart >= this.getGame().baseTimerDuration * 1000) {
             return 0;
 
         } else {
-            return this.getGame().baseTimerDuration - timeSinceStart;
+            return this.getGame().baseTimerDuration * 1000 - msSinceStart;
 
         }
     }
@@ -182,6 +186,10 @@ export class Player {
 
         if (!this.getGame().isActive) {
             status = "ready";
+        }
+
+        if (this.getGame().isFinished) {
+            status = "idle"; // could change this to winner/loser
         }
 
         if (!this.isConnected) {

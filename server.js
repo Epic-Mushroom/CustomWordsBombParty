@@ -47,13 +47,8 @@ function addPlayerListeners(player) {
     player.events.on("started_player_turn", () => {
         let curGame = player.getGame();
 
-        io.to(player.socketId).emit("gameplay_visibility", true, player.username, curGame.currentSubstring);
         for (const gamePlayer of curGame.players) {
-            if (gamePlayer === player) {
-                continue;
-            }
-
-            io.to(gamePlayer.socketId).emit("gameplay_visibility", false, player.username, curGame.currentSubstring);
+            io.to(gamePlayer.socketId).emit("gameplay_visibility", gamePlayer === player, player.username, curGame.currentSubstring, player.timerEndTime);
         }
     });
 }
