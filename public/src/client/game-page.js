@@ -99,6 +99,8 @@ async function submitGuess(guess) {
 
     if (response.failure) {
         // flash red
+
+        submitGuessTextBox.value = "";
         console.log(`invalid guess`);
 
     } else {

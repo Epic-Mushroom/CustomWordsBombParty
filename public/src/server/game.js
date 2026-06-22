@@ -92,7 +92,7 @@ export class Player {
         this.isPlayerTurn = true;
 
         this.events.emit("started_player_turn");
-        console.log(`activated ${this.username}'s turn`);
+        console.log(`activated ${this.username}'s turn, substring is ${this.getGame().currentSubstring}`);
     }
 
     submitGuess(word) {
@@ -102,7 +102,7 @@ export class Player {
             return false;
         }
 
-        if (this.getGame().isValidGuess(word)) {
+        if (this.getGame().registerGuess(word, this)) {
             this.endTurn(true);
             return true;
 
@@ -270,7 +270,7 @@ export class Game {
             readFile(
                 this.wordListFile, 
                 (line) => {
-                    let word = line.trim();
+                    let word = line.toLowerCase().trim();
                     this.wordDictionary.add(word);
 
                     // update substrings set
@@ -415,6 +415,7 @@ export class Game {
         this.isActive = true;
 
         console.log(`game with code ${this.roomCode} has begun`);
+        this.currentSubstring = this.getRandomSubstring();
         this.players[this.currentTurn].activateTurn();
 
     }
@@ -435,6 +436,7 @@ export class Game {
             return this.nextTurn(true);
         }
 
+        this.currentSubstring = this.getRandomSubstring();
         nextPlayer.activateTurn();
     }
 
@@ -447,8 +449,28 @@ export class Game {
         console.log(`game over, winner is ${winner}`);
     }
 
+    /**
+     * 
+     * @param {string} guess 
+     * @returns 
+     */
     isValidGuess(guess) {
-        return guess.includes(this.currentSubstring);
+        return this.wordDictionary.has(guess) && guess.includes(this.currentSubstring) && !this.wordsSubmitted.has(guess);
+    }
+
+    /**
+     * 
+     * @param {string} guess 
+     * @param {Player} player
+     * @returns {boolean}
+     */
+    registerGuess(guess, player) {
+        if (!this.isValidGuess(guess)) {
+            return false;
+        }
+
+        this.wordsSubmitted.set(guess, player);
+        return true;
     }
 
     getSecondsSinceCreation() {
