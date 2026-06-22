@@ -13,6 +13,7 @@ export const DEFAULT_BASE_TIMER_DURATION = 8; // seconds
 export const DEFAULT_MAX_PLAYERS_PER_ROOM = 10;
 export const DEFAULT_STARTING_LIVES = 3;
 export const DEFAULT_MIN_WORDS_PER_SUBSTRING = 100; // should convert this into a percent to account for different sizes of wordlists
+export const DEFAULT_MIN_PERCENT_WORDS_CONTAINING_SUBSTRING = 0.2;
 
 export const MAX_BASE_TIMER_DURATION = 67;
 export const MAX_MAX_PLAYERS_PER_ROOM = 67;
@@ -311,10 +312,10 @@ export class Game {
         }
     }
 
-    getRandomSubstring(minWordsPerSubstring = DEFAULT_MIN_WORDS_PER_SUBSTRING) {
+    getRandomSubstring(minSubstringPercent = DEFAULT_MIN_PERCENT_WORDS_CONTAINING_SUBSTRING) {
         return getWeightedRandomElement(this.substrings.keys(), (substring) => {
             let occurrences = this.substrings.get(substring);
-            if (occurrences < minWordsPerSubstring) {
+            if (occurrences < minSubstringPercent * 0.01 * this.wordDictionary.size) {
                 return 0;
             } else {
                 return occurrences;
