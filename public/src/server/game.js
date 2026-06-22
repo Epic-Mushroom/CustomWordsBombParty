@@ -48,7 +48,7 @@ export class Player {
 
         this.isPlayerTurn = false;
         this.isPlayerAlive = true;
-        this.currentLifeCount = gameManager.findGame(this.roomCode).startingLives;
+        this.currentLifeCount = gameManager.getGame(this.roomCode).startingLives;
         this.timeoutId = null; // use with setTimeout for the bomb timer
         this.timerStartTime = 0; // epoch time in ms when the timer was started
         this.currentAlphabet = new Set();
@@ -71,7 +71,7 @@ export class Player {
     }
 
     getGame() {
-        return gameManager.findGame(this.roomCode);
+        return gameManager.getGame(this.roomCode);
     }
 
     updateAlphabet(guess /* String */) {
@@ -319,6 +319,11 @@ export class Game {
         return this.isOld();
     }
 
+    /**
+     * 
+     * @param {string} username 
+     * @returns 
+     */
     findPlayer(username) {
         return this.players.find((player) => player.username === username);
     }
@@ -333,6 +338,10 @@ export class Game {
 
         if (!this.wordsLoaded) {
             throw new GameError("Still loading words!");
+        }
+
+        if (this.isActive) {
+            throw new GameError("Game is already started!");
         }
 
         // ...
@@ -374,12 +383,21 @@ export class GameManager {
     // players should only be created upon entering a room
 
     constructor() {
+        /**
+         * @type {Map<string, Game>}
+         */
         this.games = new Map();
+        /**
+         * @type {Map<string, Player>}
+         */
         this.players = new Map();
     }
 
-    // should probably make this consistent with addPlayer, as in have the caller create the Game object and pass
-    // that in
+    /**
+     * 
+     * @param {Game} game 
+     * @returns 
+     */
     addGame(game) {
         this.games.set(game.roomCode, game);
 
@@ -394,7 +412,7 @@ export class GameManager {
         return Array.from(this.games.keys()).filter((key) => this.games.get(key).isActive).length;
     }
 
-    findGame(roomCode) {
+    getGame(roomCode) {
         return this.games.get(roomCode);
     }
 

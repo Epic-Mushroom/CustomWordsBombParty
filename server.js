@@ -17,6 +17,10 @@ class ServerError extends Error {
     }
 }
 
+/**
+ * 
+ * @param {bigint} numTicks 
+ */
 function tick(numTicks) {
     let newTicks = numTicks + 1;
     // console.log(`Tick #${newTicks}`);
@@ -100,7 +104,7 @@ io.on("connection", (socket) => {
 
     socket.on("set_server_username", (newUsername, callback) => {
         // for setting the username attribute of the player object on the server end
-        let foundPlayer = gameManager.findPlayerBySocketId(socket.id);
+        let foundPlayer = gameManager.findPlayerBySocketId(socket.id); 
         let playerGame = gameManager.games.get(foundPlayer?.roomCode);
 
         if (foundPlayer != null) {
@@ -178,6 +182,30 @@ io.on("connection", (socket) => {
 
     })
 
+    socket.on("start_game", (callback) => {
+        let player = gameManager.findPlayerBySocketId(socket.id);
+        /**
+         * @type {{started : boolean, message : string}}
+         */
+        let callbackResponse = {started : false, message : ""};
+
+        try {
+            if (player?.isGameLeader()) {
+                gameManager.getGame(player.roomCode).startGame();
+                callbackResponse.started = true;
+
+            } else {
+                callbackResponse.message = "You aren't this game's room host!";
+            }
+
+        } catch (err) {
+            callbackResponse.message = err.message;
+
+        } finally {
+            callback(callbackResponse)
+        }
+    });
+
     socket.on("submit_guess", () => {
         console.log(`player clicked submit guess`);
     });      
@@ -190,7 +218,10 @@ eventManager.on("one_second_tick", (numTicks) => {
 
     for (const [key, value] of gameManager.games) {
         io.to(key).emit("update_player_info", value.players.map((player) => player.toString()), value.players.map((player) => player.username));
-        io.to(value.leader?.socketId).emit("show_start_game_container", true);
+
+        if (!value.isActive) {
+            io.to(value.leader?.socketId).emit("show_start_game_container", true);
+        }
     }
 });
 

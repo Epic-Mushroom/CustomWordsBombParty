@@ -31,6 +31,21 @@ function showStartGameContainer(startGameContainer, isGameLeader = false) {
     }
 }
 
+function hideStartGameContainer(startGameContainer) {
+    clientMain.root.style.setProperty("--start-game-button-visibility", "none");
+}
+
+async function startGame() {
+    let response = await socket.timeout(10000).emitWithAck("start_game");
+
+    if (!response.started) {
+        alert(response.message);
+
+    } else {
+        hideStartGameContainer();
+    }
+}
+
 function submitGuess() {
     console.log("the submit guess button was clicked");
 
@@ -49,6 +64,7 @@ const usernameField = document.getElementById("username-field");
 const roomCodeContainer = document.getElementById("room-code-container");
 const mainGameContainer = document.getElementById("main-game");
 const startGameContainer = document.getElementById("start-game");
+const startGameButton = document.getElementById("start-game-button");
 const playerInfoContainer = document.getElementById("player-info");
 const submitButton = document.getElementById("submit-button");
 
@@ -56,6 +72,7 @@ const submitButton = document.getElementById("submit-button");
 usernameButton?.addEventListener("click", () => {
     clientMain.setUsername(usernameField, usernameField.value);
 });
+startGameButton.addEventListener("click", startGame);
 submitButton?.addEventListener("click", submitGuess);
 
 // socket.io listeners
