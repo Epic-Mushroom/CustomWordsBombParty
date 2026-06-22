@@ -1,3 +1,4 @@
+import EventEmitter from "events";
 import {readFile, getRandomInt, getWeightedRandomElement} from "../utils.js";
 
 const RANDOM_USERNAME_SUFFIX_CHARACTERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
@@ -78,7 +79,7 @@ export class Player {
         // called when submitting a correct guess, if alphabet is filled out then we add an extra life
     }
 
-    activatePlayerTurn() {
+    activateTurn() {
         if (!this.isPlayerAlive || this.currentLifeCount <= 0) {
             throw new GameError("Player is dead!");
         }
@@ -87,11 +88,15 @@ export class Player {
         this.startTimer();
 
         this.isPlayerTurn = true;
+
+        console.log(`activated ${this.username}'s turn`);
     }
 
     submitGuess(word) {
+        console.log(`${this.username} tried to submit ${word}`);
+
         if (this.getGame().isValidGuess(word)) {
-            this.endPlayerTurn(true);
+            this.endTurn(true);
             return true;
 
         } else {
@@ -99,17 +104,30 @@ export class Player {
         }
     }
 
-    endPlayerTurn(success = false) {
-        this.resetTimer()
-    }
-
     resetTimer() {
         clearTimeout(this.timeoutId);
         this.timerStartTime = 0;
     }
 
+    endTurn(success = false) {
+        this.resetTimer()
+        console.log(`${this.username}'s turn has ended`);
+
+        if (!success) {
+            console.log(`   ${this.username} failed to submit a word in time and has lost a life`);
+            this.currentLifeCount--;
+
+            if (this.currentLifeCount <= 0) {
+                this.isPlayerAlive = false;
+            }
+        }
+
+        // really should be using an event emitter for this
+        gameManager.getGame(this.roomCode).nextTurn();
+    }
+
     startTimer() {
-        this.timeoutId = setTimeout(this.endPlayerTurn, this.getGame().baseTimerDuration * 1000);
+        this.timeoutId = setTimeout(() => this.endTurn(), this.getGame().baseTimerDuration * 1000);
         this.timerStartTime = (new Date()).getTime();
     }
 
@@ -189,6 +207,9 @@ export class Game {
         this.wordListFile = "public/word-lists/default-word-list.txt";
         this.wordsLoaded = false;
 
+        /**
+         * @type {Array<Player>}
+         */
         this.players = [];
         this.alphabetRule = new Set();
         this.wordDictionary = new Set();
@@ -211,11 +232,19 @@ export class Game {
             throw new Error(`Starting lives must be between ${MIN_STARTING_LIVES} and ${MAX_STARTING_LIVES} inclusive`);
         }
 
+        /**
+         * @type {number}
+         */
         this.currentRound = 1;
+        /**
+         * @type {number}
+         */
+        this.currentTurn = 0; // index of players
         this.currentSubstring = "ION";
         this.wordsSubmitted = new Map();
 
         this.isActive = false;
+        this.isFinished = false;
 
         this.leader = null; // should just be the first player in the this.players array
 
@@ -328,6 +357,36 @@ export class Game {
         return this.players.find((player) => player.username === username);
     }
 
+    lastOneStanding() {
+        let count = 0;
+        let winner = null;
+        for (const player of this.players) {
+            if (player.isPlayerAlive) {
+                count++;
+                winner = player;
+
+                if (count >= 2) {
+                    return null;
+                }
+            }
+        }
+
+        if (count === 0) {
+            if (this.players.length >= 2) {
+                throw new GameError("Somehow, everyone is dead in a non-solo game!");
+            } else if (this.players.length === 1) {
+                return this.players[0];
+            } else {
+                throw new GameError("Somehow, this game is empty! How does this even happen");
+            }
+
+        } else if (this.players.length === 1) {
+            return null;
+        }
+
+        return winner;
+    }
+
     startGame() {
         if (this.players.length === 0) {
             throw new GameError("There are no players in this room!");
@@ -344,18 +403,37 @@ export class Game {
             throw new GameError("Game is already started!");
         }
 
-        // ...
-
         this.isActive = true;
 
+        console.log(`game with code ${this.roomCode} has begun`);
+        this.players[this.currentTurn].activateTurn();
+
     }
 
-    nextTurn() {
+    nextTurn(skipWinnerCheck = false) {
+        // massively prone to infinite loop lol
+        if (!skipWinnerCheck && this.lastOneStanding() != null) {
+            return this.endGame();
+        }
 
+        this.currentTurn++;
+        if (this.currentTurn >= this.players.length) {
+            this.currentTurn = 0;
+        }
+
+        let nextPlayer = this.players[this.currentTurn];
+        if (!nextPlayer.isPlayerAlive) {
+            return this.nextTurn(true);
+        }
+
+        nextPlayer.activateTurn();
     }
 
-    nextRound() {
+    endGame() {
+        this.isActive = false;
+        this.isFinished = true;
 
+        console.log(`game over, winner is ${this.lastOneStanding()}`);
     }
 
     isValidGuess(guess) {
