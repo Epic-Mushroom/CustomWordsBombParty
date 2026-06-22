@@ -54,11 +54,11 @@ async function startGame() {
 function gameplayVisibility(submitGuessTextBox, substringElement, isClientTurn, curTurnHolderUsername, curSubstring) {
     clientMain.root.style.setProperty("--gameplay-visibility", "flex");
 
+    substringVisibility(substringElement, curSubstring);
+
     if (isClientTurn) {
         clientMain.root.style.setProperty("--guess-entry-visibility", "block");
         clientMain.root.style.setProperty("--waiting-visibility", "none");
-
-        substringElement.textContent = curSubstring.toUpperCase();
 
         submitGuessTextBox.value = "";
         submitGuessTextBox.focus();
@@ -74,6 +74,10 @@ function gameplayVisibility(submitGuessTextBox, substringElement, isClientTurn, 
         console.log("hiding submit guess interface");
 
     }
+}
+
+function substringVisibility(substringElement, curSubstring) {
+    substringElement.textContent = curSubstring.toUpperCase();
 }
 
 /**
@@ -146,6 +150,9 @@ socket.on("update_player_info", (playerStrings, playerUsernames) => updatePlayer
 socket.on("show_start_game_container", (isLeader) => showStartGameContainer(startGameContainer, isLeader));
 socket.on("gameplay_visibility", (isClientTurn, curTurnHolderUsername, curSubstring) => {
     gameplayVisibility(submitGuessTextBox, substringElement, isClientTurn, curTurnHolderUsername, curSubstring);
+})
+socket.on("substring_visibility", (curSubstring) => {
+    substringVisibility(substringElement, curSubstring);
 })
 socket.on("show_winner", showWinner);
 socket.on("connect", async () => {
