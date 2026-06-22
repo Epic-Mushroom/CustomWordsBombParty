@@ -55,6 +55,10 @@ export class Player {
         this.timerStartTime = 0; // epoch time in ms when the timer was started
         this.currentAlphabet = new Set();
 
+        this.numCorrectGuesses = 0;
+        this.numIncorrectGuesses = 0;
+        this.numMisses = 0;
+
         this.isConnected = true;
         this.playerDisconnectTime = 2 * (new Date()).getTime(); // placeholder value
 
@@ -104,10 +108,12 @@ export class Player {
         }
 
         if (this.getGame().registerGuess(word, this)) {
+            this.numCorrectGuesses++;
             this.endTurn(true);
             return true;
 
         } else {
+            this.numIncorrectGuesses++;
             return false;
         }
     }
@@ -123,6 +129,7 @@ export class Player {
 
         if (!success) {
             console.log(`   ${this.username} failed to submit a word in time and has lost a life`);
+            this.numMisses++;
             this.currentLifeCount--;
 
             if (this.currentLifeCount <= 0) {
