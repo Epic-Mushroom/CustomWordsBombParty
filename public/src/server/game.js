@@ -507,7 +507,7 @@ export class Game {
         this.isFinished = true;
 
         let winner = this.lastOneStanding();
-        this.events.emit("game_over", winner.username);
+        this.events.emit("game_over", winner.username, winner.numCorrectGuesses);
         console.log(`game over, winner is ${winner}`);
     }
 

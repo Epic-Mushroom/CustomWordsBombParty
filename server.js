@@ -74,8 +74,8 @@ function addPlayerListeners(player) {
  * @param {gameLogic.Game} game 
  */
 function addGameListeners(game) {
-    game.events.on("game_over", (winnerUsername) => {
-        io.to(game.roomCode).emit("show_winner", winnerUsername);
+    game.events.on("game_over", (winnerUsername, winnerCorrectGuesses) => {
+        io.to(game.roomCode).emit("show_winner", winnerUsername, winnerCorrectGuesses);
     })
 }
 

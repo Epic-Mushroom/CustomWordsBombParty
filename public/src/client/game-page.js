@@ -105,14 +105,14 @@ function updateTimeLeft(timeLeftElement, endTimeSeconds) {
  * 
  * @param {string} winnerUsername 
  */
-function showWinner(winnerUsername) {
+function showWinner(winnerUsername, winnerCorrectGuesses) {
     clientMain.root.style.setProperty("--winner-visibility", "block");
     clientMain.root.style.setProperty("--guess-entry-visibility", "none");
     clientMain.root.style.setProperty("--waiting-visibility", "none");
     clientMain.root.style.setProperty("--prompt-info-visibility", "none");
 
     let winnerSpan = document.getElementById("winner");
-    winnerSpan.textContent = `🎉 ${winnerUsername} has won the game!`;
+    winnerSpan.textContent = `🎉 ${winnerUsername} has won the game!\n${winnerCorrectGuesses} words`;
 }
 
 /**
