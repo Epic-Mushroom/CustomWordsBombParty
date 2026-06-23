@@ -15,6 +15,18 @@ async function preFillRoomRuleDefaults(
     startingLivesField.value = startingLives;
 }
 
+/**
+ * 
+ * @param {boolean} visible 
+ */
+function customWordsSettingsVisibility(customWordsSettingsContainer, visible) {
+    if (visible) {
+        clientMain.root.style.setProperty("--custom-words-settings-visibility", "flex");
+    } else {
+        clientMain.root.style.setProperty("--custom-words-settings-visibility", "none");
+    }
+}
+
 function createRoom(
     maxPlayers,
     baseTimerDuration,
@@ -29,7 +41,11 @@ function updateRoomsCount(roomsCountContainer, count) {
     roomsCountContainer.replaceChildren();
 
     let roomCountSpan = document.createElement("span");
-    roomCountSpan.textContent = `There are currently ${count} rooms active`;
+    if (count !== 1) {
+        roomCountSpan.textContent = `There are currently ${count} rooms active`;
+    } else {
+        roomCountSpan.textContent = `There is currently ${count} room active`;
+    }
     roomsCountContainer.appendChild(roomCountSpan);
 
     console.log("updated rooms count");
@@ -46,6 +62,8 @@ const startingLivesField = document.getElementById("starting-lives-field");
 const newlyGeneratedCodeContainer = document.getElementById("newly-generated-code"); 
 const createRoomButton = document.getElementById("create-room-button");
 const defaultRulesButton = document.getElementById("reset-rules-button");
+const dictionarySelectDropdown = document.getElementById("dictionary-dropdown");
+const customWordsSettings = document.getElementById("custom-words-settings");
 
 const roomsCountContainer = document.getElementById("active-rooms-count");
 const roomsList = document.getElementById("active-rooms-list");
@@ -59,6 +77,9 @@ createRoomButton?.addEventListener("click", () => {
 });
 defaultRulesButton?.addEventListener("click", async () => {
     socket.emit("request_room_rule_defaults");
+});
+dictionarySelectDropdown?.addEventListener("change", (event) => {
+    customWordsSettingsVisibility(customWordsSettings, event.target.value === "custom-dictionary");
 });
 
 // socket.io listeners

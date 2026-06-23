@@ -26,6 +26,17 @@
                     <span><label for="starting-lives-field">Starting lives: </label>
                     <input type="text" id="starting-lives-field" class="number-input"></span>
                     <span>Bonus alphabet: COMING SOON</span>
+                    <span><label for="dictionary-dropdown">Dictionary: </label>
+                    <select id="dictionary-dropdown" class="dropdown-input">
+                        <option selected value="default-dictionary">Default English Dictionary</option>
+                        <option value="custom-dictionary">Custom Words</option>
+                    </select></span>
+                    <div id="custom-words-settings" class="center-aligned-container">
+                        <label for="custom-words-field">Custom words (separate with line break or commas): </label>
+                        <textarea id="custom-words-field" rows="30" cols="25" class="long-form-input"></textarea>
+                        <span><input type="checkbox" id="combine-with-default-dictionary" checked class="checkbox-input">
+                        <label for="combine-with-default-dictionary">Combine custom words with default dictionary?</label></span>
+                    </div>
                     <div id="newly-generated-code" class="room-code-info"></div>
                     <button type="button" id="create-room-button">Create a Room</button>
                     <button type="button" id="reset-rules-button">Default Rules</button>

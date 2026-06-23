@@ -3,6 +3,8 @@
     --gradient-start-color: #7bdaaa;
     --gradient-end-color: #229ec0;
 
+    --custom-words-settings-visibility: none; /* set to flex when enabling */
+
     --gameplay-visibility: none; /* set to flex when enabling */
     --prompt-info-visibility: block;
     --guess-entry-visibility: none; /* set to block when enabling */
@@ -33,6 +35,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 15px;
+}
+
+#custom-words-settings {
+    display: var(--custom-words-settings-visibility);
     gap: 15px;
 }
 
