@@ -46,6 +46,21 @@ function getDictionaryFile(dictionarySelectionId) {
     switch (dictionarySelectionId) {
         case "default-dictionary":
             break;
+        case "cities":
+            dictionaryFile = gameLogic.CITIES_FILE;
+            break;
+        case "pokemon":
+            dictionaryFile = gameLogic.POKEMON_FILE;
+            break;
+        case "minecraft":
+            dictionaryFile = gameLogic.MINECRAFT_FILE;
+            break;
+        case "terraria":
+            dictionaryFile = gameLogic.TERRARIA_FILE;
+            break;
+        case "demons":
+            dictionaryFile = gameLogic.GD_DEMONS_FILE;
+            break;
         case "custom-dictionary":
             break;
         default:

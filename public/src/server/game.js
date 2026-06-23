@@ -18,6 +18,10 @@ export const DEFAULT_MIN_PERCENT_WORDS_CONTAINING_SUBSTRING = 0.2;
 export const MIN_DICTIONARY_SIZE = 5;
 
 export const DEFAULT_WORD_LIST_FILE = "public/word-lists/default-word-list.txt";
+export const CITIES_FILE = "public/word-lists/cities.txt";
+export const POKEMON_FILE = "public/word-lists/pokemon.txt";
+export const MINECRAFT_FILE = "public/word-lists/minecraft.txt";
+export const TERRARIA_FILE = "public/word-lists/terraria.txt";
 export const GD_DEMONS_FILE = "public/word-lists/demons.txt";
 
 export const MAX_BASE_TIMER_DURATION = 67;
