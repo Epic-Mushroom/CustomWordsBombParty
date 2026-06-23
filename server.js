@@ -6,6 +6,7 @@ import express from "express";
 import * as httpModule from "http"; 
 import * as socketIo from "socket.io"; 
 
+import {parseCommaOrLineBreakSeparatedValues} from "./public/src/utils.js"
 import * as gameLogic from "./public/src/server/game.js";
 import {gameManager} from "./public/src/server/game.js";
 import * as roomsLogic from "./public/src/server/rooms.js";
@@ -37,6 +38,21 @@ function tick(numTicks) {
     tickInterval = setTimeout(() => {
         tick(newTicks);
     }, SERVER_TICK_DELAY);
+}
+
+function getDictionaryFile(dictionarySelectionId) {
+    let dictionaryFile = gameLogic.DEFAULT_WORD_LIST_FILE;
+
+    switch (dictionarySelectionId) {
+        case "default-dictionary":
+            break;
+        case "custom-dictionary":
+            break;
+        default:
+            break;
+    }
+
+    return dictionaryFile;
 }
 
 /**
@@ -148,11 +164,21 @@ io.on("connection", (socket) => {
     socket.on("create_room", (
         maxPlayers = gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM,
         baseTimerDuration = gameLogic.DEFAULT_BASE_TIMER_DURATION,
-        startingLives = gameLogic.DEFAULT_STARTING_LIVES
+        startingLives = gameLogic.DEFAULT_STARTING_LIVES,
+        dictionarySelectionId = "default-dictionary",
+        additionalWordsInput = "",
+        usePresetDictionary = true
     ) => {
         try {
             let generatedCode = roomsLogic.generateRoomCode();
-            let newGame = new gameLogic.Game(generatedCode, maxPlayers, baseTimerDuration, startingLives)
+            let dictionaryFile = getDictionaryFile(dictionarySelectionId);
+
+            let additionalWords = parseCommaOrLineBreakSeparatedValues(additionalWordsInput);
+
+            let newGame = new gameLogic.Game(
+                generatedCode, maxPlayers, baseTimerDuration, startingLives,
+                dictionaryFile, additionalWords, usePresetDictionary
+            );
             gameManager.addGame(newGame);
             addGameListeners(newGame);
 

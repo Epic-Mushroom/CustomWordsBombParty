@@ -77,7 +77,7 @@ function gameplayVisibility(submitGuessTextBox, substringElement, isClientTurn, 
 }
 
 function promptInfoVisibility(substringElement, timeLeftElement, curSubstring, endTime) {
-    substringElement.textContent = curSubstring.toUpperCase();
+    substringElement.textContent = `"${curSubstring.toUpperCase()}"`;
 
     let endTimeSeconds = endTime / 1000.0;
     updateTimeLeft(timeLeftElement, endTimeSeconds);

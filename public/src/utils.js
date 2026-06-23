@@ -1,6 +1,12 @@
 import fs from "fs";
 import readline from "readline";
 
+/**
+ * 
+ * @param {string} filePath 
+ * @param {function} onLineCallback 
+ * @param {function} onCloseCallback 
+ */
 export function readFile(filePath, onLineCallback, onCloseCallback = () => {}) {
   const fileStream = fs.createReadStream(filePath);
   const readlineInterface = readline.createInterface({
@@ -72,4 +78,13 @@ export function getWeightedRandomElement(iterable, weightFunction) {
   }
 
   return selectedElement;
+}
+
+/**
+ * 
+ * @param {string} input 
+ * @returns {Array<string>}
+ */
+export function parseCommaOrLineBreakSeparatedValues(input) {
+  return input.split(/[,\r\n]+/);
 }

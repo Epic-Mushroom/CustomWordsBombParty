@@ -30,11 +30,17 @@ function customWordsSettingsVisibility(customWordsSettingsContainer, visible) {
 function createRoom(
     maxPlayers,
     baseTimerDuration,
-    startingLives
+    startingLives,
+    dictionarySelectionId,
+    additionalWordsInput,
+    usePresetDictionary
 ) {
     console.log("trying to create room");
 
-    socket.emit("create_room", maxPlayers, baseTimerDuration, startingLives);
+    socket.emit(
+        "create_room", maxPlayers, baseTimerDuration, startingLives,
+        dictionarySelectionId, additionalWordsInput, usePresetDictionary
+    );
 }
 
 function updateRoomsCount(roomsCountContainer, count) {
@@ -64,6 +70,8 @@ const createRoomButton = document.getElementById("create-room-button");
 const defaultRulesButton = document.getElementById("reset-rules-button");
 const dictionarySelectDropdown = document.getElementById("dictionary-dropdown");
 const customWordsSettings = document.getElementById("custom-words-settings");
+const customWordsField = document.getElementById("custom-words-field");
+const combineWithDefaultDictCheckbox = document.getElementById("combine-with-default-dictionary");
 
 const roomsCountContainer = document.getElementById("active-rooms-count");
 const roomsList = document.getElementById("active-rooms-list");
@@ -73,7 +81,10 @@ usernameButton?.addEventListener("click", () => {
     clientMain.setUsername(usernameField, usernameField.value);
 });
 createRoomButton?.addEventListener("click", () => {
-    createRoom(maxPlayersField.value, baseTimerDurationField.value, startingLivesField.value);
+    createRoom(
+        maxPlayersField.value, baseTimerDurationField.value, startingLivesField.value,
+        dictionarySelectDropdown.value, customWordsField.value, combineWithDefaultDictCheckbox.checked
+    );
 });
 defaultRulesButton?.addEventListener("click", async () => {
     socket.emit("request_room_rule_defaults");

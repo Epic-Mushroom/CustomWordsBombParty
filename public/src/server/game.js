@@ -15,6 +15,11 @@ export const DEFAULT_STARTING_LIVES = 3;
 export const DEFAULT_MIN_WORDS_PER_SUBSTRING = 100; // should convert this into a percent to account for different sizes of wordlists
 export const DEFAULT_MIN_PERCENT_WORDS_CONTAINING_SUBSTRING = 0.2;
 
+export const MIN_DICTIONARY_SIZE = 5;
+
+export const DEFAULT_WORD_LIST_FILE = "public/word-lists/default-word-list.txt";
+export const GD_DEMONS_FILE = "public/word-lists/demons.txt";
+
 export const MAX_BASE_TIMER_DURATION = 67;
 export const MAX_MAX_PLAYERS_PER_ROOM = 67;
 export const MAX_STARTING_LIVES = 10;
@@ -223,11 +228,19 @@ export class Game {
 
     constructor(roomCode, maxPlayers = DEFAULT_MAX_PLAYERS_PER_ROOM,
                 baseTimerDuration = DEFAULT_BASE_TIMER_DURATION, 
-                startingLives = DEFAULT_STARTING_LIVES) {
+                startingLives = DEFAULT_STARTING_LIVES,
+                dictionaryFile = DEFAULT_WORD_LIST_FILE,
+                additionalWords = [],
+                usePresetDictionary = true) {
         this.roomCode = roomCode;
-        
-        this.usesPresetWordList = true;
-        this.wordListFile = "public/word-lists/default-word-list.txt";
+
+        this.wordListFile = dictionaryFile;
+        this.usesAdditionalWords = additionalWords.length > 0;
+        this.additionalWords = additionalWords;
+        this.usesPresetWordList = usePresetDictionary;
+        if (!this.usesPresetWordList && !this.usesAdditionalWords) {
+            throw new GameError("Can't not have a word list");
+        }
         this.wordsLoaded = false;
 
         /**
@@ -242,17 +255,17 @@ export class Game {
         if (baseTimerDuration <= MAX_BASE_TIMER_DURATION && baseTimerDuration >= MIN_BASE_TIMER_DURATION) {
             this.baseTimerDuration = baseTimerDuration; // could add variation depending on substring rarity
         } else {
-            throw new Error(`Bomb timer duration must be between ${MIN_BASE_TIMER_DURATION} and ${MAX_BASE_TIMER_DURATION} inclusive`);
+            throw new GameError(`Bomb timer duration must be between ${MIN_BASE_TIMER_DURATION} and ${MAX_BASE_TIMER_DURATION} inclusive`);
         }
         if (maxPlayers <= MAX_MAX_PLAYERS_PER_ROOM && maxPlayers >= MIN_MAX_PLAYERS_PER_ROOM) {
             this.maxPlayers = Math.floor(maxPlayers); 
         } else {
-            throw new Error(`Max players must be between ${MIN_MAX_PLAYERS_PER_ROOM} and ${MAX_MAX_PLAYERS_PER_ROOM} inclusive`);
+            throw new GameError(`Max players must be between ${MIN_MAX_PLAYERS_PER_ROOM} and ${MAX_MAX_PLAYERS_PER_ROOM} inclusive`);
         }
         if (startingLives <= MAX_STARTING_LIVES && startingLives >= MIN_STARTING_LIVES) {
             this.startingLives = Math.ceil(startingLives); 
         } else {
-            throw new Error(`Starting lives must be between ${MIN_STARTING_LIVES} and ${MAX_STARTING_LIVES} inclusive`);
+            throw new GameError(`Starting lives must be between ${MIN_STARTING_LIVES} and ${MAX_STARTING_LIVES} inclusive`);
         }
 
         /**
@@ -275,6 +288,18 @@ export class Game {
 
         this.populateWordData();
 
+        // error checking for purely custom lists
+        if (!this.usesPresetWordList && this.usesAdditionalWords) {
+            if (this.wordDictionary.size < MIN_DICTIONARY_SIZE) {
+                throw new GameError(`Number of total words in the custom dictionary cannot be less than ${MIN_DICTIONARY_SIZE}`)
+            }
+
+            if (this.substrings.size <= 0) {
+                throw new GameError("Could not generate any prompts from the custom word list! Try using longer words");
+            }
+            
+        }
+
         this.events = new EventEmitter();
     }
 
@@ -282,32 +307,53 @@ export class Game {
     populateWordData() {
         console.log(`started adding words to the word dictionary`);
 
-        try {
-            readFile(
-                this.wordListFile, 
-                (line) => {
-                    let word = line.toLowerCase().trim();
-                    this.wordDictionary.add(word);
-
-                    // update substrings set
-                    this.populateSubstrings(word);
-                },
-                () => {
-                    // console.log(`finished adding ${this.wordDictionary.size} words to the word dictionary`);
-                    // console.log(`substring "ass" has ${this.substrings.get("ass")} occurrences`);
-                    // console.log(`number of unique substrings: ${this.uniqueSubstrings}`);
-                    // for (let i = 0; i < 50; i++) {
-                    //     let randSubstring = this.getRandomSubstring();
-                    //     console.log(`${randSubstring}: ${this.substrings.get(randSubstring)}`);
-                    // }
-
-                    this.wordsLoaded = true;
+        if (this.usesAdditionalWords) {
+            for (const addlWord of this.additionalWords) {
+                let word = addlWord.toLowerCase().trim();
+                if (word === "") {
+                    continue;
                 }
-            );
+                this.wordDictionary.add(word);
 
-        } catch (err) {
-            console.error(`Something happened when trying to read the word list file (${err})`);
+                // update substrings set
+                this.populateSubstrings(word);
+            }
+        }
 
+        if (this.usesPresetWordList) {
+            try {
+                readFile(
+                    this.wordListFile, 
+                    (line) => {
+                        let word = line.toLowerCase().trim();
+                        if (word === "") {
+                            return;
+                        }
+                        this.wordDictionary.add(word);
+
+                        // update substrings set
+                        this.populateSubstrings(word);
+                    },
+                    () => {
+                        // console.log(`finished adding ${this.wordDictionary.size} words to the word dictionary`);
+                        // console.log(`substring "ass" has ${this.substrings.get("ass")} occurrences`);
+                        // console.log(`number of unique substrings: ${this.uniqueSubstrings}`);
+                        // for (let i = 0; i < 50; i++) {
+                        //     let randSubstring = this.getRandomSubstring();
+                        //     console.log(`${randSubstring}: ${this.substrings.get(randSubstring)}`);
+                        // }
+
+                        this.wordsLoaded = true;
+                    }
+                );
+
+            } catch (err) {
+                console.error(`Something happened when trying to read the word list file (${err})`);
+
+            }
+            
+        } else {
+            this.wordsLoaded = true;
         }
     }
 
