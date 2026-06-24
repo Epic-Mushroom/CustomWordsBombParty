@@ -128,7 +128,7 @@ async function submitGuess(guess) {
         // flash red
 
         submitGuessTextBox.value = "";
-        console.log(`invalid guess`);
+        console.log(`${response.reason}`);
 
     } else {
         // flash green

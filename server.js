@@ -275,7 +275,8 @@ io.on("connection", (socket) => {
 
     socket.on("submit_guess", (guess, callback) => {
         const player = gameManager.findPlayerBySocketId(socket.id);
-        callback({failure : !player.submitGuess(guess.toLowerCase().trim())});
+        let submittedGuess = player.submitGuess(guess.toLowerCase().trim());
+        callback({failure: !submittedGuess.valid, reason: submittedGuess.reason});
     });      
     
 });

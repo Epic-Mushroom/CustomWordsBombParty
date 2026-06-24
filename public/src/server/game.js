@@ -114,17 +114,19 @@ export class Player {
         console.log(`${this.username} tried to submit ${word}`);
 
         if (!this.getGame().isActive || !this.isPlayerTurn) {
-            return false;
+            return {valid: false, reason: "cannotSubmit"};
         }
 
-        if (this.getGame().registerGuess(word, this)) {
+        let isGuessRegistered = this.getGame().registerGuess(word, this);
+
+        if (isGuessRegistered.valid) {
             this.numCorrectGuesses++;
             this.endTurn(true);
-            return true;
+            return {valid: true, reason: "valid"};
 
         } else {
             this.numIncorrectGuesses++;
-            return false;
+            return {valid: false, reason: isGuessRegistered.reason};
         }
     }
 
@@ -521,22 +523,36 @@ export class Game {
      * @returns 
      */
     isValidGuess(guess) {
-        return this.wordDictionary.has(guess) && guess.includes(this.currentSubstring) && !this.wordsSubmitted.has(guess);
+        if (!this.wordDictionary.has(guess)) {
+            return {valid: false, reason: "notInDictionary"};
+        }
+
+        if (!guess.includes(this.currentSubstring)) {
+            return {valid: false, reason: "doesNotIncludeSubstring"};
+        }
+
+        if (this.wordsSubmitted.has(guess)) {
+            return {valid: false, reason: "alreadySubmitted"};
+        }
+
+        return {valid: true, reason: "valid"};
     }
 
     /**
      * 
      * @param {string} guess 
      * @param {Player} player
-     * @returns {boolean}
+     * @returns 
      */
     registerGuess(guess, player) {
-        if (!this.isValidGuess(guess)) {
-            return false;
+        let isValid = this.isValidGuess(guess);
+
+        if (!isValid.valid) {
+            return {valid: false, reason: isValid.reason};
         }
 
         this.wordsSubmitted.set(guess, player);
-        return true;
+        return {valid: true, reason: "valid"};
     }
 
     getSecondsSinceCreation() {

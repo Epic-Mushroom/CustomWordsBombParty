@@ -1,7 +1,44 @@
+@property --initial-gradient-start-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #7bdaaa;
+}
+
+@property --initial-gradient-end-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #229ec0;
+}
+
+@property --gradient-start-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #7bdaaa;
+}
+
+@property --gradient-end-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #229ec0;
+}
+
+@keyframes flashRed {
+    0% {
+        --gradient-start-color: #ff0000;
+        --gradient-end-color: #ff0000;
+    }
+    10% {
+        --gradient-start-color: #ff0000;
+        --gradient-end-color: #ff0000;
+    }
+    100% {
+        --gradient-start-color: var(--initial-gradient-start-color);
+        --gradient-end-color: var(--initial-gradient-end-color);
+    }
+}
+
 :root {
     --gradient-midpoint: 50%;
-    --gradient-start-color: #7bdaaa;
-    --gradient-end-color: #229ec0;
 
     --custom-words-settings-visibility: none; /* set to flex when enabling */
 
@@ -13,7 +50,11 @@
     --start-game-button-visibility: none;
 }
 
-.menu-body, .game-body {
+.flash-red {
+    animation: flashRed 0.67s;
+}
+
+.page-body {
     margin-top: 67px;
     background: linear-gradient(to right, var(--gradient-start-color), var(--gradient-end-color) var(--gradient-midpoint));
 }
