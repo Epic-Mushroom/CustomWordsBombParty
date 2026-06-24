@@ -28,7 +28,7 @@
     initial-value: #229ec0;
 }
 
-@keyframes flash {
+@keyframes flashBG {
     0% {
         --gradient-start-color: var(--flash-color);
         --gradient-end-color: var(--flash-color);
@@ -40,6 +40,18 @@
     100% {
         --gradient-start-color: var(--initial-gradient-start-color);
         --gradient-end-color: var(--initial-gradient-end-color);
+    }
+}
+
+@keyframes flashTextInput {
+    0% {
+        background-color: var(--flash-color);
+    }
+    10% {
+        background-color: var(--flash-color);
+    }
+    100% {
+        background-color: #ffffff;
     }
 }
 
@@ -56,8 +68,18 @@
     --start-game-button-visibility: none;
 }
 
-.flash {
-    animation: flash 0.67s;
+.flash-bg {
+    animation: flashBG 0.67s;
+}
+
+.flash-text-input {
+    animation: flashTextInput 0.67s;
+}
+
+input[type="text"] {
+    appearance: none;
+    -webkit-appearance: none;
+    box-shadow: none;
 }
 
 .page-body {

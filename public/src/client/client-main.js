@@ -38,8 +38,16 @@ export function resetTimesCopied() {
 export function flashBackground(backgroundElement, colorHexString = "#ff0000") {
     root.style.setProperty("--flash-color", colorHexString);
 
-    backgroundElement.classList.toggle("flash", false);
-    requestAnimationFrame(() => backgroundElement.classList.toggle("flash", true));
+    backgroundElement.classList.toggle("flash-bg", false);
+    requestAnimationFrame(() => backgroundElement.classList.toggle("flash-bg", true));
+}
+
+export function flashTextInput(textInput, colorHexString = "#ff0000") {
+    // can (probably will) cause conflicts if both bg and text input are flashed
+    root.style.setProperty("--flash-color", colorHexString);
+
+    textInput.classList.toggle("flash-text-input", false);
+    requestAnimationFrame(() => textInput.classList.toggle("flash-text-input", true));
 }
 
 export function preFillUsernameField(usernameField, username = null) {

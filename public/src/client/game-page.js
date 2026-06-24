@@ -97,6 +97,8 @@ function updateTimeLeft(timeLeftElement, endTimeSeconds) {
         timeLeftElement.textContent = Math.max(endTimeSeconds - Date.now() / 1000.0, 0).toFixed(1);
         if (endTimeSeconds - (Date.now() / 1000.0) <= 0) {
             clearInterval(bombTimerInterval);
+            // flash red
+            clientMain.flashTextInput(submitGuessTextBox, "#ff0000");
         }
     }, 100);
 }
@@ -130,11 +132,11 @@ async function submitGuess(guess) {
 
         if (response.reason === "alreadySubmitted") {
             // flash orange
-            clientMain.flashBackground(gameBody, "#ffa500");
+            clientMain.flashTextInput(submitGuessTextBox, "#ffa500");
 
         } else {
             // flash red
-            clientMain.flashBackground(gameBody, "#ff0000");
+            clientMain.flashTextInput(submitGuessTextBox, "#ff0000");
 
         }
  
@@ -142,7 +144,7 @@ async function submitGuess(guess) {
         console.log(`valid guess`);
 
         // flash green
-        clientMain.flashBackground(gameBody, "#00ff00");
+        clientMain.flashTextInput(submitGuessTextBox, "#00ff00");
     }
 }
 
