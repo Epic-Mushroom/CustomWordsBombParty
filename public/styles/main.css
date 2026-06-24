@@ -87,6 +87,14 @@ input[type="text"] {
     background: linear-gradient(to right, var(--gradient-start-color), var(--gradient-end-color) var(--gradient-midpoint));
 }
 
+footer {
+    padding-bottom: 5%;
+}
+
+h1 {
+    font-size: 35pt;
+}
+
 .center-aligned-item {
     display: block;
     align-content: center;
@@ -153,19 +161,29 @@ input[type="text"] {
     font-size: larger;
 }
 
+#player-info-container {
+    font-size: 22pt;
+}
+
+#player-info-container li {
+    font-size: 19pt;
+}
+
 #bonus-alphabet-container {
+    background-color: rgba(0, 0, 0, 0.438);
+
     position: fixed;
     display: flex;
     flex-wrap: wrap;
-    flex-direction: row;
+    flex-direction: column;
     gap: 5px;
 
     justify-content: center;
     align-items: center;
     text-align: center;
-    bottom: 5%;
-    left: 0%;
-    width: 100%;
+    top: 0%;
+    right: 0%;
+    height: 100%;
     z-index: 999;
 
 }
