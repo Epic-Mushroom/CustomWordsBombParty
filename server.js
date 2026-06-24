@@ -74,20 +74,34 @@ function getDictionaryFile(dictionarySelectionId) {
  * 
  * @param {gameLogic.Player} player 
  */
+function emitGameplayVisibility(player) {
+    let curGame = player.getGame();
+    let gameAlphabetArray = Array.from(curGame.bonusAlphabet);
+
+    for (const gamePlayer of curGame.players) {
+        io.to(gamePlayer.socketId).emit("gameplay_visibility", {
+            isClientTurn: gamePlayer === player,
+            curTurnHolderUsername: player.username,
+            curSubstring: curGame.currentSubstring,
+            endTime: player.timerEndTime,
+            playerAlphabetArray: Array.from(gamePlayer.currentAlphabet),
+            gameAlphabetArray: gameAlphabetArray
+        });
+    }
+}
+
+/**
+ * 
+ * @param {gameLogic.Player} player 
+ */
 function addPlayerListeners(player) {
     player.events.on("started_player_turn", () => {
-        let curGame = player.getGame();
-        let gameAlphabetArray = Array.from(curGame.bonusAlphabet);
+        emitGameplayVisibility(player);
+    });
 
-        for (const gamePlayer of curGame.players) {
-            io.to(gamePlayer.socketId).emit("gameplay_visibility", {
-                isClientTurn: gamePlayer === player,
-                curTurnHolderUsername: player.username,
-                curSubstring: curGame.currentSubstring,
-                endTime: player.timerEndTime,
-                playerAlphabetArray: Array.from(gamePlayer.currentAlphabet),
-                gameAlphabetArray: gameAlphabetArray
-            });
+    player.events.on("reconnect", () => {
+        if (player.getGame().isActive) {
+            emitGameplayVisibility(player);
         }
     });
 }
@@ -105,6 +119,7 @@ function addGameListeners(game) {
 const SERVER_TICK_DELAY = 50; // milliseconds
 const DIRNAME = path.dirname(url.fileURLToPath(import.meta.url));
 
+// set up server and sockets
 const app = express();
 const http = httpModule.createServer(app);
 const io = new socketIo.Server(http);
@@ -294,7 +309,6 @@ eventManager.on("one_second_tick", (numTicks) => {
     // console.log("one second tick");
 
     for (const [key, value] of gameManager.games) {
-        // note: CANNOT USE PLAYERS METHODS ON CLIENT SIDE
         let playerData = [];
         for (const player of value.players) {
             playerData.push({

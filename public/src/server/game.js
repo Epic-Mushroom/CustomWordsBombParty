@@ -201,6 +201,8 @@ export class Player {
         this.isConnected = true;
         this.socketId = newSocketId;
         this.playerDisconnectTime = 2 * (new Date()).getTime();
+
+        this.events.emit("reconnect");
     }
 
     disconnect() {
