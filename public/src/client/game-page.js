@@ -1,16 +1,18 @@
 import * as clientMain from "./client-main.js";
 import {socket} from "./client-main.js";
 
-function updatePlayerInfo(playerInfoContainer, playerStrings, playerUsernames) {
+function updatePlayerInfo(playerInfoContainer, playerData) {
     // console.log("trying to update player info");
 
     playerInfoContainer.replaceChildren();
 
-    for (let i = 0; i < playerStrings.length; i++) {
-        let playerString = playerStrings[i];
+    for (let i = 0; i < playerData.length; i++) {
+        let playerString = playerData[i].asString;
+
+        playerString += ` ${playerData[i].numCorrectGuesses} ✅ | ${playerData[i].numIncorrectGuesses} ❌ | ${playerData[i].numMisses} 💣`;
 
         let newPlayerLi = document.createElement("li");
-        if (playerUsernames[i] === localStorage.getItem("username")) {
+        if (playerData[i].username === localStorage.getItem("username")) {
             let boldElement = document.createElement("b");
             boldElement.textContent = playerString;
             newPlayerLi.append(boldElement);
@@ -114,7 +116,12 @@ function showWinner(winnerUsername, winnerCorrectGuesses) {
     clientMain.root.style.setProperty("--prompt-info-visibility", "none");
 
     let winnerSpan = document.getElementById("winner");
-    winnerSpan.textContent = `🎉 ${winnerUsername} has won the game!\n${winnerCorrectGuesses} words`;
+    if (winnerUsername != null) {
+        winnerSpan.textContent = `🎉 ${winnerUsername} has won the game!\n${winnerCorrectGuesses} words`;
+    } else {
+        winnerSpan.textContent = `‼️ Draw!\nNo more words left in the list!`;
+    }
+    
 }
 
 /**
@@ -184,7 +191,7 @@ submitGuessForm.addEventListener("submit", (event) => {
 
 // socket.io listeners
 socket.on("force_username_update", (newUsername) => clientMain.setUsername(usernameField, newUsername));
-socket.on("update_player_info", (playerStrings, playerUsernames) => updatePlayerInfo(playerInfoContainer, playerStrings, playerUsernames));
+socket.on("update_player_info", (playerData) => updatePlayerInfo(playerInfoContainer, playerData));
 socket.on("show_start_game_container", (isLeader) => showStartGameContainer(startGameContainer, isLeader));
 socket.on("gameplay_visibility", (isClientTurn, curTurnHolderUsername, curSubstring, endTime) => {
     gameplayVisibility(submitGuessTextBox, substringElement, isClientTurn, curTurnHolderUsername, curSubstring, endTime);

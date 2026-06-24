@@ -1,5 +1,6 @@
 import EventEmitter from "events";
 import {readFile, getRandomInt, getWeightedRandomElement} from "../utils.js";
+import { assert } from "console";
 
 const RANDOM_USERNAME_SUFFIX_CHARACTERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
 const RANDOM_USERNAME_SUFFIX_MIN_LENGTH = 6;
@@ -58,7 +59,7 @@ export class Player {
         this.socketId = socketId;
 
         this.isPlayerTurn = false;
-        this.isPlayerAlive = true;
+        this.isAlive = true;
         this.currentLifeCount = gameManager.getGame(this.roomCode).startingLives;
         this.timeoutId = null; // use with setTimeout for the bomb timer
         this.timerStartTime = 0; // epoch time in ms when the timer was started
@@ -97,7 +98,7 @@ export class Player {
     }
 
     activateTurn() {
-        if (!this.isPlayerAlive || this.currentLifeCount <= 0) {
+        if (!this.isAlive || this.currentLifeCount <= 0) {
             throw new GameError("Player is dead!");
         }
 
@@ -146,7 +147,7 @@ export class Player {
             this.currentLifeCount--;
 
             if (this.currentLifeCount <= 0) {
-                this.isPlayerAlive = false;
+                this.isAlive = false;
             }
         }
 
@@ -207,7 +208,7 @@ export class Player {
             status = "disconnected";
         }
 
-        if (!this.isPlayerAlive) {
+        if (!this.isAlive) {
             status = "dead";
         }
 
@@ -379,15 +380,35 @@ export class Game {
         }
     }
 
-    getRandomSubstring(minSubstringPercent = DEFAULT_MIN_PERCENT_WORDS_CONTAINING_SUBSTRING) {
-        return getWeightedRandomElement(this.substrings.keys(), (substring) => {
-            let occurrences = this.substrings.get(substring);
-            if (occurrences < minSubstringPercent * 0.01 * this.wordDictionary.size) {
-                return 0;
-            } else {
-                return occurrences;
+    decrementSubstrings(word) {
+        for (const substringLength of SUBSTRING_LENGTHS) {
+            for (let i = 0; i <= word.length - substringLength; i++) {
+                let curSubstring = word.substring(i, i + substringLength).toLowerCase();
+
+                if (this.substrings.get(curSubstring) != null) {
+                    let curSubstringCount = this.substrings.get(curSubstring);
+                    this.substrings.set(curSubstring, Math.max(0, curSubstringCount - 1));
+                }
+
             }
-        });
+        }
+    }
+
+    getRandomSubstring(minSubstringPercent = DEFAULT_MIN_PERCENT_WORDS_CONTAINING_SUBSTRING) {
+        try {
+            return getWeightedRandomElement(this.substrings.keys(), (substring) => {
+                let occurrences = this.substrings.get(substring);
+                if (occurrences < minSubstringPercent * 0.01 * this.wordDictionary.size) {
+                    return 0;
+                } else {
+                    return occurrences;
+                }
+            });
+
+        } catch (err) {
+            console.log(err.message);
+            return null;
+        }
     }
 
     addOrUpdatePlayer(player) {
@@ -405,7 +426,7 @@ export class Game {
         if (this.players.length >= this.maxPlayers) {
             throw new GameError("This room is full!");
         }
-        
+
         if (this.isActive) {
             throw new GameError("The game has already started!");
         }
@@ -447,7 +468,7 @@ export class Game {
         let count = 0;
         let winner = null;
         for (const player of this.players) {
-            if (player.isPlayerAlive) {
+            if (player.isAlive) {
                 count++;
                 winner = player;
 
@@ -498,7 +519,7 @@ export class Game {
     }
 
     nextTurn(skipWinnerCheck = false) {
-        // massively prone to infinite loop lol
+        // base case
         if (!skipWinnerCheck && this.lastOneStanding() != null) {
             return this.endGame();
         }
@@ -508,22 +529,39 @@ export class Game {
             this.currentTurn = 0;
         }
 
+        // recurse
         let nextPlayer = this.players[this.currentTurn];
-        if (!nextPlayer.isPlayerAlive) {
+        if (!nextPlayer.isAlive) {
             return this.nextTurn(true);
         }
 
         this.currentSubstring = this.getRandomSubstring();
-        nextPlayer.activateTurn();
+
+        if (this.currentSubstring != null) {
+            nextPlayer.activateTurn();
+
+        } else {
+            this.endGame(true);
+
+        }
     }
 
-    endGame() {
+    endGame(tie = false) {
         this.isActive = false;
         this.isFinished = true;
 
-        let winner = this.lastOneStanding();
-        this.events.emit("game_over", winner.username, winner.numCorrectGuesses);
-        console.log(`game over, winner is ${winner}`);
+        if (!tie) {
+            let winner = this.lastOneStanding();
+            this.events.emit("game_over", winner.username, winner.numCorrectGuesses);
+            console.log(`game over, winner is ${winner}`);
+
+        } else {
+            let tiedPlayers = this.players.filter((player) => player.isAlive);
+            assert(tiedPlayers.length >= 2 || this.players.length === 1 && tiedPlayers.length === 2);
+
+            this.events.emit("game_over", null, tiedPlayers[0].numCorrectGuesses);
+            console.log(`game over, tie between ${tiedPlayers.length} players`);
+        }
     }
 
     /**
@@ -561,6 +599,7 @@ export class Game {
         }
 
         this.wordsSubmitted.set(guess, player);
+        this.decrementSubstrings(guess);
         return {valid: true, reason: "valid"};
     }
 
