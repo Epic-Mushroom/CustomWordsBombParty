@@ -77,9 +77,17 @@ function getDictionaryFile(dictionarySelectionId) {
 function addPlayerListeners(player) {
     player.events.on("started_player_turn", () => {
         let curGame = player.getGame();
+        let gameAlphabetArray = Array.from(curGame.bonusAlphabet);
 
         for (const gamePlayer of curGame.players) {
-            io.to(gamePlayer.socketId).emit("gameplay_visibility", gamePlayer === player, player.username, curGame.currentSubstring, player.timerEndTime);
+            io.to(gamePlayer.socketId).emit("gameplay_visibility", {
+                isClientTurn: gamePlayer === player,
+                curTurnHolderUsername: player.username,
+                curSubstring: curGame.currentSubstring,
+                endTime: player.timerEndTime,
+                playerAlphabetArray: Array.from(gamePlayer.currentAlphabet),
+                gameAlphabetArray: gameAlphabetArray
+            });
         }
     });
 }

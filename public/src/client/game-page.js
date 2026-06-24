@@ -53,10 +53,14 @@ async function startGame() {
  * @param {HTMLElement} gameplayContainer 
  * @param {boolean} isClientTurn 
  */
-function gameplayVisibility(submitGuessTextBox, substringElement, isClientTurn, curTurnHolderUsername, curSubstring, endTime) {
+function gameplayVisibility(
+    submitGuessTextBox, substringElement, isClientTurn, curTurnHolderUsername, curSubstring, endTime,
+    playerAlphabetArray, gameAlphabetArray
+) {
     clientMain.root.style.setProperty("--gameplay-visibility", "flex");
 
     promptInfoVisibility(substringElement, timeLeftElement, curSubstring, endTime);
+    bonusAlphabetVisibility(bonusAlphabetContainer, gameAlphabetArray, playerAlphabetArray);
 
     if (isClientTurn) {
         clientMain.root.style.setProperty("--guess-entry-visibility", "block");
@@ -111,7 +115,7 @@ function updateTimeLeft(timeLeftElement, endTimeSeconds) {
  * @param {Array<string>} gameAlphabetArray 
  * @param {Array<string>} playerAlphabetArray 
  */
-function updateBonusAlphabet(bonusAlphabetContainer, gameAlphabetArray, playerAlphabetArray) {
+function bonusAlphabetVisibility(bonusAlphabetContainer, gameAlphabetArray, playerAlphabetArray) {
     // should make sure the arrays are sorted alphabetically
 
     if (bonusAlphabetContainer.children.length != gameAlphabetArray.length) {
@@ -236,8 +240,13 @@ submitGuessForm.addEventListener("submit", (event) => {
 socket.on("force_username_update", (newUsername) => clientMain.setUsername(usernameField, newUsername));
 socket.on("update_player_info", (playerData) => updatePlayerInfo(playerInfoContainer, playerData));
 socket.on("show_start_game_container", (isLeader) => showStartGameContainer(startGameContainer, isLeader));
-socket.on("gameplay_visibility", (isClientTurn, curTurnHolderUsername, curSubstring, endTime) => {
-    gameplayVisibility(submitGuessTextBox, substringElement, isClientTurn, curTurnHolderUsername, curSubstring, endTime);
+socket.on("gameplay_visibility", (visibilityData) => {
+    gameplayVisibility(
+        submitGuessTextBox, substringElement,
+        visibilityData.isClientTurn, visibilityData.curTurnHolderUsername,
+        visibilityData.curSubstring, visibilityData.endTime,
+        visibilityData.playerAlphabetArray, visibilityData.gameAlphabetArray
+    );
 });
 socket.on("show_winner", showWinner);
 socket.on("connect", async () => {

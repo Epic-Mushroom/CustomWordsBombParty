@@ -261,7 +261,7 @@ export class Game {
                 dictionaryFile = DEFAULT_WORD_LIST_FILE,
                 additionalWords = null,
                 usePresetDictionary = true,
-                bonusAlphabet = DEBUG_BONUS_ALPHABET
+                bonusAlphabet = DEFAULT_BONUS_ALPHABET
             ) {
         this.roomCode = roomCode;
 
