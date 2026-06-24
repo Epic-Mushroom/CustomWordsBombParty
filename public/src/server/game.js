@@ -391,10 +391,6 @@ export class Game {
     }
 
     addOrUpdatePlayer(player) {
-        if (this.players.length >= this.maxPlayers) {
-            throw new GameError("This room is full!");
-        }
-
         let existingPlayer = this.findPlayer(player.username);
 
         if (existingPlayer?.isConnected) {
@@ -403,6 +399,19 @@ export class Game {
         } else if (existingPlayer != null) {
             existingPlayer.reconnect(player.socketId);
             return existingPlayer;
+        }
+
+        // after existing player checks to let players reconnect mid-game
+        if (this.players.length >= this.maxPlayers) {
+            throw new GameError("This room is full!");
+        }
+        
+        if (this.isActive) {
+            throw new GameError("The game has already started!");
+        }
+
+        if (this.isFinished) {
+            throw new GameError("The game has already finished!");
         }
 
         this.players.push(player);
