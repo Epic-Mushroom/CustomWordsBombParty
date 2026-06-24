@@ -30,6 +30,18 @@ export function resetTimesCopied() {
     timesLinkCopied = 0;
 }
 
+/**
+ * 
+ * @param {HTMLElement} backgroundElement 
+ * @param {string} colorHexString 
+ */
+export function flashBackground(backgroundElement, colorHexString = "#ff0000") {
+    root.style.setProperty("--flash-color", colorHexString);
+
+    backgroundElement.classList.toggle("flash", false);
+    requestAnimationFrame(() => backgroundElement.classList.toggle("flash", true));
+}
+
 export function preFillUsernameField(usernameField, username = null) {
     if (username != null) {
         console.log(`trying to pre-fill username field with username "${username}"`)

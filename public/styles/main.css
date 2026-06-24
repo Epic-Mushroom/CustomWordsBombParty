@@ -10,6 +10,12 @@
     initial-value: #229ec0;
 }
 
+@property --flash-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: #ff0000;
+}
+
 @property --gradient-start-color {
     syntax: "<color>";
     inherits: true;
@@ -22,14 +28,14 @@
     initial-value: #229ec0;
 }
 
-@keyframes flashRed {
+@keyframes flash {
     0% {
-        --gradient-start-color: #ff0000;
-        --gradient-end-color: #ff0000;
+        --gradient-start-color: var(--flash-color);
+        --gradient-end-color: var(--flash-color);
     }
     10% {
-        --gradient-start-color: #ff0000;
-        --gradient-end-color: #ff0000;
+        --gradient-start-color: var(--flash-color);
+        --gradient-end-color: var(--flash-color);
     }
     100% {
         --gradient-start-color: var(--initial-gradient-start-color);
@@ -50,8 +56,8 @@
     --start-game-button-visibility: none;
 }
 
-.flash-red {
-    animation: flashRed 0.67s;
+.flash {
+    animation: flash 0.67s;
 }
 
 .page-body {

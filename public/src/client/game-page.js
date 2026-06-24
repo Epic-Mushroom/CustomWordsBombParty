@@ -126,10 +126,11 @@ async function submitGuess(guess) {
 
     if (response.failure) {
         // flash red
+        clientMain.flashBackground(gameBody);
 
         submitGuessTextBox.value = "";
         console.log(`${response.reason}`);
-
+ 
     } else {
         // flash green
         console.log(`valid guess`);
@@ -145,6 +146,7 @@ function getRoomCode() {
 const usernameButton = document.getElementById("submit-username-button");
 const usernameField = document.getElementById("username-field");
 
+const gameBody = document.getElementById("game-body");
 const roomCodeContainer = document.getElementById("room-code-container");
 const mainGameContainer = document.getElementById("main-game");
 const startGameContainer = document.getElementById("start-game");
