@@ -125,15 +125,24 @@ async function submitGuess(guess) {
     let response = await socket.timeout(10000).emitWithAck("submit_guess", guess);
 
     if (response.failure) {
-        // flash red
-        clientMain.flashBackground(gameBody);
-
         submitGuessTextBox.value = "";
         console.log(`${response.reason}`);
+
+        if (response.reason === "alreadySubmitted") {
+            // flash orange
+            clientMain.flashBackground(gameBody, "#ffa500");
+
+        } else {
+            // flash red
+            clientMain.flashBackground(gameBody, "#ff0000");
+
+        }
  
     } else {
-        // flash green
         console.log(`valid guess`);
+
+        // flash green
+        clientMain.flashBackground(gameBody, "#00ff00");
     }
 }
 
