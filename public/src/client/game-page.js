@@ -107,6 +107,48 @@ function updateTimeLeft(timeLeftElement, endTimeSeconds) {
 
 /**
  * 
+ * @param {HTMLElement} bonusAlphabetContainer 
+ * @param {Array<string>} gameAlphabetArray 
+ * @param {Array<string>} playerAlphabetArray 
+ */
+function updateBonusAlphabet(bonusAlphabetContainer, gameAlphabetArray, playerAlphabetArray) {
+    // should make sure the arrays are sorted alphabetically
+
+    if (bonusAlphabetContainer.children.length != gameAlphabetArray.length) {
+        // clear container and refill
+        bonusAlphabetContainer.replaceChildren();
+
+        for (const letter of gameAlphabetArray) {
+            let letterDiv = document.createElement("div");
+            letterDiv.id = `letter-${letter.trim().toLowerCase()}`;
+            letterDiv.classList.add("unobtained-letter");
+            letterDiv.textContent = letter.trim().toUpperCase();
+            bonusAlphabetContainer.append(letterDiv);
+        }
+    }
+
+    let obtainedLetters = new Set();
+    playerAlphabetArray.forEach((letter) => obtainedLetters.add(letter.trim().toLowerCase()));
+
+    for (const letterDiv of bonusAlphabetContainer.children) {
+        const letter = letterDiv.id.replace("letter-", "");
+
+        if (obtainedLetters.has(letter)) {
+            letterDiv.classList.toggle("unobtained-letter", false);
+            letterDiv.classList.toggle("obtained-letter", true);
+            letterDiv.textContent = `${letter.trim().toUpperCase()} ✅`;
+
+        } else {
+            letterDiv.classList.toggle("unobtained-letter", true);
+            letterDiv.classList.toggle("obtained-letter", false);
+            letterDiv.textContent = `${letter.trim().toUpperCase()} ❌`;
+
+        }
+    }
+}
+
+/**
+ * 
  * @param {string} winnerUsername 
  */
 function showWinner(winnerUsername, winnerCorrectGuesses) {
@@ -175,6 +217,7 @@ const timeLeftElement = document.getElementById("time-left");
 const submitGuessTextBox = document.getElementById("guess")
 const submitGuessForm = document.getElementById("submit-guess-form");
 const playerInfoContainer = document.getElementById("player-info");
+const bonusAlphabetContainer = document.getElementById("bonus-alphabet-container");
 
 // intervals
 let bombTimerInterval = null;

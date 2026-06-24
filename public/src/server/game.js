@@ -114,7 +114,8 @@ export class Player {
     }
 
     checkAlphabet() {
-        return this.currentAlphabet.size >= this.getGame().bonusAlphabet.size && this.getGame().bonusAlphabet.isSubsetOf(this.currentAlphabet);
+        // if the bonus alphabet is blank, then no extra lives will be rewarded ever
+        return this.getGame().bonusAlphabet.size > 0 && this.currentAlphabet.size >= this.getGame().bonusAlphabet.size && this.getGame().bonusAlphabet.isSubsetOf(this.currentAlphabet);
     }
 
     activateTurn() {
