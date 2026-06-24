@@ -1,13 +1,13 @@
 @property --initial-gradient-start-color {
     syntax: "<color>";
     inherits: true;
-    initial-value: #7bdaaa;
+    initial-value: #4bf19e;
 }
 
 @property --initial-gradient-end-color {
     syntax: "<color>";
     inherits: true;
-    initial-value: #229ec0;
+    initial-value: #27b4db;
 }
 
 @property --flash-color {
@@ -151,6 +151,27 @@ input[type="text"] {
 #winner {
     display: var(--winner-visibility);
     font-size: larger;
+}
+
+#bonus-alphabet-container {
+    position: fixed;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    gap: 5px;
+
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    bottom: 5%;
+    left: 0%;
+    width: 100%;
+    z-index: 999;
+
+}
+
+.obtained-letter, .unobtained-letter {
+    font-size: 36pt;
 }
 
 #start-game {
