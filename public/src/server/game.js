@@ -15,6 +15,8 @@ export const DEFAULT_MAX_PLAYERS_PER_ROOM = 10;
 export const DEFAULT_STARTING_LIVES = 3;
 export const DEFAULT_MIN_WORDS_PER_SUBSTRING = 100; // should convert this into a percent to account for different sizes of wordlists
 export const DEFAULT_MIN_PERCENT_WORDS_CONTAINING_SUBSTRING = 0.2;
+export const DEFAULT_BONUS_ALPHABET = new Set(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y']);
+export const DEBUG_BONUS_ALPHABET = new Set(["A", "S", "T"]);
 
 export const MIN_DICTIONARY_SIZE = 5;
 
@@ -93,8 +95,26 @@ export class Player {
         return gameManager.getGame(this.roomCode);
     }
 
-    updateAlphabet(guess /* String */) {
+    /**
+     * 
+     * @param {string} guess 
+     */
+    updateAlphabet(guess) {
         // called when submitting a correct guess, if alphabet is filled out then we add an extra life
+        for (const char of guess) {
+            this.currentAlphabet.add(char.toLowerCase());
+            console.log(`alphabet updated with letter ${char.toLowerCase()}`)
+        }
+
+        if (this.checkAlphabet()) {
+            this.currentAlphabet.clear();
+            this.currentLifeCount++;
+            console.log(`${this.username} gained an extra life`);
+        }
+    }
+
+    checkAlphabet() {
+        return this.currentAlphabet.size >= this.getGame().bonusAlphabet.size && this.getGame().bonusAlphabet.isSubsetOf(this.currentAlphabet);
     }
 
     activateTurn() {
@@ -122,6 +142,7 @@ export class Player {
 
         if (isGuessRegistered.valid) {
             this.numCorrectGuesses++;
+            this.updateAlphabet(word);
             this.endTurn(true);
             return {valid: true, reason: "valid"};
 
@@ -237,24 +258,30 @@ export class Game {
                 baseTimerDuration = DEFAULT_BASE_TIMER_DURATION, 
                 startingLives = DEFAULT_STARTING_LIVES,
                 dictionaryFile = DEFAULT_WORD_LIST_FILE,
-                additionalWords = [],
-                usePresetDictionary = true) {
+                additionalWords = null,
+                usePresetDictionary = true,
+                bonusAlphabet = DEBUG_BONUS_ALPHABET
+            ) {
         this.roomCode = roomCode;
 
         this.wordListFile = dictionaryFile;
         this.usesAdditionalWords = additionalWords.length > 0;
-        this.additionalWords = additionalWords;
+        this.additionalWords = (additionalWords == null) ? [] : additionalWords;
         this.usesPresetWordList = usePresetDictionary;
         if (!this.usesPresetWordList && !this.usesAdditionalWords) {
             throw new GameError("Can't not have a word list");
         }
+        this.bonusAlphabet = new Set();
+        for (const letter of bonusAlphabet) {
+            this.bonusAlphabet.add(letter.trim().toLowerCase());
+        }
+
         this.wordsLoaded = false;
 
         /**
          * @type {Array<Player>}
          */
         this.players = [];
-        this.alphabetRule = new Set();
         this.wordDictionary = new Set();
         this.substrings = new Map();
         this.uniqueSubstrings = 0;
