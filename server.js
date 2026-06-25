@@ -165,7 +165,7 @@ io.on("connection", (socket) => {
     socket.on("join_io_room", (ioRoomCode, callback) => {
         socket.join(ioRoomCode);
         callback(); 
-});
+    });
 
     // homepage
     socket.emit("update_rooms_count", gameManager.games.size);
@@ -174,14 +174,16 @@ io.on("connection", (socket) => {
         "pre_fill_room_rule_defaults", 
         gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM, 
         gameLogic.DEFAULT_BASE_TIMER_DURATION, 
-        gameLogic.DEFAULT_STARTING_LIVES
+        gameLogic.DEFAULT_STARTING_LIVES,
+        Array.from(gameLogic.DEFAULT_BONUS_ALPHABET)
     );
 
     socket.on("request_room_rule_defaults", () => socket.emit(
         "pre_fill_room_rule_defaults", 
         gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM, 
         gameLogic.DEFAULT_BASE_TIMER_DURATION, 
-        gameLogic.DEFAULT_STARTING_LIVES
+        gameLogic.DEFAULT_STARTING_LIVES,
+        Array.from(gameLogic.DEFAULT_BONUS_ALPHABET)
     ));
 
     socket.on("set_server_username", (newUsername, callback) => {

@@ -1,10 +1,22 @@
 import * as clientMain from "./client-main.js";
 import {socket} from "./client-main.js";
 
+/**
+ * 
+ * @param {*} maxPlayersField 
+ * @param {number} maxPlayers 
+ * @param {*} baseTimerDurationField 
+ * @param {number} baseTimerDuration 
+ * @param {*} startingLivesField 
+ * @param {number} startingLives 
+ * @param {HTMLElement} bonusAlphabetCheckboxesContainer 
+ * @param {Array<string>} bonusAlphabet 
+ */
 async function preFillRoomRuleDefaults(
     maxPlayersField, maxPlayers,
     baseTimerDurationField, baseTimerDuration,
-    startingLivesField, startingLives
+    startingLivesField, startingLives,
+    bonusAlphabetCheckboxesContainer, bonusAlphabet
 ) {
     console.log(`trying to pre-fill room rule defaults`)
 
@@ -13,6 +25,16 @@ async function preFillRoomRuleDefaults(
     maxPlayersField.value = maxPlayers;
     baseTimerDurationField.value = baseTimerDuration;
     startingLivesField.value = startingLives;
+
+    // reset bonus alphabet
+    let aCharCode = "a".charCodeAt(0);
+
+    for (let i = aCharCode; i < aCharCode + 26; i++) {
+        let letter = String.fromCharCode(i);
+        let letterCheckbox = document.getElementById(`${letter}-checkbox`);
+
+        letterCheckbox.checked = bonusAlphabet.includes(letter.toUpperCase());
+    }
 }
 
 /**
@@ -124,11 +146,12 @@ socket.on("update_rooms_count", (count) => {
 socket.on("show_newly_generated_room", (generatedCode) => {
     clientMain.displayRoomCodeInfo(newlyGeneratedCodeContainer, generatedCode, true);
 });
-socket.on("pre_fill_room_rule_defaults", (maxPlayers, baseTimerDuration, startingLives) => {
+socket.on("pre_fill_room_rule_defaults", (maxPlayers, baseTimerDuration, startingLives, bonusAlphabet) => {
     preFillRoomRuleDefaults(
         maxPlayersField, maxPlayers, 
         baseTimerDurationField, baseTimerDuration,
-        startingLivesField, startingLives
+        startingLivesField, startingLives,
+        bonusAlphabetCheckboxesContainer, bonusAlphabet
     );
 });
 
