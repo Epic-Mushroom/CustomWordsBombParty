@@ -50,8 +50,14 @@ async function startGame() {
 
 /**
  * 
- * @param {HTMLElement} gameplayContainer 
+ * @param {HTMLInputElement} submitGuessTextBox 
+ * @param {HTMLElement} substringElement 
  * @param {boolean} isClientTurn 
+ * @param {string} curTurnHolderUsername 
+ * @param {string} curSubstring 
+ * @param {number} endTime 
+ * @param {Array<string>} playerAlphabetArray 
+ * @param {Array<string>} gameAlphabetArray 
  */
 function gameplayVisibility(
     submitGuessTextBox, substringElement, isClientTurn, curTurnHolderUsername, curSubstring, endTime,
@@ -63,20 +69,28 @@ function gameplayVisibility(
     bonusAlphabetVisibility(bonusAlphabetContainer, gameAlphabetArray, playerAlphabetArray);
 
     if (isClientTurn) {
+        let waitingSpan = document.getElementById("waiting-for-player");
+        waitingSpan.textContent = `Your turn!`;
+
         clientMain.root.style.setProperty("--guess-entry-visibility", "block");
-        clientMain.root.style.setProperty("--waiting-visibility", "none");
+        clientMain.root.style.setProperty("--waiting-visibility", "block");
 
         submitGuessTextBox.value = "";
+        submitGuessTextBox.disabled = false;
         submitGuessTextBox.focus();
 
         console.log("showing submit guess interface");
 
     } else {
         let waitingSpan = document.getElementById("waiting-for-player");
-        waitingSpan.textContent = `Waiting for ${curTurnHolderUsername}`;
+        waitingSpan.textContent = `${curTurnHolderUsername} is up...`;
 
-        clientMain.root.style.setProperty("--guess-entry-visibility", "none");
+        submitGuessTextBox.value = "";
+        submitGuessTextBox.disabled = true;
+
+        clientMain.root.style.setProperty("--guess-entry-visibility", "block");
         clientMain.root.style.setProperty("--waiting-visibility", "block");
+
         console.log("hiding submit guess interface");
 
     }
@@ -103,8 +117,6 @@ function updateTimeLeft(timeLeftElement, endTimeSeconds) {
         timeLeftElement.textContent = Math.max(endTimeSeconds - Date.now() / 1000.0, 0).toFixed(1);
         if (endTimeSeconds - (Date.now() / 1000.0) <= 0) {
             clearInterval(bombTimerInterval);
-            // flash red
-            clientMain.flashTextInput(submitGuessTextBox, "#ff0000");
         }
     }, 100);
 }
@@ -247,6 +259,10 @@ socket.on("gameplay_visibility", (visibilityData) => {
         visibilityData.curSubstring, visibilityData.endTime,
         visibilityData.playerAlphabetArray, visibilityData.gameAlphabetArray
     );
+});
+socket.on("ran_out_of_time", () => {
+    // flash red
+    clientMain.flashTextInput(submitGuessTextBox, "#ff0000");
 });
 socket.on("show_winner", showWinner);
 socket.on("connect", async () => {

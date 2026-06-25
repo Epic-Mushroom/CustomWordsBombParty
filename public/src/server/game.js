@@ -168,12 +168,15 @@ export class Player {
             this.numMisses++;
             this.currentLifeCount--;
 
+            this.events.emit("ran_out_of_time");
+
             if (this.currentLifeCount <= 0) {
                 this.isAlive = false;
             }
         }
 
         // really should be using an event emitter for this
+        this.isPlayerTurn = false;
         gameManager.getGame(this.roomCode).nextTurn();
     }
 

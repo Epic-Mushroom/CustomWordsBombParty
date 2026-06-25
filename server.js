@@ -104,6 +104,10 @@ function addPlayerListeners(player) {
             emitGameplayVisibility(player);
         }
     });
+
+    player.events.on("ran_out_of_time", () => {
+        io.to(player.socketId).emit("ran_out_of_time");
+    })
 }
 
 /**
@@ -205,7 +209,8 @@ io.on("connection", (socket) => {
         startingLives = gameLogic.DEFAULT_STARTING_LIVES,
         dictionarySelectionId = "default-dictionary",
         additionalWordsInput = "",
-        usePresetDictionary = true
+        usePresetDictionary = true,
+        bonusAlphabet = gameLogic.DEFAULT_BONUS_ALPHABET
     ) => {
         try {
             let generatedCode = roomsLogic.generateRoomCode();
@@ -215,7 +220,7 @@ io.on("connection", (socket) => {
 
             let newGame = new gameLogic.Game(
                 generatedCode, maxPlayers, baseTimerDuration, startingLives,
-                dictionaryFile, additionalWords, usePresetDictionary
+                dictionaryFile, additionalWords, usePresetDictionary, bonusAlphabet
             );
             gameManager.addGame(newGame);
             addGameListeners(newGame);
