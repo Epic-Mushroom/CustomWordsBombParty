@@ -55,6 +55,12 @@
     }
 }
 
+* {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    list-style: none;
+    box-sizing: border-box;
+}
+
 :root {
     --gradient-midpoint: 50%;
 
@@ -121,7 +127,7 @@ h1 {
 }
 
 .number-input {
-    width: 21px;
+    width: 28px;
 }
 
 .room-code-info {

@@ -41,7 +41,7 @@ function selectAllLetters(select = true) {
     let aCharCode = "a".charCodeAt(0);
 
     for (let i = aCharCode; i < aCharCode + 26; i++) {
-        let letter = String.fromCharCode(i);
+        let letter = String.fromCharCode(i);    
         let letterCheckbox = document.getElementById(`${letter}-checkbox`);
 
         letterCheckbox.checked = select;

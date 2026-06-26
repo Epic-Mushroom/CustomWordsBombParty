@@ -17,6 +17,7 @@ export const DEFAULT_MIN_WORDS_PER_SUBSTRING = 100; // should convert this into 
 export const DEFAULT_MIN_PERCENT_WORDS_CONTAINING_SUBSTRING = 0.2;
 export const DEFAULT_BONUS_ALPHABET = new Set(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y']);
 export const DEBUG_BONUS_ALPHABET = new Set(["A", "S", "T"]);
+export const DEFAULT_MISSES_BEFORE_SUBSTRING_CHANGE = 2;
 
 export const MIN_DICTIONARY_SIZE = 5;
 
@@ -74,6 +75,8 @@ export class Player {
 
         this.isConnected = true;
         this.playerDisconnectTime = 2 * (new Date()).getTime(); // placeholder value
+
+        this.mostRecentGuess = null;
 
         this.events = new EventEmitter();
     }
@@ -139,6 +142,7 @@ export class Player {
             return {valid: false, reason: "cannotSubmit"};
         }
 
+        this.mostRecentGuess = word.trim().toLowerCase();
         let isGuessRegistered = this.getGame().registerGuess(word, this);
 
         if (isGuessRegistered.valid) {
@@ -168,6 +172,8 @@ export class Player {
             this.numMisses++;
             this.currentLifeCount--;
 
+            this.getGame().incMissCount();
+
             this.events.emit("ran_out_of_time");
 
             if (this.currentLifeCount <= 0) {
@@ -177,7 +183,7 @@ export class Player {
 
         // really should be using an event emitter for this
         this.isPlayerTurn = false;
-        gameManager.getGame(this.roomCode).nextTurn();
+        gameManager.getGame(this.roomCode).nextTurn(!success);
     }
 
     startTimer() {
@@ -266,7 +272,8 @@ export class Game {
                 dictionaryFile = DEFAULT_WORD_LIST_FILE,
                 additionalWords = null,
                 usePresetDictionary = true,
-                bonusAlphabet = DEFAULT_BONUS_ALPHABET
+                bonusAlphabet = DEFAULT_BONUS_ALPHABET,
+                numMissesBeforeSubstringChange = DEFAULT_MISSES_BEFORE_SUBSTRING_CHANGE
             ) {
         this.roomCode = roomCode;
 
@@ -281,6 +288,7 @@ export class Game {
         for (const letter of bonusAlphabet) {
             this.bonusAlphabet.add(letter.trim().toLowerCase());
         }
+        this.numMissesBeforeSubstringChange = DEFAULT_MISSES_BEFORE_SUBSTRING_CHANGE;
 
         this.wordsLoaded = false;
 
@@ -317,6 +325,7 @@ export class Game {
          */
         this.currentTurn = 0; // index of players
         this.currentSubstring = "ION";
+        this.currentNumMisses = 0;
         this.wordsSubmitted = new Map();
 
         this.isActive = false;
@@ -551,7 +560,7 @@ export class Game {
 
     }
 
-    nextTurn(skipWinnerCheck = false) {
+    nextTurn(playerLostLife, skipWinnerCheck = false) {
         // base case
         if (!skipWinnerCheck && this.lastOneStanding() != null) {
             return this.endGame();
@@ -565,10 +574,13 @@ export class Game {
         // recurse
         let nextPlayer = this.players[this.currentTurn];
         if (!nextPlayer.isAlive) {
-            return this.nextTurn(true);
+            return this.nextTurn(playerLostLife, true);
         }
 
-        this.currentSubstring = this.getRandomSubstring();
+        if (!playerLostLife || this.currentNumMisses >= this.numMissesBeforeSubstringChange) {
+            this.currentSubstring = this.getRandomSubstring();
+            this.currentNumMisses = 0;
+        }
 
         if (this.currentSubstring != null) {
             nextPlayer.activateTurn();
@@ -595,6 +607,10 @@ export class Game {
             this.events.emit("game_over", null, tiedPlayers[0].numCorrectGuesses);
             console.log(`game over, tie between ${tiedPlayers.length} players`);
         }
+    }
+
+    incMissCount(count = 1) {
+        this.currentNumMisses = Math.min(this.currentNumMisses + count, this.numMissesBeforeSubstringChange);
     }
 
     /**
