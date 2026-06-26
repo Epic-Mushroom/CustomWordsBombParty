@@ -90,6 +90,24 @@ function emitGameplayVisibility(player) {
     }
 }
 
+function emitPlayerInfoVisibility(roomCode) {
+    let game = gameManager.getGame(roomCode);
+
+    let playerData = [];
+    for (const player of game.players) {
+        playerData.push({
+            asString: player.toString(), username: player.username, numCorrectGuesses: player.numCorrectGuesses,
+            numIncorrectGuesses: player.numIncorrectGuesses, numMisses: player.numMisses
+        })
+    }
+    
+    io.to(roomCode).emit("player_info_visibility", playerData);
+
+    if (!game.isActive && !game.isFinished) {
+        io.to(game.leader?.socketId).emit("show_start_game_container", true);
+    }
+}
+
 /**
  * 
  * @param {gameLogic.Player} player 
@@ -315,19 +333,8 @@ io.on("connection", (socket) => {
 eventManager.on("one_second_tick", (numTicks) => {
     // console.log("one second tick");
 
-    for (const [key, value] of gameManager.games) {
-        let playerData = [];
-        for (const player of value.players) {
-            playerData.push({
-                asString: player.toString(), username: player.username, numCorrectGuesses: player.numCorrectGuesses,
-                numIncorrectGuesses: player.numIncorrectGuesses, numMisses: player.numMisses
-            })
-        }
-        io.to(key).emit("update_player_info", playerData);
-
-        if (!value.isActive && !value.isFinished) {
-            io.to(value.leader?.socketId).emit("show_start_game_container", true);
-        }
+    for (const key of gameManager.games.keys()) {
+        emitPlayerInfoVisibility(key);
     }
 });
 

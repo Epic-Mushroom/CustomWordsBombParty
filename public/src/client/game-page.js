@@ -250,7 +250,7 @@ submitGuessForm.addEventListener("submit", (event) => {
 
 // socket.io listeners
 socket.on("force_username_update", (newUsername) => clientMain.setUsername(usernameField, newUsername));
-socket.on("update_player_info", (playerData) => updatePlayerInfo(playerInfoContainer, playerData));
+socket.on("player_info_visibility", (playerData) => updatePlayerInfo(playerInfoContainer, playerData));
 socket.on("show_start_game_container", (isLeader) => showStartGameContainer(startGameContainer, isLeader));
 socket.on("gameplay_visibility", (visibilityData) => {
     gameplayVisibility(
