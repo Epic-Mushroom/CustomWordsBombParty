@@ -260,9 +260,11 @@ socket.on("gameplay_visibility", (visibilityData) => {
         visibilityData.playerAlphabetArray, visibilityData.gameAlphabetArray
     );
 });
-socket.on("ran_out_of_time", () => {
+socket.on("ran_out_of_time", (callback) => {
     // flash red
     clientMain.flashTextInput(submitGuessTextBox, "#ff0000");
+
+    callback({submissionBoxContent: `${submitGuessTextBox.value}`});
 });
 socket.on("show_winner", showWinner);
 socket.on("connect", async () => {

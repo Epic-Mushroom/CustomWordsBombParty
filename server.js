@@ -126,10 +126,23 @@ function addPlayerListeners(player) {
         }
     });
 
-    player.events.on("ran_out_of_time", () => {
-        io.to(player.socketId).emit("ran_out_of_time");
-        emitPlayerInfoVisibility(player.roomCode);
-    })
+    player.events.on("ran_out_of_time", async () => {
+        let mostRecentGuess = "";
+
+        try {
+            const response = (await io.to(player.socketId).timeout(10000).emitWithAck("ran_out_of_time"))[0];
+            mostRecentGuess = response.submissionBoxContent?.trim().toLowerCase();
+
+        } catch (err) {
+            console.log(`error upon waiting for response from client: ${err.message}`);
+
+        } finally {
+            player.mostRecentGuess = mostRecentGuess;
+            player.mostRecentGuessWasCorrect = false;
+            emitPlayerInfoVisibility(player.roomCode);
+
+        }
+    });
 }
 
 /**

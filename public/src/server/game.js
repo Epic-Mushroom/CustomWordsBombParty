@@ -76,7 +76,7 @@ export class Player {
         this.isConnected = true;
         this.playerDisconnectTime = 2 * (new Date()).getTime(); // placeholder value
 
-        this.mostRecentGuess = null;
+        this.mostRecentGuess = "";
         this.mostRecentGuessWasCorrect = false;
 
         this.events = new EventEmitter();
@@ -234,7 +234,7 @@ export class Player {
 
     toString() {
         let crown = (this.isGameLeader()) ? "👑 " : "";
-        let mostRecentSubmission = (this.mostRecentGuess == null) ? "" : `| ${this.mostRecentGuess} ${(this.mostRecentGuessWasCorrect) ? "✅" : "❌"} | `;
+        let mostRecentSubmission = (this.mostRecentGuess === "") ? "" : `| ${this.mostRecentGuess} ${(this.mostRecentGuessWasCorrect) ? "✅" : "❌"} | `;
         let status = "in-game";
 
         if (!this.getGame().isActive) {
