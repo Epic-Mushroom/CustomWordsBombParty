@@ -77,6 +77,7 @@ export class Player {
         this.playerDisconnectTime = 2 * (new Date()).getTime(); // placeholder value
 
         this.mostRecentGuess = null;
+        this.mostRecentGuessWasCorrect = false;
 
         this.events = new EventEmitter();
     }
@@ -136,6 +137,8 @@ export class Player {
     }
 
     submitGuess(word) {
+        let response = {valid: true, reason: "valid"};
+
         console.log(`${this.username} tried to submit ${word}`);
 
         if (!this.getGame().isActive || !this.isPlayerTurn) {
@@ -143,19 +146,23 @@ export class Player {
         }
 
         this.mostRecentGuess = word.trim().toLowerCase();
-        this.events.emit("submitted_guess");
         let isGuessRegistered = this.getGame().registerGuess(word, this);
 
         if (isGuessRegistered.valid) {
             this.numCorrectGuesses++;
+            this.mostRecentGuessWasCorrect = true;
             this.updateAlphabet(word);
             this.endTurn(true);
-            return {valid: true, reason: "valid"};
 
         } else {
             this.numIncorrectGuesses++;
-            return {valid: false, reason: isGuessRegistered.reason};
+            this.mostRecentGuessWasCorrect = false;
+            response.valid = false;
+            response.reason = isGuessRegistered.reason;
         }
+
+        this.events.emit("submitted_guess");
+        return response;
     }
 
     resetTimer() {
@@ -227,7 +234,7 @@ export class Player {
 
     toString() {
         let crown = (this.isGameLeader()) ? "👑 " : "";
-        let mostRecentSubmission = (this.mostRecentGuess == null) ? "" : `| ${this.mostRecentGuess} | `;
+        let mostRecentSubmission = (this.mostRecentGuess == null) ? "" : `| ${this.mostRecentGuess} ${(this.mostRecentGuessWasCorrect) ? "✅" : "❌"} | `;
         let status = "in-game";
 
         if (!this.getGame().isActive) {
