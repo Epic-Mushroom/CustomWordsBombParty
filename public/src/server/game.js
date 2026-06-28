@@ -227,7 +227,7 @@ export class Player {
 
     toString() {
         let crown = (this.isGameLeader()) ? "👑 " : "";
-
+        let mostRecentSubmission = (this.mostRecentGuess == null) ? "" : `| ${this.mostRecentGuess} | `;
         let status = "in-game";
 
         if (!this.getGame().isActive) {
@@ -257,7 +257,7 @@ export class Player {
             livesDisplay += "💛";
         }
 
-        return `${crown}${this.username} ${livesDisplay} (${status})`;
+        return `${crown}${this.username} ${mostRecentSubmission}${livesDisplay} (${status})`;
     }
 }
 
