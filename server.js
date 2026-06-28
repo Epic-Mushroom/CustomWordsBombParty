@@ -17,7 +17,6 @@ class ServerError extends Error {
         this.name = "ServerError";
     }
 }
-
 /**
  * 
  * @param {bigint} numTicks 
@@ -113,6 +112,10 @@ function emitPlayerInfoVisibility(roomCode) {
  * @param {gameLogic.Player} player 
  */
 function addPlayerListeners(player) {
+    player.events.on("submitted_guess", () => {
+        emitPlayerInfoVisibility(player.roomCode);
+    });
+
     player.events.on("started_player_turn", () => {
         emitGameplayVisibility(player);
     });
@@ -125,6 +128,7 @@ function addPlayerListeners(player) {
 
     player.events.on("ran_out_of_time", () => {
         io.to(player.socketId).emit("ran_out_of_time");
+        emitPlayerInfoVisibility(player.roomCode);
     })
 }
 

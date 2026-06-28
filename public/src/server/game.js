@@ -143,6 +143,7 @@ export class Player {
         }
 
         this.mostRecentGuess = word.trim().toLowerCase();
+        this.events.emit("submitted_guess");
         let isGuessRegistered = this.getGame().registerGuess(word, this);
 
         if (isGuessRegistered.valid) {
