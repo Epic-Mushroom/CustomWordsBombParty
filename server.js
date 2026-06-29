@@ -139,6 +139,10 @@ function addPlayerListeners(player) {
             console.log(`error upon waiting for response from client: ${err.message}`);
 
         } finally {
+            if (mostRecentGuess === "") {
+                mostRecentGuess = player.mostRecentGuess;
+            }
+            
             player.mostRecentGuess = mostRecentGuess;
             player.mostRecentGuessWasCorrect = false;
             emitPlayerInfoVisibility(player.roomCode);
