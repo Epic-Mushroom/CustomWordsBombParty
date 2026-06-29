@@ -61,6 +61,18 @@
     box-sizing: border-box;
 }
 
+.bolded {
+    font-weight: bold;
+}
+
+.italicized {
+    font-style: italic;
+}
+
+.underlined {
+    text-decoration: underline;
+}
+
 :root {
     --gradient-midpoint: 50%;
 

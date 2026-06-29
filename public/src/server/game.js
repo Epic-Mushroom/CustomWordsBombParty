@@ -77,6 +77,7 @@ export class Player {
         this.playerDisconnectTime = 2 * (new Date()).getTime(); // placeholder value
 
         this.mostRecentGuess = "";
+        this.mostRecentSubstring = "xyz";
         this.mostRecentGuessWasCorrect = false;
 
         this.events = new EventEmitter();
@@ -146,6 +147,7 @@ export class Player {
         }
 
         this.mostRecentGuess = word.trim().toLowerCase();
+        this.mostRecentSubstring = this.getGame().currentSubstring;
         let isGuessRegistered = this.getGame().registerGuess(word, this);
 
         if (isGuessRegistered.valid) {
@@ -177,6 +179,7 @@ export class Player {
 
         if (!success) {
             console.log(`   ${this.username} failed to submit a word in time and has lost a life`);
+            this.mostRecentSubstring = this.getGame().currentSubstring;
             this.numMisses++;
             this.currentLifeCount--;
 
@@ -234,23 +237,28 @@ export class Player {
 
     toString() {
         let crown = (this.isGameLeader()) ? "👑 " : "";
-        let mostRecentSubmission = (this.mostRecentGuess === "") ? "" : `| ${this.mostRecentGuess} ${(this.mostRecentGuessWasCorrect) ? "✅" : "❌"} | `;
+        // let mostRecentSubmission = (this.mostRecentGuess === "") ? "" : `| ${this.mostRecentGuess} ${(this.mostRecentGuessWasCorrect) ? "✅" : "❌"} | `;
         let status = "in-game";
+        let displayStatus = false;
 
         if (!this.getGame().isActive) {
             status = "ready";
+            displayStatus = true;
         }
 
         if (this.getGame().isFinished) {
             status = "idle"; // could change this to winner/loser
+            // displayStatus = true;
         }
 
         if (!this.isConnected) {
             status = "disconnected";
+            displayStatus = true;
         }
 
         if (!this.isAlive) {
             status = "dead";
+            displayStatus = true;
         }
 
         let livesDisplay = "";
@@ -264,7 +272,12 @@ export class Player {
             livesDisplay += "💛";
         }
 
-        return `${crown}${this.username} ${mostRecentSubmission}${livesDisplay} (${status})`;
+        if (displayStatus) {
+            return `${crown}${this.username} ${livesDisplay} (${status})`;
+        } else {
+            return `${crown}${this.username} ${livesDisplay}`;
+        }
+
     }
 }
 

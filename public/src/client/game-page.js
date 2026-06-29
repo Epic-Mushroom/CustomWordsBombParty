@@ -12,13 +12,36 @@ function updatePlayerInfo(playerInfoContainer, playerData) {
         playerString += ` ${playerData[i].numCorrectGuesses} ✅ | ${playerData[i].numIncorrectGuesses} ❌ | ${playerData[i].numMisses} 💣`;
 
         let newPlayerLi = document.createElement("li");
+        // might be better to use the "bolded" css class and apply it to newPlayerLi if it's the players turn
+        // instead of making a whole new "textElement"
+        let textElement = newPlayerLi;
         if (playerData[i].username === localStorage.getItem("username")) {
             let boldElement = document.createElement("b");
-            boldElement.textContent = playerString;
+            textElement = boldElement;
             newPlayerLi.append(boldElement);
-        } else {
-            newPlayerLi.textContent = playerString;
         }
+
+        let newSpan = document.createElement("span");
+        newSpan.textContent = playerString;
+        textElement.append(newSpan);
+
+        let mostRecentSubmission = (playerData[i].mostRecentGuess === "") ? "" : ` | ${playerData[i].mostRecentGuess} ${(playerData[i].mostRecentGuessWasCorrect) ? "✅" : "❌"}`;
+
+        // underlines the substring in the player's most recent submission
+        const substringIndex = mostRecentSubmission.indexOf(playerData[i].mostRecentSubstring);
+        const substringLen = playerData[i].mostRecentSubstring.length;
+        if (substringIndex != -1) {
+            let part1 = document.createTextNode(mostRecentSubmission.substring(0, substringIndex));
+            let part2 = document.createElement("span");
+            part2.textContent = playerData[i].mostRecentSubstring;
+            part2.classList.add("underlined");
+            let part3 = document.createTextNode(mostRecentSubmission.substring(substringIndex + substringLen, mostRecentSubmission.length));
+            textElement.append(part1, part2, part3);
+
+        } else {
+            textElement.append(document.createTextNode(mostRecentSubmission));
+        }
+
         playerInfoContainer.append(newPlayerLi);
 
         // console.log(`adding ${playerString} to player info`)

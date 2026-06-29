@@ -96,7 +96,8 @@ function emitPlayerInfoVisibility(roomCode) {
     for (const player of game.players) {
         playerData.push({
             asString: player.toString(), username: player.username, numCorrectGuesses: player.numCorrectGuesses,
-            numIncorrectGuesses: player.numIncorrectGuesses, numMisses: player.numMisses
+            numIncorrectGuesses: player.numIncorrectGuesses, numMisses: player.numMisses, mostRecentSubstring: player.mostRecentSubstring,
+            mostRecentGuess: player.mostRecentGuess, mostRecentGuessWasCorrect: player.mostRecentGuessWasCorrect
         })
     }
     
@@ -127,6 +128,7 @@ function addPlayerListeners(player) {
     });
 
     player.events.on("ran_out_of_time", async () => {
+        // shows contents of user's submit box on running out of time
         let mostRecentGuess = "";
 
         try {
