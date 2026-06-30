@@ -79,6 +79,7 @@ export class Player {
         this.mostRecentGuess = "";
         this.mostRecentSubstring = "xyz";
         this.mostRecentGuessWasCorrect = false;
+        this.mostRecentGuessWasBomb = false;
 
         this.events = new EventEmitter();
     }
@@ -147,6 +148,7 @@ export class Player {
         }
 
         this.mostRecentGuess = word.trim().toLowerCase();
+        this.mostRecentGuessWasBomb = false;
         this.mostRecentSubstring = this.getGame().currentSubstring;
         let isGuessRegistered = this.getGame().registerGuess(word, this);
 
@@ -180,6 +182,8 @@ export class Player {
         if (!success) {
             console.log(`   ${this.username} failed to submit a word in time and has lost a life`);
             this.mostRecentSubstring = this.getGame().currentSubstring;
+            this.mostRecentGuessWasCorrect = false;
+            this.mostRecentGuessWasBomb = true;
             this.numMisses++;
             this.currentLifeCount--;
 

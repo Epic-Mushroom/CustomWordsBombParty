@@ -18,7 +18,7 @@ async function preFillRoomRuleDefaults(
     startingLivesField, startingLives,
     bonusAlphabetCheckboxesContainer, bonusAlphabet
 ) {
-    console.log(`trying to pre-fill room rule defaults`)
+    console.log(`trying to pre-fill room rule defaults`);
 
     // const response = await socket.timeout(10000).emitWithAck("get_room_rule_defaults");
 

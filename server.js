@@ -97,7 +97,8 @@ function emitPlayerInfoVisibility(roomCode) {
         playerData.push({
             asString: player.toString(), username: player.username, numCorrectGuesses: player.numCorrectGuesses,
             numIncorrectGuesses: player.numIncorrectGuesses, numMisses: player.numMisses, mostRecentSubstring: player.mostRecentSubstring,
-            mostRecentGuess: player.mostRecentGuess, mostRecentGuessWasCorrect: player.mostRecentGuessWasCorrect
+            mostRecentGuess: player.mostRecentGuess, mostRecentGuessWasCorrect: player.mostRecentGuessWasCorrect,
+            mostRecentGuessWasBomb: player.mostRecentGuessWasBomb
         })
     }
     
@@ -142,9 +143,8 @@ function addPlayerListeners(player) {
             if (mostRecentGuess === "") {
                 mostRecentGuess = player.mostRecentGuess;
             }
-            
+
             player.mostRecentGuess = mostRecentGuess;
-            player.mostRecentGuessWasCorrect = false;
             emitPlayerInfoVisibility(player.roomCode);
 
         }
