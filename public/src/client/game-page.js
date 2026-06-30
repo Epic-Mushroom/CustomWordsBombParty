@@ -11,14 +11,9 @@ function updatePlayerInfo(playerInfoContainer, playerData) {
 
         playerString += ` ${playerData[i].numCorrectGuesses} ✅ | ${playerData[i].numIncorrectGuesses} ❌ | ${playerData[i].numMisses} 💣`;
 
-        let newPlayerLi = document.createElement("li");
-        // might be better to use the "bolded" css class and apply it to newPlayerLi if it's the players turn
-        // instead of making a whole new "textElement"
-        let textElement = newPlayerLi;
-        if (playerData[i].username === localStorage.getItem("username")) {
-            let boldElement = document.createElement("b");
-            textElement = boldElement;
-            newPlayerLi.append(boldElement);
+        let textElement = document.createElement("li");
+        if (playerData[i].curTurnHolderUsername === playerData[i].username) {
+            textElement.classList.add("bolded");
         }
 
         let newSpan = document.createElement("span");
@@ -66,7 +61,7 @@ function updatePlayerInfo(playerInfoContainer, playerData) {
             textElement.append(document.createTextNode(mostRecentSubmission));
         }
 
-        playerInfoContainer.append(newPlayerLi);
+        playerInfoContainer.append(textElement);
 
         // console.log(`adding ${playerString} to player info`)
     }

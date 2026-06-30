@@ -103,7 +103,8 @@ function emitPlayerInfoVisibility(roomCode) {
         playerData.push({
             asString: player.toString(), username: player.username, numCorrectGuesses: player.numCorrectGuesses,
             numIncorrectGuesses: player.numIncorrectGuesses, numMisses: player.numMisses, mostRecentSubstring: player.mostRecentSubstring,
-            mostRecentGuess: player.mostRecentGuess, mostRecentGuessStatus: player.mostRecentGuessStatus
+            mostRecentGuess: player.mostRecentGuess, mostRecentGuessStatus: player.mostRecentGuessStatus, 
+            curTurnHolderUsername: game.players[game.currentTurn].username
         })
     }
     
