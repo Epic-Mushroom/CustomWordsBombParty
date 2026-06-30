@@ -224,7 +224,8 @@ h1 {
 
 #winner {
     display: var(--winner-visibility);
-    font-size: larger;
+    padding-bottom: 40px;
+    font-size: 28pt;
 }
 
 #player-info-container {
