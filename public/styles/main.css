@@ -156,7 +156,7 @@ h1 {
     margin: 0 auto;
     align-items: center;
     width: 320px;
-    gap: 15px;
+    gap: 17px;
 }
 
 #custom-words-settings {
@@ -204,6 +204,17 @@ h1 {
     color: rgb(0, 63, 0);
 }
 
+#main-game {
+    display: flex;
+    flex-direction: row;
+    max-height: 100vh;
+}
+
+#not-bonus-alphabet-container {
+    align-self: flex-start;
+    flex-grow: 1;
+}
+
 #gameplay {
     display: var(--gameplay-visibility);
     flex-direction: column;
@@ -239,7 +250,9 @@ h1 {
 #bonus-alphabet-container {
     background-color: rgba(0, 0, 0, 0.438);
 
-    position: fixed;
+    position: sticky;
+    flex-shrink: 0;
+
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
@@ -250,13 +263,14 @@ h1 {
     text-align: center;
     top: 0%;
     right: 0%;
+
     height: 100%;
     z-index: 999;
 
 }
 
 .obtained-letter, .unobtained-letter {
-    font-size: 36pt;
+    font-size: 20pt;
 }
 
 #start-game {
