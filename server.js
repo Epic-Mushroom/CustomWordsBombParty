@@ -261,12 +261,16 @@ io.on("connection", (socket) => {
         bonusAlphabet = gameLogic.DEFAULT_BONUS_ALPHABET
     ) => {
         try {
-            let generatedCode = roomsLogic.generateRoomCode();
-            let dictionaryFile = getDictionaryFile(dictionarySelectionId);
+            const generatedCode = roomsLogic.generateRoomCode();
+            const dictionaryFile = getDictionaryFile(dictionarySelectionId);
 
-            let additionalWords = parseCommaOrLineBreakSeparatedValues(additionalWordsInput);
+            const additionalWords = parseCommaOrLineBreakSeparatedValues(additionalWordsInput);
 
-            let newGame = new gameLogic.Game(
+            if (additionalWords.length === 0) {
+                usePresetDictionary = true;
+            }
+
+            const newGame = new gameLogic.Game(
                 generatedCode, parseFloat(maxPlayers), parseFloat(baseTimerDuration), parseFloat(startingLives),
                 dictionaryFile, additionalWords, usePresetDictionary, bonusAlphabet
             );
@@ -300,7 +304,7 @@ io.on("connection", (socket) => {
         }
 
         try {
-            let roomGame = gameManager.games.get(roomCode);
+            const roomGame = gameManager.games.get(roomCode);
             let newPlayer = new gameLogic.Player(username, roomCode, socket.id);
 
             console.log(`created Player with username ${newPlayer.username}`);

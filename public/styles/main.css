@@ -101,6 +101,9 @@ input[type="text"] {
 }
 
 .page-body {
+    display: flex;
+    flex-direction: column;
+
     margin-top: 67px;
     background: linear-gradient(to right, var(--gradient-start-color), var(--gradient-end-color) var(--gradient-midpoint));
 }

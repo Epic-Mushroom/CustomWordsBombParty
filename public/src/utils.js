@@ -86,5 +86,9 @@ export function getWeightedRandomElement(iterable, weightFunction) {
  * @returns {Array<string>}
  */
 export function parseCommaOrLineBreakSeparatedValues(input) {
+  if (input === "") {
+    return [];
+  }
+
   return input.split(/[,\r\n]+/);
 }

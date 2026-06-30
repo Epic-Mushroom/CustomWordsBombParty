@@ -73,6 +73,7 @@ function customWordsSettingsVisibility(customWordsSettingsContainer, visible) {
         clientMain.root.style.setProperty("--custom-words-settings-visibility", "flex");
     } else {
         clientMain.root.style.setProperty("--custom-words-settings-visibility", "none");
+        customWordsField.value = "";
     }
 }
 
