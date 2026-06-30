@@ -104,12 +104,30 @@ input[type="text"] {
     display: flex;
     flex-direction: column;
 
-    margin-top: 67px;
+    min-height: calc(100vh - 12px);
+
+    margin: 12px 0 0 0;
+    
     background: linear-gradient(to right, var(--gradient-start-color), var(--gradient-end-color) var(--gradient-midpoint));
 }
 
+.page-body > *:not(footer) {
+    flex-grow: 1;
+}
+
 footer {
-    padding-bottom: 5%;
+    background-color: #000000;
+    font-size: small;
+    color: #ffffff;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 100%;
+    margin: 0 auto;
+    padding-top: 7px;
+    padding-bottom: 7px;
 }
 
 h1 {
@@ -156,6 +174,7 @@ h1 {
 
 #active-rooms {
     padding-top: 40px;
+    padding-bottom: 27px;
 }
 
 .number-input {
