@@ -25,7 +25,31 @@ function updatePlayerInfo(playerInfoContainer, playerData) {
         newSpan.textContent = playerString;
         textElement.append(newSpan);
 
-        let mostRecentSubmission = (playerData[i].mostRecentGuess === "") ? "" : ` | ${playerData[i].mostRecentGuess} ${(playerData[i].mostRecentGuessWasCorrect) ? "✅" : ((playerData[i].mostRecentGuessWasBomb) ? "💣" : "❌")}`;
+        let mostRecentSubmission = (playerData[i].mostRecentGuess === "") ? "" : ` | ${playerData[i].mostRecentGuess} `;
+        // if there is a most recent guess, switch over statuses
+        if (mostRecentSubmission !== "") {
+            switch (playerData[i].mostRecentGuessStatus) {
+                case "CORRECT":
+                    mostRecentSubmission += "✅";
+                    break;
+                case "INCORRECT":
+                    mostRecentSubmission += "❌";
+                    break;
+                case "BOMB":
+                    mostRecentSubmission += "💣";
+                    break;
+                case "LOCKED":
+                    if (Math.random() * 50 <= 1) {
+                        mostRecentSubmission += "🔏";
+                    } else {
+                        mostRecentSubmission += "🔒";
+                    }
+                    break;
+                case "NONE":
+                default:
+                    break;
+            }
+        }
 
         // underlines the substring in the player's most recent submission
         const substringIndex = mostRecentSubmission.indexOf(playerData[i].mostRecentSubstring);

@@ -97,8 +97,7 @@ function emitPlayerInfoVisibility(roomCode) {
         playerData.push({
             asString: player.toString(), username: player.username, numCorrectGuesses: player.numCorrectGuesses,
             numIncorrectGuesses: player.numIncorrectGuesses, numMisses: player.numMisses, mostRecentSubstring: player.mostRecentSubstring,
-            mostRecentGuess: player.mostRecentGuess, mostRecentGuessWasCorrect: player.mostRecentGuessWasCorrect,
-            mostRecentGuessWasBomb: player.mostRecentGuessWasBomb
+            mostRecentGuess: player.mostRecentGuess, mostRecentGuessStatus: player.mostRecentGuessStatus
         })
     }
     

@@ -40,6 +40,14 @@ export const SECONDS_UNTIL_GAME_IS_OLD = 600;
 
 export const SUBSTRING_LENGTHS = [2, 3];
 
+export const GuessStatus = Object.freeze({
+    CORRECT: "CORRECT",
+    INCORRECT: "INCORRECT",
+    BOMB: "BOMB",
+    LOCKED: "LOCKED",
+    NONE: "NONE"
+});
+
 class GameError extends Error {
     constructor(message) {
         super(message);
@@ -78,8 +86,7 @@ export class Player {
 
         this.mostRecentGuess = "";
         this.mostRecentSubstring = "xyz";
-        this.mostRecentGuessWasCorrect = false;
-        this.mostRecentGuessWasBomb = false;
+        this.mostRecentGuessStatus = GuessStatus.NONE;
 
         this.events = new EventEmitter();
     }
@@ -148,19 +155,22 @@ export class Player {
         }
 
         this.mostRecentGuess = word.trim().toLowerCase();
-        this.mostRecentGuessWasBomb = false;
         this.mostRecentSubstring = this.getGame().currentSubstring;
         let isGuessRegistered = this.getGame().registerGuess(word, this);
 
         if (isGuessRegistered.valid) {
             this.numCorrectGuesses++;
-            this.mostRecentGuessWasCorrect = true;
+            this.mostRecentGuessStatus = GuessStatus.CORRECT;
             this.updateAlphabet(word);
             this.endTurn(true);
 
         } else {
             this.numIncorrectGuesses++;
-            this.mostRecentGuessWasCorrect = false;
+            if (isGuessRegistered.reason === "alreadySubmitted") {
+                this.mostRecentGuessStatus = GuessStatus.LOCKED;
+            } else {
+                this.mostRecentGuessStatus = GuessStatus.INCORRECT
+            }
             response.valid = false;
             response.reason = isGuessRegistered.reason;
         }
@@ -182,8 +192,7 @@ export class Player {
         if (!success) {
             console.log(`   ${this.username} failed to submit a word in time and has lost a life`);
             this.mostRecentSubstring = this.getGame().currentSubstring;
-            this.mostRecentGuessWasCorrect = false;
-            this.mostRecentGuessWasBomb = true;
+            this.mostRecentGuessStatus = GuessStatus.BOMB;
             this.numMisses++;
             this.currentLifeCount--;
 
@@ -241,7 +250,6 @@ export class Player {
 
     toString() {
         let crown = (this.isGameLeader()) ? "👑 " : "";
-        // let mostRecentSubmission = (this.mostRecentGuess === "") ? "" : `| ${this.mostRecentGuess} ${(this.mostRecentGuessWasCorrect) ? "✅" : "❌"} | `;
         let status = "in-game";
         let displayStatus = false;
 
