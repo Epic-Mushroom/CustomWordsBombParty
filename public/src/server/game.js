@@ -1,6 +1,6 @@
 import EventEmitter from "events";
 import {readFile, getRandomInt, getWeightedRandomElement} from "../utils.js";
-import { assert } from "console";
+import { assert, time } from "console";
 
 const RANDOM_USERNAME_SUFFIX_CHARACTERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
 const RANDOM_USERNAME_SUFFIX_MIN_LENGTH = 6;
@@ -18,6 +18,7 @@ export const DEFAULT_MIN_PERCENT_WORDS_CONTAINING_SUBSTRING = 0.2;
 export const DEFAULT_BONUS_ALPHABET = new Set(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y']);
 export const DEBUG_BONUS_ALPHABET = new Set(["A", "S", "T"]);
 export const DEFAULT_MISSES_BEFORE_SUBSTRING_CHANGE = 2;
+export const DEFAULT_TIME_INC = 3; // how much the timer increases when the last player submits a correct guess, caps at the base timer dur
 
 export const MIN_DICTIONARY_SIZE = 5;
 
@@ -186,8 +187,11 @@ export class Player {
     }
 
     endTurn(success = false) {
-        this.resetTimer()
+        const msLeft = this.getTimeLeft();
+
+        this.resetTimer();
         console.log(`${this.username}'s turn has ended`);
+        console.log(`   ${msLeft} milliseconds left on the clock`);
 
         if (!success) {
             console.log(`   ${this.username} failed to submit a word in time and has lost a life`);
@@ -207,25 +211,29 @@ export class Player {
 
         // really should be using an event emitter for this
         this.isPlayerTurn = false;
-        gameManager.getGame(this.roomCode).nextTurn(!success);
+        gameManager.getGame(this.roomCode).nextTurn(!success, msLeft);
     }
 
     startTimer() {
-        this.timeoutId = setTimeout(() => this.endTurn(), this.getGame().baseTimerDuration * 1000);
+        this.timeoutId = setTimeout(() => this.endTurn(), this.getGame().curTimerDuration * 1000);
         this.timerStartTime = (new Date()).getTime();
-        this.timerEndTime = this.timerStartTime + this.getGame().baseTimerDuration * 1000;
+        this.timerEndTime = this.timerStartTime + this.getGame().curTimerDuration * 1000;
     }
 
+    /**
+     * returns MILLISECONDS
+     * @returns 
+     */
     getTimeLeft() {
         // need to change calculation if using variable timer duration in the future
         let curTimeMs = (new Date()).getTime();
         let msSinceStart = (curTimeMs - this.timerStartTime);
 
-        if (msSinceStart >= this.getGame().baseTimerDuration * 1000) {
+        if (msSinceStart >= this.getGame().curTimerDuration * 1000) {
             return 0;
 
         } else {
-            return this.getGame().baseTimerDuration * 1000 - msSinceStart;
+            return this.getGame().curTimerDuration * 1000 - msSinceStart;
 
         }
     }
@@ -306,7 +314,8 @@ export class Game {
                 additionalWords = null,
                 usePresetDictionary = true,
                 bonusAlphabet = DEFAULT_BONUS_ALPHABET,
-                numMissesBeforeSubstringChange = DEFAULT_MISSES_BEFORE_SUBSTRING_CHANGE
+                numMissesBeforeSubstringChange = DEFAULT_MISSES_BEFORE_SUBSTRING_CHANGE,
+                timeInc = DEFAULT_TIME_INC
             ) {
         this.roomCode = roomCode;
 
@@ -322,6 +331,7 @@ export class Game {
             this.bonusAlphabet.add(letter.trim().toLowerCase());
         }
         this.numMissesBeforeSubstringChange = DEFAULT_MISSES_BEFORE_SUBSTRING_CHANGE;
+        this.timeInc = timeInc;
 
         this.wordsLoaded = false;
 
@@ -360,6 +370,7 @@ export class Game {
         this.currentSubstring = "ION";
         this.currentNumMisses = 0;
         this.wordsSubmitted = new Map();
+        this.curTimerDuration = this.baseTimerDuration;
 
         this.isActive = false;
         this.isFinished = false;
@@ -593,10 +604,16 @@ export class Game {
 
     }
 
-    nextTurn(playerLostLife, skipWinnerCheck = false) {
+    nextTurn(playerLostLife, msLeft, recurse = false) {
         // base case
-        if (!skipWinnerCheck && this.lastOneStanding() != null) {
+        if (!recurse && this.lastOneStanding() != null) {
             return this.endGame();
+        }
+
+        if (!playerLostLife) {
+            this.curTimerDuration = Math.min(msLeft / 1000.0 + this.timeInc, this.baseTimerDuration);
+        } else {
+            this.curTimerDuration = this.baseTimerDuration;
         }
 
         this.currentTurn++;
@@ -607,10 +624,10 @@ export class Game {
         // recurse
         let nextPlayer = this.players[this.currentTurn];
         if (!nextPlayer.isAlive) {
-            return this.nextTurn(playerLostLife, true);
+            return this.nextTurn(playerLostLife, msLeft, true);
         }
 
-        if (!playerLostLife || this.currentNumMisses >= this.numMissesBeforeSubstringChange) {
+        if (this.players.length <= 1 || !playerLostLife || this.currentNumMisses >= this.numMissesBeforeSubstringChange) {
             this.currentSubstring = this.getRandomSubstring();
             this.currentNumMisses = 0;
         }

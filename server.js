@@ -261,7 +261,7 @@ io.on("connection", (socket) => {
             let additionalWords = parseCommaOrLineBreakSeparatedValues(additionalWordsInput);
 
             let newGame = new gameLogic.Game(
-                generatedCode, maxPlayers, baseTimerDuration, startingLives,
+                generatedCode, parseFloat(maxPlayers), parseFloat(baseTimerDuration), parseFloat(startingLives),
                 dictionaryFile, additionalWords, usePresetDictionary, bonusAlphabet
             );
             gameManager.addGame(newGame);
