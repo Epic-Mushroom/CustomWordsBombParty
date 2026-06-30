@@ -44,6 +44,12 @@ function getDictionaryFile(dictionarySelectionId) {
     switch (dictionarySelectionId) {
         case "default-dictionary":
             break;
+        case "adjectives":
+            dictionaryFile = gameLogic.ADJECTIVES_FILE;
+            break;
+        case "adverbs":
+            dictionaryFile = gameLogic.ADVERBS_FILE;
+            break;
         case "cities":
             dictionaryFile = gameLogic.CITIES_FILE;
             break;

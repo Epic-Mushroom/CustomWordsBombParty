@@ -23,6 +23,8 @@ export const DEFAULT_TIME_INC = 3; // how much the timer increases when the last
 export const MIN_DICTIONARY_SIZE = 5;
 
 export const DEFAULT_WORD_LIST_FILE = "public/word-lists/default-word-list.txt";
+export const ADJECTIVES_FILE = "public/word-lists/adjectives.txt";
+export const ADVERBS_FILE = "public/word-lists/adverbs.txt";
 export const CITIES_FILE = "public/word-lists/cities.txt";
 export const POKEMON_FILE = "public/word-lists/pokemon.txt";
 export const MINECRAFT_FILE = "public/word-lists/minecraft.txt";
