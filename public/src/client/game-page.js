@@ -346,6 +346,8 @@ socket.on("connect", async () => {
         mainGameContainer.replaceChildren();
         let invalidCodeInfoText = document.createElement("h3");
         invalidCodeInfoText.textContent = "This room doesn't exist!";
+        invalidCodeInfoText.style.setProperty("text-align", "center");
+        invalidCodeInfoText.style.setProperty("padding", "20px");
 
         mainGameContainer.append(invalidCodeInfoText);
     }
