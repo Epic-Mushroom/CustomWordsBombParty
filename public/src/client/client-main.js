@@ -1,8 +1,26 @@
 import {io} from "https://cdn.socket.io/4.8.3/socket.io.esm.min.js";
+import {Howl} from "https://esm.sh/howler";
 
 export const CLIENT_TICK_DELAY = 50; // ms
 export const MAX_GRADIENT_DISTANCE = 80; // percent
 export const MIN_GRADIENT_DISTANCE = 20; // percent
+
+// sounds
+export const correctSFX = new Howl({
+    src: ["../../sounds/correct.mp3"]
+});
+export const incorrectSFX = new Howl({
+    src: ["../../sounds/incorrect.mp3"]
+});
+export const bombSFX = new Howl({
+    src: ["../../sounds/bomb.mp3"]
+});
+export const bombRareSFX = new Howl({
+    src: ["../../sounds/bomb-rare.mp3"]
+});
+export const lockSFX = new Howl({
+    src: ["../../sounds/lock.mp3"]
+});
 
 const COPY_FLAVOR_TEXT = [ // indexed based on num times previously copied
     "copied URL!",

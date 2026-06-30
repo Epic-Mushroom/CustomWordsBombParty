@@ -249,10 +249,12 @@ async function submitGuess(guess) {
         console.log(`${response.reason}`);
 
         if (response.reason === "alreadySubmitted") {
+            clientMain.lockSFX.play();
             // flash orange
             clientMain.flashTextInput(submitGuessTextBox, "#ffa500");
 
         } else {
+            clientMain.incorrectSFX.play();
             // flash red
             clientMain.flashTextInput(submitGuessTextBox, "#ff0000");
 
@@ -261,6 +263,7 @@ async function submitGuess(guess) {
     } else {
         console.log(`valid guess`);
 
+        clientMain.correctSFX.play();
         // flash green
         clientMain.flashTextInput(submitGuessTextBox, "#00ff00");
     }
@@ -315,6 +318,11 @@ socket.on("gameplay_visibility", (visibilityData) => {
     );
 });
 socket.on("ran_out_of_time", (callback) => {
+    if (Math.random() >= 0.01) {
+        clientMain.bombSFX.play();
+    } else {
+        clientMain.bombRareSFX.play();
+    }
     // flash red
     clientMain.flashTextInput(submitGuessTextBox, "#ff0000");
 
