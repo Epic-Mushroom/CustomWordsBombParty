@@ -83,6 +83,7 @@ function emitGameplayVisibility(player) {
             curTurnHolderUsername: player.username,
             curSubstring: curGame.currentSubstring,
             endTime: player.timerEndTime,
+            showTimeDisplay: curGame.showTimeDisplay,
             playerAlphabetArray: Array.from(gamePlayer.currentAlphabet),
             gameAlphabetArray: gameAlphabetArray
         });

@@ -108,11 +108,11 @@ async function startGame() {
  */
 function gameplayVisibility(
     submitGuessTextBox, substringElement, isClientTurn, curTurnHolderUsername, curSubstring, endTime,
-    playerAlphabetArray, gameAlphabetArray
+    showTimeDisplay, playerAlphabetArray, gameAlphabetArray
 ) {
     clientMain.root.style.setProperty("--gameplay-visibility", "flex");
 
-    promptInfoVisibility(substringElement, timeLeftElement, curSubstring, endTime);
+    promptInfoVisibility(substringElement, timeLeftContainer, timeLeftElement, curSubstring, endTime, showTimeDisplay);
     bonusAlphabetVisibility(bonusAlphabetContainer, gameAlphabetArray, playerAlphabetArray);
 
     if (isClientTurn) {
@@ -143,11 +143,11 @@ function gameplayVisibility(
     }
 }
 
-function promptInfoVisibility(substringElement, timeLeftElement, curSubstring, endTime) {
+function promptInfoVisibility(substringElement, timeLeftContainer, timeLeftElement, curSubstring, endTime, showTimeDisplay) {
     substringElement.textContent = `"${curSubstring.toUpperCase()}"`;
 
     let endTimeSeconds = endTime / 1000.0;
-    updateTimeLeft(timeLeftElement, endTimeSeconds);
+    updateTimeLeft(timeLeftContainer, timeLeftElement, endTimeSeconds, showTimeDisplay);
 }
 
 /**
@@ -156,7 +156,7 @@ function promptInfoVisibility(substringElement, timeLeftElement, curSubstring, e
  * @param {number} endTimeSeconds 
  * @returns 
  */
-function updateTimeLeft(timeLeftElement, endTimeSeconds) {
+function updateTimeLeft(timeLeftContainer, timeLeftElement, endTimeSeconds, showTimeDisplay) {
     clearInterval(bombTimerInterval);
     timeLeftElement.textContent = Math.max(endTimeSeconds - Date.now() / 1000.0, 0).toFixed(1);
 
@@ -166,6 +166,12 @@ function updateTimeLeft(timeLeftElement, endTimeSeconds) {
             clearInterval(bombTimerInterval);
         }
     }, 100);
+
+    if (showTimeDisplay) {
+        timeLeftContainer.style.setProperty("display", "block");
+    } else {
+        timeLeftContainer.style.setProperty("display", "none");
+    }
 }
 
 /**
@@ -276,6 +282,7 @@ const startGameContainer = document.getElementById("start-game");
 const startGameButton = document.getElementById("start-game-button");
 const gameplayContainer = document.getElementById("gameplay");
 const substringElement = document.getElementById("substring");
+const timeLeftContainer = document.getElementById("time-left-container");
 const timeLeftElement = document.getElementById("time-left");
 const submitGuessTextBox = document.getElementById("guess")
 const submitGuessForm = document.getElementById("submit-guess-form");
@@ -303,7 +310,7 @@ socket.on("gameplay_visibility", (visibilityData) => {
     gameplayVisibility(
         submitGuessTextBox, substringElement,
         visibilityData.isClientTurn, visibilityData.curTurnHolderUsername,
-        visibilityData.curSubstring, visibilityData.endTime,
+        visibilityData.curSubstring, visibilityData.endTime, visibilityData.showTimeDisplay,
         visibilityData.playerAlphabetArray, visibilityData.gameAlphabetArray
     );
 });

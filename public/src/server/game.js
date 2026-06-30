@@ -315,7 +315,8 @@ export class Game {
                 usePresetDictionary = true,
                 bonusAlphabet = DEFAULT_BONUS_ALPHABET,
                 numMissesBeforeSubstringChange = DEFAULT_MISSES_BEFORE_SUBSTRING_CHANGE,
-                timeInc = DEFAULT_TIME_INC
+                timeInc = DEFAULT_TIME_INC,
+                showTimeDisplay = false
             ) {
         this.roomCode = roomCode;
 
@@ -332,6 +333,7 @@ export class Game {
         }
         this.numMissesBeforeSubstringChange = DEFAULT_MISSES_BEFORE_SUBSTRING_CHANGE;
         this.timeInc = timeInc;
+        this.showTimeDisplay = showTimeDisplay;
 
         this.wordsLoaded = false;
 
