@@ -21,6 +21,9 @@ export const bombRareSFX = new Howl({
 export const lockSFX = new Howl({
     src: ["../../sounds/lock.mp3"]
 });
+export const turnStartSFX = new Howl({
+    src: ["../../sounds/turn-start.mp3"]
+});
 
 const COPY_FLAVOR_TEXT = [ // indexed based on num times previously copied
     "copied URL!",

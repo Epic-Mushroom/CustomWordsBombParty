@@ -121,6 +121,8 @@ function gameplayVisibility(
         submitGuessTextBox.disabled = false;
         submitGuessTextBox.focus();
 
+        clientMain.turnStartSFX.play();
+
         console.log("showing submit guess interface");
 
     } else {
