@@ -7,18 +7,21 @@ function updatePlayerInfo(playerInfoContainer, playerData) {
     playerInfoContainer.replaceChildren();
 
     for (let i = 0; i < playerData.length; i++) {
-        let playerString = playerData[i].asString;
-
-        playerString += ` ${playerData[i].numCorrectGuesses} ✅ | ${playerData[i].numIncorrectGuesses} ❌ | ${playerData[i].numMisses} 💣`;
+        let playerString = "";
 
         let textElement = document.createElement("li");
-        if (playerData[i].curTurnHolderUsername === playerData[i].username) {
+        if (playerData[i].gameIsActive && playerData[i].curTurnHolderUsername === playerData[i].username) {
             textElement.classList.add("bolded");
+            playerString += "⏩ ";
         }
 
-        let newSpan = document.createElement("span");
-        newSpan.textContent = playerString;
-        textElement.append(newSpan);
+        if (playerData[i].username === localStorage.getItem("username")) {
+            playerString += "👤 ";
+        }
+
+        playerString += `${playerData[i].asString} ${playerData[i].numCorrectGuesses} ✅ | ${playerData[i].numIncorrectGuesses} ❌ | ${playerData[i].numMisses} 💣`;
+
+        textElement.append(document.createTextNode(playerString));
 
         let mostRecentSubmission = (playerData[i].mostRecentGuess === "") ? "" : ` | ${playerData[i].mostRecentGuess} `;
         // if there is a most recent guess, switch over statuses
