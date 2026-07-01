@@ -88,10 +88,17 @@ function createRoom(
 ) {
     console.log("trying to create room");
 
-    socket.emit(
-        "create_room", maxPlayers, baseTimerDuration, startingLives,
-        dictionarySelectionId, additionalWordsInput, usePresetDictionary, bonusAlphabet
-    );
+    if (clientMain.clientFlags.timesRoomCreated > 40) {
+        alert("You have been making too many rooms and have been banned from doing so permanently (or until you refresh the page)");
+
+    } else {
+        socket.emit(
+            "create_room", maxPlayers, baseTimerDuration, startingLives,
+            dictionarySelectionId, additionalWordsInput, usePresetDictionary, bonusAlphabet
+        );
+    }
+
+    clientMain.clientFlags.timesRoomCreated++;
 }
 
 function updateRoomsCount(roomsCountContainer, count) {

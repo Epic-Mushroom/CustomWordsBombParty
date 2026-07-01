@@ -126,6 +126,9 @@ function addPlayerListeners(player) {
 
     player.events.on("started_player_turn", () => {
         emitGameplayVisibility(player);
+        // will cause it to emit twice because submitted_guess happens usually right before
+        // but this helps to emit at the very beginning of the game, might want to create a different emit
+        // for beginning of the game
         emitPlayerInfoVisibility(player.roomCode);
     });
 

@@ -43,12 +43,15 @@ const COPY_FLAVOR_TEXT = [ // indexed based on num times previously copied
 
 export let targetGradientX = 50; // percent
 
-let timesLinkCopied = 0;
+export const clientFlags = {
+    timesLinkCopied: 0,
+    timesRoomCreated: 0,
+}
 
 export const root = document.documentElement;
 
 export function resetTimesCopied() {
-    timesLinkCopied = 0;
+    clientFlags.timesLinkCopied = 0;
 }
 
 /**
@@ -105,15 +108,15 @@ export async function makeRoomCodeCopyable(roomCode, textElement) {
         await navigator.clipboard.writeText(`${window.location.hostname}:${window.location.port}/game/${roomCode}`);
         let copySuccessText = ""
 
-        if (timesLinkCopied >= COPY_FLAVOR_TEXT.length) {
+        if (clientFlags.timesLinkCopied >= COPY_FLAVOR_TEXT.length) {
             copySuccessText = "...";
 
         } else {
-            copySuccessText = COPY_FLAVOR_TEXT[timesLinkCopied];
+            copySuccessText = COPY_FLAVOR_TEXT[clientFlags.timesLinkCopied];
         }
 
         textElement.textContent = `Room Code: ${roomCode} (${copySuccessText})`;
-        timesLinkCopied++;
+        clientFlags.timesLinkCopied++;
 
     } catch (err) {
         textElement.textContent = `Room Code: ${roomCode} (failed to copy URL)`;
