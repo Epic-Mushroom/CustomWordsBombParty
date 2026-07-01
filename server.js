@@ -122,7 +122,7 @@ function addPlayerToRoom(socket, username, roomCode) {
     }
 
     if (!gameManager.games.has(roomCode)) {
-        return;
+        return null;
     }
 
     try {
@@ -132,6 +132,12 @@ function addPlayerToRoom(socket, username, roomCode) {
         console.log(`created Player with username ${newPlayer.username}`);
 
         newPlayer = roomGame.addOrUpdatePlayer(newPlayer);
+
+        const oldPlayer = gameManager.findPlayerBySocketId(socket.id);
+        if (oldPlayer != null) {
+            oldPlayer.getGame().removePlayer(oldPlayer);
+        }
+
         gameManager.addPlayer(newPlayer);
         addPlayerListeners(newPlayer);
 
@@ -139,12 +145,15 @@ function addPlayerToRoom(socket, username, roomCode) {
             socket.emit("force_username_update", newPlayer.username);
         }
 
+        return newPlayer;
+
     } catch (err) {
         if (err.name != "GameError") {
             throw err;
 
         } else {
             socket.emit("alert_with_redirect", err.message);
+            return null;
 
         }
     }
@@ -318,7 +327,8 @@ io.on("connection", (socket) => {
             gameManager.addGame(newGame);
             addGameListeners(newGame);
 
-            addPlayerToRoom(socket, username, generatedCode);
+            const newRoomLeader = addPlayerToRoom(socket, username, generatedCode);
+            newRoomLeader.disconnect(); 
 
             socket.emit("show_newly_generated_room", generatedCode);
             io.emit("update_rooms_count", gameManager.games.size);

@@ -534,6 +534,18 @@ export class Game {
         return player;
     }
 
+    removePlayer(player) {
+        this.players = this.players.filter((gamePlayer) => player !== gamePlayer);
+
+        if (this.players.length === 0) {
+            this.leader = null;
+
+        } else if (this.leader === player) {
+            this.leader = this.players[0];
+
+        }
+    }
+
     isDeadLobby() {
         for (const player of this.players) {
             if (player.isConnected) {

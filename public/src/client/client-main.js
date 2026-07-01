@@ -90,7 +90,7 @@ export function preFillUsernameField(usernameField, username = null) {
 export async function setUsername(usernameField, username) {
     console.log(`trying to store username "${username}"`)
 
-    if (username.trim() !== "") {
+    if (username.trim() !== "" && username.trim() !== localStorage.getItem("username")) {
         let response = await socket.timeout(10000).emitWithAck("set_server_username", username);
 
         if (!response.usernameSet) {
