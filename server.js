@@ -115,6 +115,41 @@ function emitPlayerInfoVisibility(roomCode) {
     }
 }
 
+function addPlayerToRoom(socket, username, roomCode) {
+    // console.log(`trying to add ${username} to ${roomCode}`);
+    if (username == "") {
+        console.warn(`username is blank`);
+    }
+
+    if (!gameManager.games.has(roomCode)) {
+        return;
+    }
+
+    try {
+        const roomGame = gameManager.games.get(roomCode);
+        let newPlayer = new gameLogic.Player(username, roomCode, socket.id);
+
+        console.log(`created Player with username ${newPlayer.username}`);
+
+        newPlayer = roomGame.addOrUpdatePlayer(newPlayer);
+        gameManager.addPlayer(newPlayer);
+        addPlayerListeners(newPlayer);
+
+        if (newPlayer.username != username) {
+            socket.emit("force_username_update", newPlayer.username);
+        }
+
+    } catch (err) {
+        if (err.name != "GameError") {
+            throw err;
+
+        } else {
+            socket.emit("alert_with_redirect", err.message);
+
+        }
+    }
+}
+
 /**
  * 
  * @param {gameLogic.Player} player 
@@ -257,6 +292,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("create_room", (
+        username,
         maxPlayers = gameLogic.DEFAULT_MAX_PLAYERS_PER_ROOM,
         baseTimerDuration = gameLogic.DEFAULT_BASE_TIMER_DURATION,
         startingLives = gameLogic.DEFAULT_STARTING_LIVES,
@@ -282,6 +318,8 @@ io.on("connection", (socket) => {
             gameManager.addGame(newGame);
             addGameListeners(newGame);
 
+            addPlayerToRoom(socket, username, generatedCode);
+
             socket.emit("show_newly_generated_room", generatedCode);
             io.emit("update_rooms_count", gameManager.games.size);
 
@@ -299,38 +337,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("add_player_to_room", (username, roomCode) => {
-        // console.log(`trying to add ${username} to ${roomCode}`);
-        if (username == "") {
-            console.warn(`username is blank`);
-        }
-
-        if (!gameManager.games.has(roomCode)) {
-            return;
-        }
-
-        try {
-            const roomGame = gameManager.games.get(roomCode);
-            let newPlayer = new gameLogic.Player(username, roomCode, socket.id);
-
-            console.log(`created Player with username ${newPlayer.username}`);
-
-            newPlayer = roomGame.addOrUpdatePlayer(newPlayer);
-            gameManager.addPlayer(newPlayer);
-            addPlayerListeners(newPlayer);
-
-            if (newPlayer.username != username) {
-                socket.emit("force_username_update", newPlayer.username);
-            }
-
-        } catch (err) {
-            if (err.name != "GameError") {
-                throw err;
-
-            } else {
-                socket.emit("alert_with_redirect", err.message);
-
-            }
-        }
+        addPlayerToRoom(socket, username, roomCode);
 
     })
 

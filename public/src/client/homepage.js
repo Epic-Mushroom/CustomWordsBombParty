@@ -78,6 +78,7 @@ function customWordsSettingsVisibility(customWordsSettingsContainer, visible) {
 }
 
 function createRoom(
+    username,
     maxPlayers,
     baseTimerDuration,
     startingLives,
@@ -89,11 +90,11 @@ function createRoom(
     console.log("trying to create room");
 
     if (clientMain.clientFlags.timesRoomCreated > 40) {
-        alert("You have been making too many rooms and have been banned from doing so permanently (or until you refresh the page)");
+        alert("You have been making too many rooms and have been banned from doing so permanently (or until you refresh the page) (please don't refresh the page and continue spamming rooms");
 
     } else {
         socket.emit(
-            "create_room", maxPlayers, baseTimerDuration, startingLives,
+            "create_room", username, maxPlayers, baseTimerDuration, startingLives,
             dictionarySelectionId, additionalWordsInput, usePresetDictionary, bonusAlphabet
         );
     }
@@ -143,7 +144,7 @@ usernameButton?.addEventListener("click", () => {
 });
 createRoomButton?.addEventListener("click", () => {
     createRoom(
-        maxPlayersField.value, baseTimerDurationField.value, startingLivesField.value,
+        localStorage.getItem("username"), maxPlayersField.value, baseTimerDurationField.value, startingLivesField.value,
         dictionarySelectDropdown.value, customWordsField.value, combineWithDefaultDictCheckbox.checked,
         checkboxesToArray()
     );
